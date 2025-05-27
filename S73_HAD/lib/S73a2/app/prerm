@@ -1,0 +1,11 @@
+#!/bin/bash
+
+systemctl daemon-reload
+
+# log
+echo "stop rb_mt apps ..."
+# hobot-fstab
+systemctl stop rbmt.service
+systemctl disable rbmt.service
+
+exit 0

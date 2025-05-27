@@ -1,0 +1,8 @@
+[Unit]
+Description=Hobot Power Management Service
+
+[Service]
+ExecStart=hb_pms
+
+[Install]
+WantedBy=multi-user.target

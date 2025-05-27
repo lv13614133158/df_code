@@ -1,0 +1,72 @@
+/***
+ *                     COPYRIGHT NOTICE
+ *            Copyright (C) 2019 -2022 Horizon Robotics, Inc.
+ *                   All rights reserved.
+ ***/
+
+#ifndef HB_VPFHL_COMMON_H_
+#define HB_VPFHL_COMMON_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//PYM ERR INFO
+#define HB_VPFHL_PYM_OPEN_DEV_FAIL     (9000)
+#define HB_VPFHL_PYM_NULL_POINTER      (9001)
+#define HB_VPFHL_PYM_INVALID_PARAMETER (9002)
+#define HB_VPFHL_PYM_INVALID_NODE      (9003)
+#define HB_VPFHL_PYM_SET_BUF_FAIL      (9004)
+#define HB_VPFHL_PYM_GET_BUF_FAIL      (9005)
+#define HB_VPFHL_PYM_SEND_FRAME_FAIL   (9006)
+#define HB_VPFHL_PYM_INPUT_BUFFER_NULL (9007)
+#define HB_VPFHL_PYM_OUTPUT_BUFFER_NULL (9008)
+#define HB_VPFHL_PYM_SET_ATTR_EX_FAIL   (9009)
+#define HB_VPFHL_PYM_SET_ATTR_FAIL      (9010)
+#define HB_VPFHL_PYM_SET_ICHN_FAIL      (9011)
+#define HB_VPFHL_PYM_SET_OCHN_FAIL      (9012)
+#define HB_VPFHL_PYM_START_FAIL         (9013)
+
+
+// VPFHL ERR INFO
+#define HB_VPFHL_GET_HBMEM_BUFFER_FAIL (10000)
+
+//GDC ERR INFO
+#define HB_VPFHL_GDC_OPEN_DEV_FAIL     (11000)
+#define HB_VPFHL_GDC_START_VNODE_FAIL  (11001)
+#define HB_VPFHL_GDC_STOP_VNODE_FAIL   (11002)
+#define HB_VPFHL_GDC_SET_BUF_FAIL      (11003)
+#define HB_VPFHL_GDC_GET_BUF_FAIL      (11004)
+#define HB_VPFHL_GDC_SEND_FRAME_FAIL   (11005)
+#define HB_VPFHL_GDC_GET_ATTR_FAIL     (11006)
+#define HB_VPFHL_GDC_SET_ATTR_FAIL     (11007)
+#define HB_VPFHL_GDC_SET_ICHN_FAIL     (11008)
+#define HB_VPFHL_GDC_SET_OCHN_FAIL     (11009)
+#define HB_VPFHL_GDC_NULL_POINTER      (11010)
+#define HB_VPFHL_GDC_NULL_JSON         (11011)
+#define HB_VPFHL_GDC_READ_JSON_FAIL    (11012)
+#define HB_VPFHL_GDC_INVALID_NODE      (11013)
+
+//STH ERR INFO
+#define HB_VPFHL_STH_OPEN_DEV_FAIL          (12000)
+#define HB_VPFHL_STH_START_VNODE_FAIL       (12001)
+#define HB_VPFHL_STH_STOP_VNODE_FAIL        (12002)
+#define HB_VPFHL_STH_SET_BUF_FAIL           (12003)
+#define HB_VPFHL_STH_GET_BUF_FAIL           (12004)
+#define HB_VPFHL_STH_SEND_FRAME_FAIL        (12005)
+#define HB_VPFHL_STH_GET_ATTR_FAIL          (12006)
+#define HB_VPFHL_STH_SET_ATTR_FAIL          (12007)
+#define HB_VPFHL_STH_SET_ICHN_FAIL          (12008)
+#define HB_VPFHL_STH_SET_OCHN_FAIL          (12009)
+#define HB_VPFHL_STH_NULL_POINTER           (12010)
+#define HB_VPFHL_STH_INVALID_PARAMETER      (12011)
+#define HB_VPFHL_STH_START_FAIL             (12012)
+#define HB_VPFHL_STH_SET_ATTR_EX_FAIL       (12013)
+#define HB_VPFHL_STH_SEND_SRC_FRAME_FAILD   (12014)
+#define HB_VPFHL_STH_INVALID_NODE           (12015)
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // HB_VPFHL_COMMON_H_

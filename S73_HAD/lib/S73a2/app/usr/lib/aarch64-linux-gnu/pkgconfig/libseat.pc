@@ -1,0 +1,9 @@
+prefix=/home/yuxin.ye/code/j6/thirdparty/seatd/install
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libseat
+Description: Seat management library
+Version: 0.4.0
+Libs: -L${libdir} -lseat
+Cflags: -I${includedir}

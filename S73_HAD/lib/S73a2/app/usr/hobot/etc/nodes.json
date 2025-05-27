@@ -1,0 +1,81 @@
+{
+  "nodes" : [
+    {
+      "id" : 0,
+      "enable" : false,
+      "mode_comment" : "value_table: R, W, RW",
+      "mode" : "R",
+      "target" : "chassis",
+      "io_channel" : {
+        "device_type_comment" : "value_table: can, eth, ipcf, spi",
+        "device_type" : "spi",
+        "channel_id" : 0
+      },
+      "raw_protocol" : "built_0.1"
+    },
+    {
+      "id" : 1,
+      "enable" : false,
+      "mode_comment" : "value_table: R, W, RW",
+      "mode" : "R",
+      "target" : "Radar",
+      "io_channel" : {
+        "device_type_comment" : "value_table: can, eth, ipcf, spi",
+        "device_type" : "eth",
+        "channel_id" : 0
+      },
+      "raw_protocol" : "built_1.0"
+    },
+    {
+      "id" : 2,
+      "enable" : false,
+      "mode_comment" : "value_table: R, W, RW",
+      "mode" : "W",
+      "target" : "AEB_Flag",
+      "io_channel" : {
+        "device_type_comment" : "value_table: can, eth, ipcf, spi",
+        "device_type" : "can",
+        "channel_id" : 0
+      }
+    },
+    {
+      "id" : 3,
+      "enable" : true,
+      "mode_comment" : "value_table: R, W, RW",
+      "mode" : "R",
+      "target" : "chassis",
+      "io_channel" : {
+        "device_type_comment" : "value_table: can, eth, ipcf, spi",
+        "device_type" : "ipcf",
+        "channel_id" : 0
+      },
+      "raw_protocol" : "built_1.0"
+    },
+	{
+      "id" : 4,
+      "enable" : true,
+      "mode_comment" : "value_table: R, W, RW",
+      "mode" : "R",
+      "target" : "pnc",
+      "io_channel" : {
+        "device_type_comment" : "value_table: can, eth, ipcf, spi",
+        "device_type" : "ipcf",
+        "channel_id" : 1
+      },
+      "raw_protocol" : "built_1.0"
+    },
+	{
+      "id" : 5,
+      "enable" : true,
+      "mode_comment" : "value_table: R, W, RW",
+      "mode" : "R",
+      "target" : "radar",
+      "io_channel" : {
+        "device_type_comment" : "value_table: can, eth, ipcf, spi",
+        "device_type" : "ipcf",
+        "channel_id" : 2
+      },
+      "raw_protocol" : "built_1.0"
+    }
+  ]
+}

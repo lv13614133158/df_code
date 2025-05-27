@@ -1,0 +1,12 @@
+#!/bin/bash
+
+systemctl daemon-reload
+
+# log
+echo "start rb_mt apps ..."
+# hobot-fstab
+systemctl enable rbmt.service
+systemctl start rbmt.service
+
+exit 0
+
