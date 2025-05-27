@@ -1,3 +1,0 @@
-/home/nvidia/df/S73_SGW/build/CMakeFiles/rebuild_cache.dir
-/home/nvidia/df/S73_SGW/build/CMakeFiles/IDPS.dir
-/home/nvidia/df/S73_SGW/build/CMakeFiles/edit_cache.dir
