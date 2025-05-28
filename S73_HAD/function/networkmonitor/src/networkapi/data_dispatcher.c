@@ -322,9 +322,7 @@ char* getnettxrx(){
 	memset(szline, 0, sizeof(szline));
 	root = cJSON_CreateArray(); 
 	if(root == NULL){
-		char log[256] = {0};
-		sprintf(log,"%s""cJSON_CreateArray NULL");
-		log_i("networkmonitor", log);
+		log_i("networkmonitor", "cJSON_CreateArray NULL");
 		return NULL;}
 	//跳过前两行，后面一行代表一个网卡的信息，循环读取每个网卡的信息
 	while(fgets(szline, sizeof(szline), fp) != NULL)
@@ -906,9 +904,7 @@ void create_parserthread(void){
 	pthread_attr_t attr;
 	int ret = pthread_attr_init(&attr); 
 	if((ret = pthread_attr_setstacksize(&attr, stacksize)) != 0){
-		char log[256] = {0};
-		sprintf(log,"%s""statcksize set error");
-		log_i("networkmonitor", log);
+		log_i("networkmonitor", "statcksize set error");
 	}
 	pthread_create(&thread_parser_thd,&attr,thread_parser,NULL);
 	if((ret = pthread_attr_destroy(&attr)) != 0){
@@ -1066,9 +1062,7 @@ void list_network_card()
 	int i=0,num;
 	if(pcap_findalldevs(&alldev,error)==-1)
 	{
-		char log[256] = {0};
-		sprintf(log,"%s""find all devices is error");
-		log_i("networkmonitor", log);
+		log_i("networkmonitor", "find all devices is error");
 		return;
 	}
 	for(p=alldev;p;p=p->next)

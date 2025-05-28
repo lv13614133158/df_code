@@ -9,7 +9,6 @@
 #include "ThreadPool.h"
 #include "data/ConfigConstData.h"
 #include "spdloglib.h"
-#include "ConfigParse.h"
 
 /**
  ******************************************************************************
@@ -81,108 +80,13 @@ static void setCurlCApath(char *mqttpath)
 
 static void setCurlComopt(CURL *curlget)
 {
-    curl_easy_setopt(curlget, CURLOPT_SSL_VERIFYPEER, 1L); //验证证书
-    curl_easy_setopt(curlget, CURLOPT_SSL_VERIFYHOST, 2L); //检查证书中的公用名是否存在，并且是否与提供的主机名匹配
+    curl_easy_setopt(curlget, CURLOPT_SSL_VERIFYPEER, 0L); //验证证书
+    curl_easy_setopt(curlget, CURLOPT_SSL_VERIFYHOST, 0L); //检查证书中的公用名是否存在，并且是否与提供的主机名匹配
     //curl_easy_setopt(curlget, CURLOPT_CAPATH,"/etc/ssl/certs/");
     setCurlCApath(mqttpath);
     //curl_easy_setopt(curlget, CURLOPT_CAPATH, caPath); //指定证书路径
     //curl_easy_setopt(curlget, CURLOPT_CAINFO, caInfo); //指定证书信息
     curl_easy_setopt(curlget, CURLOPT_VERBOSE, 1L);         //curl日志打印，0关闭，1打开
-
-    /*Method 1. load the certificate in memory*/
-    char *client_cert_buff = NULL;
-    int client_cert_len = 0;
-    char *client_private_key_buff = NULL;
-    int client_private_key_len = 0;
-    char *root_cert_buff = NULL;
-    int root_cert_len = 0;
-    struct curl_blob blob;
-
-    if (get_pki_root_cert())
-    {
-        root_cert_len = strlen(get_pki_root_cert());
-        root_cert_buff = malloc(root_cert_len);
-        if (root_cert_buff)
-        {
-            memcpy(root_cert_buff, get_pki_root_cert(), root_cert_len);
-        }
-    }
-
-    if (get_pki_client_cert())
-    {
-        client_cert_len = strlen(get_pki_client_cert());
-        client_cert_buff = malloc(client_cert_len);
-        if (client_cert_buff)
-        {
-            memcpy(client_cert_buff, get_pki_client_cert(), client_cert_len);
-        }
-    }
-
-    if (get_pki_client_private_key())
-    {
-        client_private_key_len = strlen(get_pki_client_private_key());
-        client_private_key_buff = malloc(client_private_key_len);
-        if (client_private_key_buff)
-        {
-            memcpy(client_private_key_buff, get_pki_client_private_key(), client_private_key_len);
-        }
-    }
-
-    if (root_cert_buff)
-    {
-        blob.data = root_cert_buff;
-        blob.len = root_cert_len;
-        blob.flags = CURL_BLOB_COPY;
-        curl_easy_setopt(curlget, CURLOPT_CAINFO_BLOB, &blob);
-        free(root_cert_buff);
-        root_cert_buff = NULL;
-    }
-
-    if (client_cert_buff)
-    {
-        curl_easy_setopt(curlget, CURLOPT_SSLCERTTYPE, "PEM");
-        blob.data = client_cert_buff;
-        blob.len = client_cert_len;
-        blob.flags = CURL_BLOB_COPY;
-        curl_easy_setopt(curlget, CURLOPT_SSLCERT_BLOB, &blob);
-        free(client_cert_buff);
-        client_cert_buff = NULL;
-    }
-
-    if (client_private_key_buff)
-    {
-        curl_easy_setopt(curlget, CURLOPT_SSLKEYTYPE, "PEM");
-        blob.data = client_private_key_buff;
-        blob.len = client_private_key_len;
-        blob.flags = CURL_BLOB_COPY;
-        curl_easy_setopt(curlget, CURLOPT_SSLKEY_BLOB, &blob);
-        free(client_private_key_buff);
-        client_private_key_buff = NULL;
-    }
-    /*Method 1. end*/
-
-    /*Method 2. load the certificate as a file*/
-#if 0
-    /* cert is stored PEM coded in file... */
-    /* since PEM is default, we needn't set it for PEM */
-    curl_easy_setopt(curlget, CURLOPT_SSLCERTTYPE, "PEM");
-
-    /* set the cert for client authentication */
-    curl_easy_setopt(curlget, CURLOPT_SSLCERT, get_pki_client_cert_file_path());
-
-    //curl_easy_setopt(curlget, CURLOPT_KEYPASSWD, "password");
-
-    /* if we use a key stored in a crypto engine,
-    *          we must set the key type to "ENG" */
-    curl_easy_setopt(curlget, CURLOPT_SSLKEYTYPE, "PEM");
-
-    /* set the private key (file or ID in engine) */
-    curl_easy_setopt(curlget, CURLOPT_SSLKEY, get_pki_client_private_key_file_path());
-
-    /* set the file with the certs vaildating the server */
-    curl_easy_setopt(curlget, CURLOPT_CAINFO, get_pki_root_cert_file_path());
-#endif
-    /*Method 2. end*/
 }
 
 static void setGetRequestopt(CURL *curlget)

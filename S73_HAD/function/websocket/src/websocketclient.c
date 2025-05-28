@@ -88,7 +88,7 @@ void DBGlist(list *listTx)
 	do{
 		printf("list size:%d\n", listTx->size);
 		if(node) {
-			printf("i:%d,%s\n", i++,node->data);
+			printf("i:%d,%s\n", i++,(char *)(node->data));
 			node = node->next;
 		}
 	}while(node);
@@ -117,7 +117,7 @@ static void *ProcessMessageThread(void *args)
 		if(node)
 		{
 			enumtype = wbsDispatchData(node->data);
-			printf("事件类型：%d data:%s\n",enumtype, node->data);
+			printf("事件类型：%d data:%s\n",enumtype, (char *)(node->data));
 			switch(enumtype)
 			{
 			case NORMAL:
@@ -178,28 +178,6 @@ static void wbsClient_localWebsocketSend(long long lseqnumber, char *data, bool 
 
 	if (json)
 	{
-		
-		#if 1
-		cJSON *item_body = cJSON_GetObjectItemCaseSensitive(json, "body");
-		if (item_body) {
-			char* bodyString = cJSON_GetStringValue(item_body);
-			cJSON *item_new_body = cJSON_Parse(bodyString);
-			if(item_new_body)
-			{
-				cJSON *item_latitude = cJSON_GetObjectItemCaseSensitive(item_new_body, "latitude");
-				if (item_latitude != NULL) {
-					cJSON_SetIntValue(item_latitude, 0); 
-				}
-				cJSON *item_longitude = cJSON_GetObjectItemCaseSensitive(item_new_body, "longitude");
-				if (item_longitude != NULL) {
-					cJSON_SetIntValue(item_longitude, 0); 
-				}
-				item_body->valuestring = cJSON_PrintUnformatted(item_new_body);
-			}
-		}
-		
-		#endif
-
 		char *print_data = cJSON_Print(json);
 		if (print_data)
 		{
@@ -230,7 +208,7 @@ void wbsClient_localWebsocketSend_no_network(char* _input)
 	log_d("offline", _input);
 }
 
-void wbsClient_sendEventData(char* _postid,char* _data,char* _event)
+void wbsClient_sendEventData(char* _postid,char* _data)
 {
 	if(!_data)return;
 	long long lseqnumber=0;
@@ -367,7 +345,7 @@ static int SendData(struct lws *wsi)
 		if(m < n)
 		{
 			char spdlog[255] = {0};
-			snprintf(spdlog, 255, "%d < %d :%s", m, n, spdlog);
+			snprintf(spdlog, 255, "%d < %d :%s", m, n, _lstring);
 			log_e("SOCKET send failed", spdlog);
 		}
 	
@@ -498,109 +476,24 @@ static int ConnectClient(void)
 int wbsClient_init(void)
 {
 	int ssl_chose = wbsGetSsl();
+	char caPath[128] = {0};
+	strncpy(caPath, wbsGetPath(),128);
+    strcat(caPath,"ca.pem");
+
 	struct lws_context_creation_info info;
 	int logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;//LLL_INFO | LLL_DEBUG
-	char *client_cert_buff = NULL;
-	int client_cert_len = 0;
-	char *client_private_key_buff = NULL;
-	int client_private_key_len = 0;
-	char *root_cert_buff = NULL;
-	int root_cert_len = 0;
-
-	/*init certificate buff*/
-	if (get_pki_root_cert())
-	{
-		root_cert_len = strlen(get_pki_root_cert());
-		root_cert_buff = malloc(root_cert_len);
-		if (root_cert_buff)
-		{
-			memcpy(root_cert_buff, get_pki_root_cert(), root_cert_len);
-		}
-	}
-
-	if (get_pki_client_cert())
-	{
-		client_cert_len = strlen(get_pki_client_cert());
-		client_cert_buff = malloc(client_cert_len);
-		if (client_cert_buff)
-		{
-			memcpy(client_cert_buff, get_pki_client_cert(), client_cert_len);
-		}
-	}
-
-	if (get_pki_client_private_key())
-	{
-		client_private_key_len = strlen(get_pki_client_private_key());
-		client_private_key_buff = malloc(client_private_key_len);
-		if (client_private_key_buff)
-		{
-			memcpy(client_private_key_buff, get_pki_client_private_key(), client_private_key_len);
-		}
-	}
-	/*init certificate buff end*/
-
 	lws_set_log_level(logs, NULL);
 	memset(&info, 0, sizeof info);
 	info.options   = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 	info.port      = CONTEXT_PORT_NO_LISTEN; /* we do not run any server */
 	info.protocols = protocols;
+	//info.client_ssl_ca_filepath = caPath;//如果服务器有CA证书则需要这行代码
 
-	/*Method 1. load the certificate in memory*/
-	if (root_cert_buff)
-	{
-		info.client_ssl_ca_filepath = NULL;  // 不使用文件方式，改为内存块方式
-		info.client_ssl_ca_mem = root_cert_buff;  // 将CA证书作为内存块传入
-		info.client_ssl_ca_mem_len = root_cert_len; // 内存块大小
-	}
-
-	if (client_cert_buff)
-	{
-		info.client_ssl_cert_filepath = NULL;  // 不使用文件方式，改为内存块方式
-		info.client_ssl_cert_mem = client_cert_buff;  // 将客户端证书作为内存块传入
-		info.client_ssl_cert_mem_len = client_cert_len; // 内存块大小
-	}
-
-	if (client_private_key_buff)
-	{
-		info.client_ssl_private_key_filepath = NULL;  // 不使用文件方式，改为内存块方式
-		info.client_ssl_key_mem = client_private_key_buff;	// 将客户端私钥作为内存块传入
-		info.client_ssl_key_mem_len = client_private_key_len; // 内存块大小
-	}
-	/*Method 1. end*/
-
-	/*Method 2. load the certificate as a file*/
-#if 0
-	info.client_ssl_ca_filepath = get_pki_root_cert();//如果服务器有CA证书则需要这行代码
-	info.client_ssl_cert_filepath = get_pki_client_cert();
-	info.client_ssl_private_key_filepath = get_pki_client_private_key();
-#endif
-	/*Method 2. end*/
 
 	if(ssl_chose == 1)
-	 	ssl_connection |= LCCSCF_USE_SSL;
+		ssl_connection |= LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK | LCCSCF_ALLOW_INSECURE | LCCSCF_ALLOW_EXPIRED;
 	info.fd_limit_per_thread = (unsigned int)(1 + 1 + 1);//1 + clients + 1
-	context = lws_create_context(&info);
-
-	/*release certificate buff*/
-	if (root_cert_buff)
-	{
-		free(root_cert_buff);
-		root_cert_buff = NULL;
-	}
-
-	if (client_cert_buff)
-	{
-		free(client_cert_buff);
-		client_cert_buff = NULL;
-	}
-
-	if (client_private_key_buff)
-	{
-		free(client_private_key_buff);
-		client_private_key_buff = NULL;
-	}
-	/*release certificate end*/
-
+	context = lws_create_context(&info);  
 	if (!context) {
 		log_e("idps_websocket", "lws init failed\n");
 		return -1;

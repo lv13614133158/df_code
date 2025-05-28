@@ -68,7 +68,7 @@ extern unsigned int modeIDPS;//标记当前的模式 IDS IDPS  IPS
 extern unsigned int thresholdLog;//攻击值记录
 
 void value_log(int index, int value, int threshold);
-void report_log(u8 event,s8 *s_addr,s32 port);
+void report_log(u8 event,s8 *s_addr,s32 port, s8 *net_info);
 void startlog(void);
 void dpi_report_log_free(void);
 void report_user_login_log(char *address);

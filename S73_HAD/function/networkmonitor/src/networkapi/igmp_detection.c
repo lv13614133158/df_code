@@ -35,7 +35,10 @@ void igmp_value_consumer(void){
 		if(igmp_pack_count>igmpFloodThreshold)
 		{
 			value_log(IGMP_FLOODING, igmp_pack_count, igmpFloodThreshold);
-			report_log(IGMP_FLOODING,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", igmp_pack_count, igmpFloodThreshold);
+			report_log(IGMP_FLOODING,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER, net_info);
 		}
 		get_date();
 		igmp_pack_count=0;

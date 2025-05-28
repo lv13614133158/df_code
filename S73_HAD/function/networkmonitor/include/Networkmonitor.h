@@ -11,7 +11,7 @@ extern "C" {
 #if MODULE_NETWORKMONITOR
 
 typedef struct _NetWorkMonitorMethod{
-    void (*newNetworkMonitor)(char*, bool, char*, char*, bool, int, bool, int);
+    void (*newNetworkMonitor)(char*, char*, bool, char*, char*, bool, int, bool, int);
     void (*startNetWorkMonitor)(int);
     void (*stopNetworkMonitor)(void);
     void (*freeNetWorkMonitor)(void);

@@ -2,8 +2,18 @@
 # documentation: https://d.android.com/studio/projects/add-native-code.html
 
 # Sets the minimum version of CMake required to build the native library.
+set(TOOLCHAIN_DIR "/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu")
+set(CMAKE_C_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-none-linux-gnu-gcc)
+set(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-none-linux-gnu-g++)
 
+
+project(idps C CXX)
 cmake_minimum_required(VERSION 3.4.1)
+
+
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+
 
 set(CURRENT_DIR ${CMAKE_SOURCE_DIR})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
@@ -67,11 +77,16 @@ include_directories(function/websocket/include/util)
 #spdlog 模块
 include_directories(function/spdlog)
 
+set(SDK_USR_DIR /home/nvidia/df/HAD/S73a2/sdk/usr)
+
+include_directories(${SDK_USR_DIR}/hobot/include/aarch64-linux-gnu) #1.1.1
+include_directories(${SDK_USR_DIR}/hobot/include) #1.1.1
+include_directories(${SDK_USR_DIR}/include/aarch64-linux-gnu) #curl.h
 
 #第三方库
 # include_directories(third_part/curl/include)
 # include_directories(third_part/openssl/include)
-# include_directories(third_part/pcap/include)
+ include_directories(third_part/pcap/include)
  include_directories(third_part/websocket/include)
 
 #硬件支持
@@ -90,8 +105,8 @@ link_directories(${CMAKE_SOURCE_DIR}/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/tier1_part/tbox_info/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/curl/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
- link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)   #库里没有
-# link_directories(${CMAKE_SOURCE_DIR}/third_part/websocket/lib)
+# link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)  
+
 
 
 
@@ -164,21 +179,11 @@ target_link_libraries( # Specifies the target library.
 	-lpthread
 	-lrt
 	-ldl
-	#-lz
-	${CMAKE_SOURCE_DIR}/lib/libz.a
+	-lz
 	${CMAKE_SOURCE_DIR}/lib/libcurl.a
-	#-lcurl
-	#-lssl
-	${CMAKE_SOURCE_DIR}/lib/libssl.a
-	${CMAKE_SOURCE_DIR}/lib/libcrypto.a
-	#-lcrypto
+	-lssl
+	-lcrypto
 	-lpcap
-
 	-lstdc++
 	${CMAKE_SOURCE_DIR}/lib/libwebsockets.a
-	#-lwebsockets
-	#-lnvapi
-	#-lcommon_base
-	#-lidpsReadInfo
-	#-lql-tee-service
 	)

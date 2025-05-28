@@ -18,7 +18,7 @@ void initDataBase(const char *dataPath)
 {
     int ret;
     memset(_dataPath,0,sizeof(_dataPath));
-    strncpy(_dataPath,dataPath,strlen(dataPath));
+    strncpy(_dataPath,dataPath,sizeof(_dataPath) - 1);
     ret = pthread_mutex_lock(&sqliteMutex);
     if(ret)
     {

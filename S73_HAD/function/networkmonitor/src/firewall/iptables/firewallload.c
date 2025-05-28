@@ -522,7 +522,7 @@ print_firewall(const struct ipt_entry *fw,
 	       unsigned int format,
 	       struct xtc_handle *const handle)
 {
-	char  poolformat[64];
+	char  poolformat[BUFSIZ];
 	const struct xtables_target *target = NULL;
 	const struct xt_entry_target *t;
 	uint8_t flags;
@@ -600,7 +600,7 @@ print_firewall(const struct ipt_entry *fw,
 		else
 			sprintf(buf, "%s", xtables_ipaddr_to_anyname(&fw->ip.src));
 		strcat(buf, xtables_ipmask_to_numeric(&fw->ip.smsk));
-		sprintf(poolformat,"%s", buf);
+		sprintf(poolformat, "%s", buf);
 		strcat(pfirerule->source,poolformat);
 	}
 

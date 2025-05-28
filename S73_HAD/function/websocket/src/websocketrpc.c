@@ -38,7 +38,7 @@ bool test1(int argA, float argB, float argC, double argD, long argE, bool argF, 
 	bool ret = 1;
 	if(argG)
 		printf("call test1 %d, %f, %f, %f, %ld, %d, %s\n",
-			argA, argB, argC, argD, argE, argF, *argG);
+			argA, argB, argC, argD, argE, argF, argG);
 	else
 	{
 		printf("call test1 %d, %f, %f, %f, %ld, %d, argG is NULL\n",

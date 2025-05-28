@@ -1,9 +1,9 @@
 {
 	"commonModule":{
-		"dataBaseDir":"/oemdata/idps/conf/cache",
+		"dataBaseDir":"/storage/idps/conf/cache",
 		"databaseName":"idps.db",
-		"dataspdlog":"/oemdata/idps/log",
-		"certsPath":"/oemdata/idps/conf/CA/"
+		"dataspdlog":"/log/idps",
+		"certsPath":"/storage/idps/conf/CA/"
 	},
 	"networkManager":{
 		"heartBeat":60,
@@ -11,11 +11,11 @@
 		"readDbLoop":60,
 		"manageKeyStore":1,
 		"server":"https://vsocidps-prd.dfiov.com.cn",
-		"snPath":"/oemdata/idps/conf/cache",
+		"snPath":"/storage/idps/conf/cache",
 		"imeiNumber":"idpslinux",
 		"channelId":"T00001",
-		"equipmentType":"t-box",
-		"watchNicDevice":"bridge0"
+		"equipmentType":"had",
+		"watchNicDevice":"eth0"
 	},
 	"websocketModule":{
 		"channelId":"WEB001",
@@ -27,7 +27,7 @@
 		"sslshutdown":1,
 		"intervalheart":60,
 		"intervalsql":10,
-		"rpcconfigpath":"/oemdata/idps/conf/config/policy_config.json",
+		"rpcconfigpath":"/storage/idps/conf/config/policy_config.json",
 		"intervalkey":2
 	},
 	"version":{

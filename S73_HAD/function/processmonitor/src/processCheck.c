@@ -78,14 +78,14 @@ static cJSON* processCompose(int pid,int ppid,int uid,int gid,char *path,int act
 
 static void uploadProcessList(char *s)
 {	
-    websocketMangerMethodobj.sendEventData("0010103000122",s,"EVENT_TYPE_PROCESS_CHANGED");
+    websocketMangerMethodobj.sendEventData(EVENT_TYPE_PROCESS_CHANGED, s);
 }
 
 static void uploadProcessEvent(int pid,int ppid,int uid,int gid,char *path,int action)
 {
 	cJSON *cjson_data = processCompose(pid, ppid, uid, gid, path, action);
 	char *s = cJSON_PrintUnformatted(cjson_data);
-    websocketMangerMethodobj.sendEventData("0010103000122",s,"EVENT_TYPE_PROCESS_CHANGED");
+    websocketMangerMethodobj.sendEventData(EVENT_TYPE_PROCESS_CHANGED, s);
 	if(s)
 		free(s);
 	if(cjson_data)
@@ -438,7 +438,7 @@ void checkZombieProcess()
         }
         cJSON *cjson_data = processCompose(atoi(pid), atoi(ppid), 0, 0, path, PROCESS_ZOMBIE);
         char *s = cJSON_PrintUnformatted(cjson_data);
-        websocketMangerMethodobj.sendEventData("0010103000122",s,"EVENT_TYPE_PROCESS_CHANGED");
+        websocketMangerMethodobj.sendEventData(EVENT_TYPE_PROCESS_CHANGED, s);
         if(s)
             free(s);
         if(cjson_data)

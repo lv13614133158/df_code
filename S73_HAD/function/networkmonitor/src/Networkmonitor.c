@@ -204,7 +204,10 @@ static int watchNicDeviceIsExist(char *watchNicDevice)
 }
 
 static void timerarrived(void){
-	log_i("networkmonitor","go to find watch nic device");
+	char log_buff[64] = {0};
+
+	snprintf(log_buff, sizeof(log_buff), "go to find watch nic device:%s", s_watchNicDevice);
+	log_i("networkmonitor", log_buff);
 	if(watchNicDeviceIsExist(s_watchNicDevice))
 	{
 		log_i("networkmonitor","watch nic device is exist");
@@ -415,23 +418,26 @@ void printNetEventformatted(char *title, char *content, int on)
 // 1、网络流量数据上报
 __attribute__((unused)) static void onFlowDataReport(char* data) {
 	printNetEventformatted("[Flow Event]",data, false);
-	websocketMangerMethodobj.sendEventData("0010108000122",data,"EVENT_TYPE_NETWORK_ATTACK");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_FLOW, data);
 }
 
 // 2、网络攻击上报
-__attribute__((unused)) static void onNetEventReport(int eventId, char* srcIp, int localPort) {
+__attribute__((unused)) static void onNetEventReport(int eventId, char* srcIp, int localPort, s8 *net_info) {
 	char l_event[48] = {0};
+	long long timestamp = clockobj.get_current_time();
 	findkeymap(eventId,l_event);
 	cJSON *cjson_data=NULL;
     cjson_data = cJSON_CreateObject();
 	cJSON_AddStringToObject(cjson_data,"event",l_event);
 	cJSON_AddStringToObject(cjson_data,"srcIp",srcIp);
 	cJSON_AddNumberToObject(cjson_data,"localPort",localPort);
+	cJSON_AddNumberToObject(cjson_data,"timestamp",timestamp);
+	cJSON_AddStringToObject(cjson_data,"netInfo",net_info);
     char *s = cJSON_PrintUnformatted(cjson_data);
 	//printNetEventformatted("[Attack event]",s);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010109000122",s,"EVENT_TYPE_NETWORK_ATTACK");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_ATTACK, s);
 	if(s)free(s);
 }
 
@@ -446,7 +452,7 @@ __attribute__((unused)) static void onDnsInquireEvent(char* dns)
 	//printNetEventformatted("[DNS event]",s);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010102000422",s,"EVENT_TYPE_NETWORK_DNS_INQUIRE");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_DNS_INQUIRE, s);
 	if(s)free(s);
 }
 
@@ -461,7 +467,7 @@ __attribute__((unused)) static void onDnsResponseEvent(char* dns, char* ip_list)
 	//printNetEventformatted("[DNS event]",s);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010102000522",s,"EVENT_TYPE_NETWORK_IP_CONNECT");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_DNS_RESPONSE, s);
 	if(s)free(s);
 }
 
@@ -480,7 +486,7 @@ __attribute__((unused)) static void onPortopenEvent(unsigned int port, char* uid
 	//printNetEventformatted("[PORT event]",s);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010102000622",s,"EVENT_TYPE_NETWORK_PORT_OPEN");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_PORT_OPEN, s);
 	if(s)free(s);
 }
 
@@ -503,7 +509,7 @@ __attribute__((unused)) static void onIpConnectEvent(int ip_version,char* srcIp,
 	//printNetEventformatted("[IP event]",s);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010102000122",s,"EVENT_TYPE_NETWORK_IP_CONNECT");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_IP_CONNECT, s);
 	if(s)free(s);
 }
 
@@ -524,7 +530,7 @@ __attribute__((unused)) static void onTcpConnectEvent(char* srcIp, int srcPort,c
 	//printNetEventformatted("[TCP event]",s);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010102000222",s,"EVENT_TYPE_NETWORK_TCP_CONNECT");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_TCP_CONNECT, s);
 	if(s)free(s);
 }
 
@@ -545,7 +551,7 @@ __attribute__((unused)) static void onUdpConnectEvent(char* srcIp, int srcPort,c
 	//printNetEventformatted("[UDP event]",s);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010102000322",s,"EVENT_TYPE_NETWORK_UDP_CONNECT");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_NETWORK_UDP_CONNECT, s);
 	if(s)free(s);
 }
 
@@ -560,7 +566,7 @@ __attribute__((unused)) static void onUserLoginEvent(char* loginAddress)
     char *s = cJSON_PrintUnformatted(cjson_data);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010105000122",s,"EVENT_TYPE_USER_LOGIN");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_USER_LOGIN, s);
 	if(s)free(s);
 }
 
@@ -694,10 +700,18 @@ void stopSniffer_Base(void)
 }
 
 // 建立监测
-void newNetworkMonitor(char *watchNicDevice, bool attackSwitch, char* attackList, char* attackThreshold,
+void newNetworkMonitor(char *watchNicDevicePolicy, char *watchNicDeviceBase, bool attackSwitch, char* attackList, char* attackThreshold,
 							bool flowSwitch, int flowInterval, bool connectSwitch, int connectInterval)
 {
-	strncpy(s_watchNicDevice, watchNicDevice, sizeof(s_watchNicDevice) - 1);
+	if (strlen(watchNicDevicePolicy) <= 0)
+	{
+		strncpy(s_watchNicDevice, watchNicDeviceBase, sizeof(s_watchNicDevice) - 1);
+	}
+	else
+	{
+		strncpy(s_watchNicDevice, watchNicDevicePolicy, sizeof(s_watchNicDevice) - 1);
+	}
+
 	LoadNetWorkMonitor(connectSwitch);
 	updateNetConnectReportInterval(connectInterval);
 	initWhiteList();

@@ -190,7 +190,7 @@ int get_value(int mode ,const char *keyIndex,char *outbuf)
 
 int delete_value(const char *data)
 {
-	char cmd[256]={0};
+	char cmd[272]={0};
 
 	snprintf(cmd, sizeof(cmd), "rm %s%s", WORKDIR, data);
 	int result = system(cmd);
@@ -213,7 +213,7 @@ int set_work_directory(const char *dir)
 		mkdir(dir, 0777);
 	}
 
-	strncpy(WORKDIR,dir,strlen(dir));
+	strncpy(WORKDIR,dir,sizeof(WORKDIR) - 1);
 	if(WORKDIR[strlen(dir)-1]!='/')
 		WORKDIR[strlen(dir)]='/';
 	SET_WORKDIR_FLAG=1;

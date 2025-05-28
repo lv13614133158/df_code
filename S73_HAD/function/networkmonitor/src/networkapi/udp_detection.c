@@ -101,16 +101,22 @@ void udpport_value_consumer(void){
 	if(ports_count > udpPortsPerSecThreshold)
 	{
 		value_log(UDP_PORT_SCAN, ports_count, udpPortsPerSecThreshold);
-		report_log(UDP_PORT_SCAN,ip_str,NONE_PORT_IDENTIFIER);
+
+		char net_info[128] = {0};
+		snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", ports_count, udpPortsPerSecThreshold);
+		report_log(UDP_PORT_SCAN,ip_str,NONE_PORT_IDENTIFIER, net_info);
 	}
 	if(fraggle_attack_count>fraggleAttemptPerSecThreshold)
 	{
 		value_log(FRAGGLE_ATTACK, fraggle_attack_count, fraggleAttemptPerSecThreshold);
-		report_log(FRAGGLE_ATTACK,ip_str,NONE_PORT_IDENTIFIER);
+
+		char net_info[128] = {0};
+		snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", fraggle_attack_count, fraggleAttemptPerSecThreshold);
+		report_log(FRAGGLE_ATTACK,ip_str,NONE_PORT_IDENTIFIER, net_info);
 	}
 	if(src_port_zero_flag==TRUE)
 	{
-		report_log(UDP_SRC_PORT_ZERO,ip_str,NONE_PORT_IDENTIFIER);
+		report_log(UDP_SRC_PORT_ZERO,ip_str,NONE_PORT_IDENTIFIER, NULL);
 	}
 	pthread_mutex_lock(&request_udp_lock);
 	while(cur_elmt != NULL)
@@ -125,7 +131,10 @@ void udpport_value_consumer(void){
 		if(e->count > udpDosRetrytimesThreshold)		//may be dos attack
 		{
 			value_log(UDP_PORT_FLOOD, e->count, udpDosRetrytimesThreshold);
-			report_log(UDP_PORT_FLOOD,tmp,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", e->count, udpDosRetrytimesThreshold);
+			report_log(UDP_PORT_FLOOD,tmp,NONE_PORT_IDENTIFIER, net_info);
 		}
 		cur_elmt = cur_elmt->next;
 	}
@@ -492,7 +501,7 @@ void dns_parser(char* src_addr,char* dest_addr,struct udphdr* udp, int action)
 		int payload_len_cnt = dns_name_len(dnshdr->payload)+4;
 		dnsConver_name(dnshdr->payload, dns_data_tmp_buff, DNS_DATA_MAX_SIZE, NULL);
 
-		dns_data_tmp_buff[DNS_DATA_MAX_SIZE - -1] = '\0';
+		dns_data_tmp_buff[DNS_DATA_MAX_SIZE -1] = '\0';
 		dns_data_tmp_buff_len = strlen(dns_data_tmp_buff);
 		if (dns_data_tmp_buff[dns_data_tmp_buff_len - 1] == ' ')
 		{
@@ -570,7 +579,8 @@ void dns_parser(char* src_addr,char* dest_addr,struct udphdr* udp, int action)
 			on_onDnsResponseEvent_callback(dns_data_tmp_buff, ip_data_tmp_buff);//响应
 		}
 	}
-}
+}
+
 void DNSWhiteCheckInit(list *listName)
 {
 	whiteDNS = listName;

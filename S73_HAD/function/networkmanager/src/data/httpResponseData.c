@@ -53,7 +53,8 @@ parseResponseData_t *startPost(char *url,char *header,int headerlength,char *bod
             freeRequestMemory(response);
             return NULL;
         }
-        strncpy(newdata->errorMsg,response->errorMsg,strlen(response->errorMsg));
+        memset(newdata->errorMsg, 0, strlen(response->errorMsg)+1);
+        memcpy(newdata->errorMsg,response->errorMsg,strlen(response->errorMsg));
         freeRequestMemory(response);
         return newdata;
     }
@@ -114,7 +115,8 @@ parseResponseData_t *startGet(char *url, char *header,void* _curl)//
             freeRequestMemory(baseResponse);
             return NULL;
         }
-        strncpy(newdata->errorMsg,baseResponse->errorMsg,strlen(baseResponse->errorMsg));
+        memset(newdata->errorMsg, 0, strlen(baseResponse->errorMsg)+1);
+        memcpy(newdata->errorMsg,baseResponse->errorMsg,strlen(baseResponse->errorMsg));
         freeRequestMemory(baseResponse);
         return newdata;
     }

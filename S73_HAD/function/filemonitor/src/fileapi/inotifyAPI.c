@@ -153,7 +153,7 @@ void inotify_all_observer(struct inotify_event *event)
 	char *processData=NULL;
 	struct monitorEvent obj={{0},0};
 	path = inotifytools_filename_from_wd(event->wd);
-	strncpy(obj.path,path,strlen(path));
+	strncpy(obj.path,path,sizeof(obj.path) - 1);
 	//判断，如果是文件则不追加文件名
 	if(is_dir_exist(obj.path)== 0)
 		strncat(obj.path,event->name,512-strlen(path));

@@ -4,7 +4,7 @@
 #include "common.h"
 #include "myHmac.h"
 
-static pthread_rwlock_t rwlockPosition = PTHREAD_RWLOCK_INITIALIZER;
+static pthread_rwlock_t rwlockPosition;
 
 static float positionInfo(float * _ilat,float* _ilongi,int _set)
 {
@@ -34,11 +34,11 @@ static float positionInfo(float * _ilat,float* _ilongi,int _set)
 	return _ltemp;
 }
 void wbsClient_initPosition(){
-	//pthread_rwlock_init(&rwlockPosition,NULL);
+	pthread_rwlock_init(&rwlockPosition,NULL);
 }  
 
 void wbsClient_endPosition(){
-	//pthread_rwlock_destroy(&rwlockPosition);
+	pthread_rwlock_destroy(&rwlockPosition);
 }  
 
 void wbsClient_setPosition(float _lat,float _longi){

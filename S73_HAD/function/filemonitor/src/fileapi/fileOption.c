@@ -154,7 +154,7 @@ int cp_file(char *src_var, char *dest_var, struct stat *st)
         char *name=NULL;
 
         //make the relative path to absolute path
-        strncpy(buf, dest_var, strlen(dest_var));
+        strncpy(buf, dest_var, sizeof(buf) - 1);
         buf[strlen(buf)]='/';
         name = strrchr(src_var,'/');
         strncat(buf, name+1,256-strlen(dest_var));
@@ -183,8 +183,8 @@ int cp_dir(char *src, char *dest)
     DIR *dirp = NULL;
     struct stat src_stat;
     struct dirent *entp = NULL;
-    char src_buf[256] = {0};
-    char dest_buf[256] = {0};
+    char src_buf[272] = {0};
+    char dest_buf[272] = {0};
 
     //1. open the dir
     if( NULL == (dirp = opendir(src)) )
@@ -202,8 +202,8 @@ int cp_dir(char *src, char *dest)
         }
         memset(src_buf,0,sizeof(src_buf));
         memset(dest_buf,0,sizeof(dest_buf));
-        snprintf(src_buf, 256,"%s/%s", src, entp->d_name);
-        snprintf(dest_buf, 256,"%s/%s", dest, entp->d_name);       
+        snprintf(src_buf, sizeof(src_buf),"%s/%s", src, entp->d_name);
+        snprintf(dest_buf, sizeof(dest_buf),"%s/%s", dest, entp->d_name);
 
         if( stat(src_buf,&src_stat) )
         {
@@ -321,7 +321,7 @@ int cmd_cp(char *sourcePath,char *destPath)
                 if(sourcePath[strlen(sourcePath)-1]=='/')
                     sourcePath[strlen(sourcePath)-1]='\0';
                 name = strrchr(sourcePath,'/');
-                strncpy(destbuf,destPath,strlen(destPath));
+                strncpy(destbuf,destPath,sizeof(destbuf) - 1);
                 if(destPath[strlen(destPath)-1]!='/')
                     destbuf[strlen(destPath)]='/';
                 strncat(destbuf,name+1,255-strlen(destPath));
@@ -379,7 +379,7 @@ int get_ls_return_length(char *dirname)
 	}
 	else
 	{
-		strncpy(dir_path,dirname,strlen(dirname));
+		strncpy(dir_path,dirname,sizeof(dir_path) - 1);
 	}
 	
 	if(-1==lstat(dir_path,&my_stat))
@@ -455,7 +455,7 @@ int cmd_ls(char *dirname,char *out)
 	}
 	else
 	{
-		strncpy(dir_path,dirname,strlen(dirname));
+		strncpy(dir_path,dirname,sizeof(dir_path) - 1);
 	}
 	
 	if(-1==lstat(dir_path,&my_stat))
@@ -495,7 +495,7 @@ int cmd_ls(char *dirname,char *out)
                 memset(temp,0,128);
 				strncat(path,p_dirent->d_name,256-strlen(dir_path));
 				dostat(path,temp);//需要绝对路径
-                strncpy(out+length,temp,strlen(temp));
+                memcpy(out+length,temp,strlen(temp));
                 length+=strlen(temp);
 			}
 		}
@@ -527,7 +527,7 @@ void show_file_info(char *filename,struct stat *info_p,char *out)
 	
 	mode_to_letters(info_p->st_mode,modestr);	
 	snprintf(buf,128,"%s %4d %-8s %-8s %8ld %s\n",modestr,(int)info_p->st_nlink,uid_to_name(info_p->st_uid),gid_to_name(info_p->st_gid),(long) info_p->st_size,filename);
-    strncpy(out,buf,strlen(buf));
+    memcpy(out,buf,strlen(buf));
 }
 
 void mode_to_letters(int mode,char str[])
@@ -674,7 +674,7 @@ int cmd_rm(const char *path)
 {
 	char cur_dir[] = ".";
 	char up_dir[] = "..";
-	char dir_name[255]={0};
+	char dir_name[272]={0};
 	DIR *dirp;
 	struct dirent *dp;
 	struct stat dir_stat;
@@ -706,7 +706,7 @@ int cmd_rm(const char *path)
 			//ignore . and ..
 			if((strcmp(cur_dir,dp->d_name) == 0) || (strcmp(up_dir,dp->d_name) == 0))
 				continue;
-			snprintf(dir_name,255,"%s/%s",path,dp->d_name);
+			snprintf(dir_name,sizeof(dir_name),"%s/%s",path,dp->d_name);
 			cmd_rm(dir_name);  //recursion call
 		}
 		closedir(dirp);

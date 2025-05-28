@@ -187,8 +187,8 @@ static int append_pass_list(PassNode_t *h,char *str1,char *str2)
 	newNode->count = 0;
 	memset(newNode->name,0,32);
 	memset(newNode->password,0,128);
-	strncpy(newNode->name,str1,strlen(str1));
-	strncpy(newNode->password,str2,strlen(str2));
+	strncpy(newNode->name,str1,sizeof(newNode->name) - 1);
+	strncpy(newNode->password,str2,sizeof(newNode->password) - 1);
 	newNode->next = NULL;
 	//尾部插入节点
 	PassNode_t **l;

@@ -212,8 +212,9 @@ void produceEventDataRequestAfterUploadAttachment(const char *policy_id, const c
         free(data);
         return;
     }
+
     memset(data->url,0,strlen(cUrl)+1);
-    strncpy(data->url,cUrl,strlen(cUrl));
+    memcpy(data->url,cUrl,strlen(cUrl));
 
     char* bodyString = getAlarmEventProtobufFromGaterData(policy_id, datacontent, ticket_id, error_msg, attachment_id,&datalen,_curl);
     if (bodyString == NULL) {
@@ -283,7 +284,7 @@ void produceGatherDataRequest(const char *url, const char *body, int priority,vo
         return;
     }
     memset(data->url,0,strlen(cUrl)+1);
-    strncpy(data->url,cUrl,strlen(cUrl));
+    memcpy(data->url,cUrl,strlen(cUrl));
     retlen = (retlen == 0)?(strlen(bodyString)):(retlen);    
     data->data = (char*)malloc(retlen + 1);/////
     if(data->data == NULL)
@@ -341,7 +342,7 @@ void produceEventDataRequest(const char *policy_id, const char *datacontent, con
         return;
     }
     memset(data->url,0,strlen(cUrl)+1);
-    strncpy(data->url,cUrl,strlen(cUrl));
+    memcpy(data->url,cUrl,strlen(cUrl));
    
     data->data = malloc(retlen+1);
     if(data->data == NULL)
@@ -387,7 +388,7 @@ void produceEventDataRequestWithAttachment(const char *policy_id, const char *da
         return;
     }
     memset(data->url,0,strlen(cUrl)+1);
-    strncpy(data->url,cUrl,strlen(cUrl));
+    memcpy(data->url,cUrl, strlen(cUrl));
 
     data->withAttachment=true;
     data->eventWrapper = (eventWrapper_t*)malloc(sizeof(eventWrapper_t));
@@ -404,8 +405,10 @@ void produceEventDataRequestWithAttachment(const char *policy_id, const char *da
         free(data);
         return;
     }
+
     memset(data->eventWrapper->policy_id,0,strlen(policy_id)+1);
-    strncpy(data->eventWrapper->policy_id,policy_id,strlen(policy_id));
+    memcpy(data->eventWrapper->policy_id, policy_id, strlen(policy_id));
+
     if(datacontent != NULL){
         data->eventWrapper->data = (char*)malloc(strlen(datacontent)+1);
         if(data->eventWrapper->data == NULL){
@@ -416,7 +419,7 @@ void produceEventDataRequestWithAttachment(const char *policy_id, const char *da
             return;
         }
         memset(data->eventWrapper->data,0,strlen(datacontent)+1);
-        strncpy(data->eventWrapper->data,datacontent,strlen(datacontent));
+        memcpy(data->eventWrapper->data,datacontent,strlen(datacontent));
     }
     data->eventWrapper->path = (char*)malloc(strlen(path)+1);
     if(data->eventWrapper->path == NULL){
@@ -428,7 +431,7 @@ void produceEventDataRequestWithAttachment(const char *policy_id, const char *da
         return;
     }
     memset(data->eventWrapper->path,0,strlen(path)+1);
-    strncpy(data->eventWrapper->path,path,strlen(path));
+    memcpy(data->eventWrapper->path,path,strlen(path));
     data->eventWrapper->ticket_id = (char*)malloc(strlen((ticket_id ? ticket_id : ""))+1);
     if(data->eventWrapper->ticket_id == NULL){
         free(data->eventWrapper->path);
@@ -440,7 +443,7 @@ void produceEventDataRequestWithAttachment(const char *policy_id, const char *da
         return;
     }
     memset(data->eventWrapper->ticket_id,0,strlen((ticket_id ? ticket_id : ""))+1);
-    strncpy(data->eventWrapper->ticket_id,(ticket_id ? ticket_id : ""),strlen((ticket_id ? ticket_id : "")));
+    memcpy(data->eventWrapper->ticket_id,(ticket_id ? ticket_id : ""),strlen((ticket_id ? ticket_id : "")));
     data->headers=NULL;
      
     long long id = 0;
@@ -490,7 +493,7 @@ void produceHeartbeatRequest(const char *url,void* _curl){
         return;
     }
     memset(data->url,0,strlen(cUrl)+1);
-    strncpy(data->url,cUrl,strlen(cUrl));
+    memcpy(data->url,cUrl,strlen(cUrl));
 
     data->data = malloc(strlen(bodyString)+1);
     if(data->data == NULL)

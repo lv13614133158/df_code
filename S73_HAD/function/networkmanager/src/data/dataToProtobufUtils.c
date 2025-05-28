@@ -95,14 +95,14 @@ char *getAlarmEventProtobufFromGaterData(const char *policy_id, const char *data
     uint16_t l_policy_idlen = strlen(policy_id);
     int8_t   l_policy_id[l_policy_idlen + 1];
     memset(l_policy_id,0,l_policy_idlen + 1);
-    strncpy(l_policy_id,policy_id,l_policy_idlen);
+    memcpy(l_policy_id,policy_id,l_policy_idlen);
     alarmEventModelList.policy_id = l_policy_id;
  
     if(data == NULL)return NULL;
     uint16_t l_datalen = strlen(data);
     int8_t   databuffer[l_datalen + 1];
     memset(databuffer,0,l_datalen + 1);
-    strncpy(databuffer,data,l_datalen);
+    memcpy(databuffer,data,l_datalen);
     alarmEventModelList.data = databuffer;
 
     alarmEventModelList.timestamp = get_current_time();
@@ -111,7 +111,7 @@ char *getAlarmEventProtobufFromGaterData(const char *policy_id, const char *data
         uint16_t l_attachment_idlen = strlen(attachment_id);
         l_attachment_id = (int8_t* )malloc(l_attachment_idlen + 1);
         memset(l_attachment_id,0,l_attachment_idlen + 1);
-        strncpy(l_attachment_id,attachment_id,l_attachment_idlen);
+        memcpy(l_attachment_id,attachment_id,l_attachment_idlen);
         alarmEventModelList.attachment_id = l_attachment_id;
     }
     if(error_msg != NULL && strlen(error_msg)>0)
@@ -119,7 +119,7 @@ char *getAlarmEventProtobufFromGaterData(const char *policy_id, const char *data
         uint16_t l_error_msg = strlen(error_msg);
         l_error_msgbuffer = (int8_t*)malloc(l_error_msg + 1);
         memset(l_error_msgbuffer,0,l_error_msg + 1);
-        strncpy(l_error_msgbuffer,error_msg,l_error_msg);
+        memcpy(l_error_msgbuffer,error_msg,l_error_msg);
         alarmEventModelList.attachment_error_msg = l_error_msgbuffer;
     }
     if(ticket_id != NULL && strlen(ticket_id)>0)
@@ -127,7 +127,7 @@ char *getAlarmEventProtobufFromGaterData(const char *policy_id, const char *data
         uint16_t l_ticket_idlen = strlen(ticket_id);
         l_ticket_idbuffer = (int8_t* )malloc(l_ticket_idlen + 1);
         memset(l_ticket_idbuffer,0,l_ticket_idlen + 1);
-        strncpy(l_ticket_idbuffer,ticket_id,l_ticket_idlen);
+        memcpy(l_ticket_idbuffer,ticket_id,l_ticket_idlen);
         alarmEventModelList.ticket_id = l_ticket_idbuffer;
     }
     len = com__qihoo360__vehiclesafe__model__alarm_event_model_list__get_packed_size(&alarmEventModelList);

@@ -178,7 +178,7 @@ static void getSNFromLocal()
         log_v("networkmanager",spdlog);
         return ;
     }
-    strncpy(keyManager.sn,tempSN,strlen(tempSN));
+    strncpy(keyManager.sn,tempSN,sizeof(keyManager.sn) - 1);
 }
 
 static void getManageKeyFromNetWork(void* _curl)
@@ -225,11 +225,11 @@ static void getManageKeyFromNetWork(void* _curl)
     if (manageKey == NULL)
         goto exit;
     printf("manangerkey from networkmanager is %s\n",manageKey);
-    strncpy(keyManager.manageKey,manageKey,strlen(manageKey));
+    strncpy(keyManager.manageKey,manageKey,sizeof(keyManager.manageKey) - 1);
     char *tempIndexKey = set_value(keyManager.mode,manageKey);
     if(tempIndexKey)
     {
-        strncpy(keyManager.indexKey,tempIndexKey,strlen(tempIndexKey));
+        strncpy(keyManager.indexKey,tempIndexKey,sizeof(keyManager.indexKey) - 1);
         setIndexKey(tempIndexKey);
         char spdlog[512] = {0};
         snprintf(spdlog,512,"save manage key %s",keyManager.indexKey);
@@ -249,11 +249,11 @@ static void getManageKeyFromNetWork(void* _curl)
         free(manageKey);
         goto exit;
     }
-    strncpy(keyManager.sn,sn,strlen(sn));
+    strncpy(keyManager.sn,sn,sizeof(keyManager.sn) - 1);
     char *tempIndexSn = set_value(keyManager.mode,keyManager.sn);
     if(tempIndexSn)
     {
-        strncpy(keyManager.indexSN,tempIndexSn,strlen(tempIndexSn));
+        strncpy(keyManager.indexSN,tempIndexSn,sizeof(keyManager.indexSN) - 1);
         setIndexSN(keyManager.indexSN);  
         char spdlog[512] = {0};
         snprintf(spdlog,512,"save indexSN to db :%s", tempIndexSn);

@@ -15,7 +15,7 @@
 
 static uint8_t SET_WORKDIR_FLAG=0;
 static char WORKDIR[256]={0};
-static char fileName[255]="keystore";
+static char *fileName="keystore";
 
 static bool findIndexExist(char *index);
 static bool getStructFromFile(char *index,cryptoNode_t *node);
@@ -118,10 +118,10 @@ bool storeKey(int mode,const char *data,char *outbuf)
         dataNode.mode = 1;
         dataNode.token = 0; //存文件时文件的token值没有用，默认赋值为0.
         dataNode.flag = true;
-        strncpy(dataNode.index,summary,strlen(summary));
-        strncpy(dataNode.data,data,strlen(data));
-        char spdlog[256] = {0};
-        snprintf(spdlog,256,"mode:%d flag:%d token:%d  index:%s  key&iv:%s   data:%s\n ",dataNode.mode,dataNode.flag,dataNode.token,dataNode.index,dataNode.data,data);
+        strncpy(dataNode.index,summary,sizeof(dataNode.index) - 1);
+        strncpy(dataNode.data,data,sizeof(dataNode.data) - 1);
+        char spdlog[512] = {0};
+        snprintf(spdlog,sizeof(spdlog),"mode:%d flag:%d token:%d  index:%s  key&iv:%s   data:%s\n ",dataNode.mode,dataNode.flag,dataNode.token,dataNode.index,dataNode.data,data);
 		log_i("CryptogramModule", spdlog);
     }
     else if(mode == 3) //存se
@@ -401,8 +401,8 @@ int readFile()
     for(i=0;i<count;i++)
     {
         size_t result = fread(&cryptoNode,sizeof(cryptoNode_t),1,fp);
-        char spdlog[256] = {0};
-        snprintf(spdlog,256,"mode :%d  flag :%d token:%d  index:%s  data:%s\n",cryptoNode.mode, cryptoNode.flag,cryptoNode.token,cryptoNode.index,cryptoNode.data);
+        char spdlog[512] = {0};
+        snprintf(spdlog,sizeof(spdlog),"mode :%d  flag :%d token:%d  index:%s  data:%s\n",cryptoNode.mode, cryptoNode.flag,cryptoNode.token,cryptoNode.index,cryptoNode.data);
 		log_i("CryptogramModule", spdlog);
         memset(&cryptoNode,0,sizeof(cryptoNode_t));
     }

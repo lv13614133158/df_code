@@ -5,15 +5,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <time.h>
 #include <sys/time.h>
 #include "Base_networkmanager.h"
-#include "websocketTool.h"
-// #include "idpsReadInfo.h"
-// #include "ql_tee_service.h"
-// #include "ql_tee_asymm_utils.h"
-// #include "ql_tee_symm_utils.h"
-
+ 
 // 配置文件目录位置设置
 #define POS_4  1
 #ifdef POS_1
@@ -21,8 +17,8 @@
 #elif POS_2
 	#define ROOT_PATH  "/usr/local/idps"
 #elif POS_3
-#define ROOT_PATH_RW  "/oemdata/idps/conf"
-#define ROOT_PATH_OR  "/oemapp/idps/conf"
+#define ROOT_PATH_RW  "/storage/idps/conf"
+#define ROOT_PATH_OR  "/idps/conf"
 #elif POS_4
 	//#define ROOT_PATH  "../conf"
 	#define ROOT_PATH_RW  "../conf"
@@ -30,7 +26,6 @@
 #else
 	#define ROOT_PATH  "/mnt/sdcard/idps"
 #endif
-
 #define DEVICE_INFO_PATH      ROOT_PATH_OR "/config/device_info.conf"
 #define BASE_CONFIG_PATH   ROOT_PATH_OR "/config/base_config.json"
 #define POLICY_CONFIG_PATH ROOT_PATH_RW "/config/policy_config.json"
@@ -38,13 +33,16 @@
 #define POLICY_CONFIG_MD5  ROOT_PATH_RW "/config/save_conf.json"
 #define BASE_VERSION_PATH  ROOT_PATH_RW "/version/version.ver"
 
+#define S73_HAD_SOFTWARE_VERSION_PATH "/version/oem_main_version.txt"
+#define S73_HAD_HARDWARE_VERSION_PATH "/usr/var/did/hardware_version"
+#define S73_HAD_SN_PATH               "/usr/var/did/serial_number"
+#define S73_HAD_VIN_PATH              "/uds_data/vin.txt"
+#define S73_HAD_SUPPLIER              "R352127"
+
 #define GETREQUEST_DATALEN  (1024*5)
 const char* GET_MONITOR_CONFIG = "/api/v1.2/policy/config";
 tboxInfo_t tboxInfo_obj;
 
-static unsigned char *s_root_cert = NULL;
-static unsigned char *s_dev_cert = NULL;
-static unsigned char *s_dev_key = NULL;
 
 // buf为空时读取文件长度，
 static int readLocalJson(char* path, char* buf, int len)
@@ -166,7 +164,7 @@ char* getJsonItemString_t(cJSON* cJSONBuf, char* name)
 // 安全获取Cjson字符串并复制
 void getJsonItemString_s(cJSON* cJSONBuf, char* name, char* valuestr)
 {
-	char spdlog[64] ={0};
+	char spdlog[128] ={0};
 
 	char* cstring = getJsonItemString_t(cJSONBuf, name);
 	if(cstring)
@@ -176,14 +174,13 @@ void getJsonItemString_s(cJSON* cJSONBuf, char* name, char* valuestr)
 			memcpy(valuestr, cstring, strlen(cstring));
 		}
 		else {
-			sprintf(spdlog,"getJsonItemString_s %s parameter Input error",name);
+			snprintf(spdlog, sizeof(spdlog), "getJsonItemString_s %s parameter Input error", name);
 			log_e("ConfigParse",spdlog);
 		}
 	}
 	else{
-		if(valuestr){
-			memcpy(valuestr, "No have string", strlen("No have string"));
-		}
+		snprintf(spdlog, sizeof(spdlog), "No have string:%s", name);
+		log_e("ConfigParse",spdlog);
 	}
 }
 
@@ -665,61 +662,6 @@ static int getOutInfoAPI(char* VIN, char* SN)
 	return ret;
 }
 
-static int readCert(const char *name, char *dataCert, unsigned int len)
-{
-
-	return 0;
-	// uint32_t object = 0, count = 0;
-	// ql_tee_error_t ret = QL_TEE_OK;
-	// char spdlog[512] = {0};
-
-	// ret = ql_ss_initialize();
-	// if (QL_TEE_OK != ret)
-	// {
-	// 	memset(spdlog, 0 ,sizeof(spdlog));
-	// 	snprintf(spdlog, sizeof(spdlog), "ql_ss_initialize err:%d", ret);
-	// 	log_e("ConfigParse", spdlog);
-
-	// 	return -1;
-	// }
-
-	// ret = ql_ss_open((void*)name, strlen(name), &object);
-	// if (QL_TEE_OK != ret)
-	// {
-	// 	ql_ss_deinitialize();
-	// 	memset(spdlog, 0 ,sizeof(spdlog));
-	// 	snprintf(spdlog, sizeof(spdlog), "ql_ss_open err:%d", ret);
-	// 	log_e("ConfigParse", spdlog);
-
-	// 	return -2;
-	// }
-
-	// ret = ql_ss_read(object, (void*)dataCert, len, &count);
-	// if (QL_TEE_OK != ret)
-	// {
-	// 	ql_ss_deinitialize();
-	// 	memset(spdlog, 0 ,sizeof(spdlog));
-	// 	snprintf(spdlog, sizeof(spdlog), "ql_ss_read err:%d,count:%d", ret, count);
-	// 	log_e("ConfigParse", spdlog);
-
-	// 	return -3;
-	// }
-
-	// ret = ql_ss_close(object);
-	// if (QL_TEE_OK != ret)
-	// {
-	// 	ql_ss_deinitialize();
-	// 	memset(spdlog, 0 ,sizeof(spdlog));
-	// 	snprintf(spdlog, sizeof(spdlog), "ql_ss_close err:%d", ret);
-	// 	log_e("ConfigParse", spdlog);
-
-	// 	return -4;
-	// }
-
-	// ql_ss_deinitialize();
-	// return count;
-}
-
 /*return: 1,data is String; 0,data is not String*/
 int isString(const char *data)
 {
@@ -752,24 +694,6 @@ int isAllZero(const char *str)
 	return 1;
 }
 
-static void tbox_info_get_gps_callback_fun(double latitude, double longitude)
-{
-	return ;
-	// static int get_gps_callback_cnt = 60;
-
-	// get_gps_callback_cnt++;
-	// if (get_gps_callback_cnt >= 60)
-	// {
-	// 	get_gps_callback_cnt = 0;
-	// 	wbsClient_setPosition(latitude, longitude);
-	// }
-
-	/*char spdlog[512] = {0};
-	snprintf(spdlog, sizeof(spdlog),
-			"latitude:%lf, longitude:%lf\n", latitude, longitude);
-	log_d("ConfigParse", spdlog);*/
-}
-
 /**
  *  获取 SN、VIN、MODEL、SYS_version信息
  *  保存信息到内存
@@ -778,211 +702,178 @@ static void tbox_info_get_gps_callback_fun(double latitude, double longitude)
 **/
 void initTboxInfo()
 {
-	return ;
-// 	char spdlog[512] = {0};
-// 	tboxInfo_t tbox_info_local = {0};
-// 	int use_default_info[5] = {0};
-// 	char buf[512]={0};
-// 	tbox_mcu_info_t tbox_mcu_info;
+	char spdlog[512] = {0};
+	tboxInfo_t tbox_info_local = {0};
+	int use_default_info[5] = {0};
+	char buf[512]={0};
+	char file_data_buf[128]={0};
+	tboxInfo_t tbox_s73_had_info = {0};
 
-// 	// 特定接口 getOutInfoAPI，返回值是use_default_info
+	// 特定接口 getOutInfoAPI，返回值是use_default_info
 	
-// 	while (1)
-// 	{
-// 		memset(&tbox_mcu_info, 0, sizeof(tbox_mcu_info));
-// 		tbox_info_get_mcu_info(&tbox_mcu_info, tbox_info_get_gps_callback_fun);
 
-// 		memset(spdlog, 0 ,sizeof(spdlog));
-// 		snprintf(spdlog, sizeof(spdlog),
-// 				"vin:%s, sn:%s, supplierInfo:%s, hardwareVersion:%s, softwareVersion:%s\n",
-// 				tbox_mcu_info.vin, tbox_mcu_info.sn, tbox_mcu_info.supplierInfo, tbox_mcu_info.hardwareVersion, tbox_mcu_info.softwareVersion);
-// 		log_d("ConfigParse", spdlog);
+	int ret = -1;
+	int fd  = -1;
 
-// 		/*判断是否为字符串*/
-// 		if (isString(tbox_mcu_info.vin) && isString(tbox_mcu_info.sn))
-// 		{
-// 			/*判断字符串长度*/
-// 			if (strlen(tbox_mcu_info.vin) == 0 || strlen(tbox_mcu_info.sn) == 0)
-// 			{
-// 				log_i("ConfigParse", "device_num or diag_vin len is 0");
-// 			}
-// 			else
-// 			{
-// 				/*判断字符串是否全部由0组成*/
-// 				if (isAllZero(tbox_mcu_info.vin) || isAllZero(tbox_mcu_info.sn))
-// 				{
-// 					log_i("ConfigParse", "device_num or diag_vin is all zero");
-// 				}
-// 				else
-// 				{
-// 					break;
-// 				}
-// 			}
-// 		}
+	// while (1)
+	// {
+	// 	memset(&tbox_s73_had_info, 0, sizeof(tbox_s73_had_info));
 
-// 		sleep(5);
-// 	}
+	// 	fd = open(S73_HAD_SN_PATH, O_RDONLY);
+	// 	if (fd >= 0)
+	// 	{
+	// 		memset(file_data_buf, 0, sizeof(file_data_buf));
+	// 		ret = read(fd, file_data_buf, sizeof(file_data_buf));
+	// 		if (ret > 0)
+	// 		{
+	// 			if (file_data_buf[ret - 1] == '\n')
+	// 			{
+	// 				file_data_buf[ret - 1] = '\0';
+	// 			}
+	// 			strncpy(tbox_s73_had_info.ID, file_data_buf, sizeof(tbox_s73_had_info.ID) - 1);
+	// 			memset(spdlog, 0 ,sizeof(spdlog));
+	// 			sprintf(spdlog, "tbox_s73_had_info.ID:%s", tbox_s73_had_info.ID);
+	// 			log_d("ConfigParse", spdlog);
+	// 		}
+	// 		close(fd);
+	// 		fd = -1;
+	// 	}
+	// 	else
+	// 	{
+	// 		log_e("ConfigParse","open had sn file failed");
+	// 	}
 
+	// 	fd = open(S73_HAD_VIN_PATH, O_RDONLY);
+	// 	if (fd >= 0)
+	// 	{
+	// 		memset(file_data_buf, 0, sizeof(file_data_buf));
+	// 		ret = read(fd, file_data_buf, sizeof(file_data_buf));
+	// 		if (ret > 0)
+	// 		{
+	// 			if (file_data_buf[ret - 1] == '\n')
+	// 			{
+	// 				file_data_buf[ret - 1] = '\0';
+	// 			}
+	// 			strncpy(tbox_s73_had_info.VIN, file_data_buf, sizeof(tbox_s73_had_info.VIN) - 1);
+	// 			memset(spdlog, 0 ,sizeof(spdlog));
+	// 			sprintf(spdlog, "tbox_s73_had_info.VIN:%s", tbox_s73_had_info.VIN);
+	// 			log_d("ConfigParse", spdlog);
+	// 		}
+	// 		close(fd);
+	// 		fd = -1;
+	// 	}
+	// 	else
+	// 	{
+	// 		log_e("ConfigParse","open had vin file failed");
+	// 	}
 
+	// 	/*判断是否为字符串*/
+	// 	if (isString(tbox_s73_had_info.VIN) && isString(tbox_s73_had_info.ID))
+	// 	{
+	// 		/*判断字符串长度*/
+	// 		if (strlen(tbox_s73_had_info.VIN) == 0 || strlen(tbox_s73_had_info.ID) == 0)
+	// 		{
+	// 			log_i("ConfigParse", "device_num or diag_vin len is 0");
+	// 		}
+	// 		else
+	// 		{
+	// 			/*判断字符串是否全部由0组成*/
+	// 			if (isAllZero(tbox_s73_had_info.VIN) || isAllZero(tbox_s73_had_info.ID))
+	// 			{
+	// 				log_i("ConfigParse", "device_num or diag_vin is all zero");
+	// 			}
+	// 			else
+	// 			{
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
 
-// 	/*get TBOX info from local configuration files*/
-// 	if(readLocalJson(DEVICE_INFO_PATH, buf, sizeof(buf)) == -1){
-// 		goto exit;
-// 	}
+	// 	sleep(5);
+	// }
 
-// 	cJSON* root = cJSON_Parse(buf);
-// 	if(!root)      //解析json失败
-// 	{
-// 		log_d("ConfigParse","tboxinfo file format error");
-// 		goto exit;
-// 	}
+	/*get TBOX info from local configuration files*/
+	strncpy(tbox_s73_had_info.VIN, "LDC913L2240000001", sizeof(tbox_s73_had_info.VIN) - 1);
+	strncpy(tbox_s73_had_info.ID, "XY202505280001", sizeof(tbox_s73_had_info.ID) - 1);
+	
+	if(readLocalJson(DEVICE_INFO_PATH, buf, sizeof(buf)) == -1){
+		goto exit;
+	}
 
-// 	cJSON* device_info = cJSON_GetObjectItem(root,"device_info");
-// 	if(device_info)
-// 	{
-// 		cJSON* SN = cJSON_GetObjectItem(device_info,"SN");
-// 		if((use_default_info[0]==0) && SN && *(SN->valuestring)){
-// 			strncpy(tbox_info_local.ID,SN->valuestring,strlen(SN->valuestring));
-// 			use_default_info[0] = 1;
-// 		}
+	cJSON* root = cJSON_Parse(buf);
+	if(!root)      //解析json失败
+	{
+		log_d("ConfigParse","tboxinfo file format error");
+		goto exit;
+	}
+
+	cJSON* device_info = cJSON_GetObjectItem(root,"device_info");
+	if(device_info)
+	{
+		cJSON* SN = cJSON_GetObjectItem(device_info,"SN");
+		if((use_default_info[0]==0) && SN && *(SN->valuestring)){
+			strncpy(tbox_info_local.ID,SN->valuestring,sizeof(tbox_info_local.ID) - 1);
+			use_default_info[0] = 1;
+		}
 			
-// 		cJSON* VIN = cJSON_GetObjectItem(device_info,"VIN");
-// 		if((use_default_info[1]==0) && VIN && *(VIN->valuestring)){
-// 			strncpy(tbox_info_local.VIN,VIN->valuestring,strlen(VIN->valuestring));
-// 			use_default_info[1] = 1;
-// 		}
+		cJSON* VIN = cJSON_GetObjectItem(device_info,"VIN");
+		if((use_default_info[1]==0) && VIN && *(VIN->valuestring)){
+			strncpy(tbox_info_local.VIN,VIN->valuestring,sizeof(tbox_info_local.VIN) - 1);
+			use_default_info[1] = 1;
+		}
 
-// 		cJSON* vehicle_model = cJSON_GetObjectItem(device_info,"vehicle_model");
-// 		if((use_default_info[2]==0) && vehicle_model && *(vehicle_model->valuestring)){
-// 			strncpy(tbox_info_local.CAR,vehicle_model->valuestring,strlen(vehicle_model->valuestring));
-// 			use_default_info[2] = 1;
-// 		}
-// 	}
+		cJSON* vehicle_model = cJSON_GetObjectItem(device_info,"vehicle_model");
+		if((use_default_info[2]==0) && vehicle_model && *(vehicle_model->valuestring)){
+			strncpy(tbox_info_local.CAR,vehicle_model->valuestring,sizeof(tbox_info_local.CAR) - 1);
+			use_default_info[2] = 1;
+		}
+	}
 
-// 	cJSON* simu_info = cJSON_GetObjectItem(root,"simu_info");
-// 	if(simu_info)
-// 	{
-// 		cJSON* sys_version = cJSON_GetObjectItem(simu_info,"sys_version");
-// 		if((use_default_info[3]==0) && sys_version && *(sys_version->valuestring)){
-// 			strncpy(tbox_info_local.SYS_VERSION,sys_version->valuestring,strlen(sys_version->valuestring));
-// 			use_default_info[3] = 1;
-// 		}
-// 	}
+	cJSON* simu_info = cJSON_GetObjectItem(root,"simu_info");
+	if(simu_info)
+	{
+		cJSON* sys_version = cJSON_GetObjectItem(simu_info,"sys_version");
+		if((use_default_info[3]==0) && sys_version && *(sys_version->valuestring)){
+			strncpy(tbox_info_local.SYS_VERSION,sys_version->valuestring,sizeof(tbox_info_local.SYS_VERSION) - 1);
+			use_default_info[3] = 1;
+		}
+	}
 
-// exit:	
-// 	if(use_default_info[0] == 0)
-// 	{
-// 		strncpy(tbox_info_local.ID, "TEST_LINUX_IDPS_SN",strlen("TEST_LINUX_IDPS_SN"));
-// 	}
-// 	if(use_default_info[1] == 0)
-// 	{
-// 		strncpy(tbox_info_local.VIN,"TEST_LINUX_IDPS_VIN",strlen("TEST_LINUX_IDPS_VIN"));
-// 	}
-// 	if(use_default_info[2] == 0)
-// 	{
-// 		strncpy(tbox_info_local.CAR,"TEST_LINUX_IDPS_MODEL",strlen("TEST_LINUX_IDPS_MODEL"));
-// 	}
-// 	if(use_default_info[3] == 0)
-// 	{
-// 		strncpy(tbox_info_local.SYS_VERSION,"TEST_LINUX_SYS_VERSION",strlen("TEST_LINUX_SYS_VERSION"));
-// 	}
+exit:	
+	if(use_default_info[0] == 0)
+	{
+		strncpy(tbox_info_local.ID, "TEST_LINUX_IDPS_SN",sizeof(tbox_info_local.ID) - 1);
+	}
+	if(use_default_info[1] == 0)
+	{
+		strncpy(tbox_info_local.VIN,"TEST_LINUX_IDPS_VIN",sizeof(tbox_info_local.VIN) - 1);
+	}
+	if(use_default_info[2] == 0)
+	{
+		strncpy(tbox_info_local.CAR,"TEST_LINUX_IDPS_MODEL",sizeof(tbox_info_local.CAR) - 1);
+	}
+	if(use_default_info[3] == 0)
+	{
+		strncpy(tbox_info_local.SYS_VERSION,"TEST_LINUX_SYS_VERSION",sizeof(tbox_info_local.SYS_VERSION) - 1);
+	}
 
-// 	if (root)
-// 	{
-// 		cJSON_Delete(root);
-// 	}
+	if (root)
+	{
+		cJSON_Delete(root);
+	}
 
-// 	strncpy(tboxInfo_obj.VIN, tbox_mcu_info.vin, sizeof(tboxInfo_obj.VIN) - 1);
-// 	strncpy(tboxInfo_obj.ID, tbox_mcu_info.sn, sizeof(tboxInfo_obj.ID) - 1);
-// 	strncpy(tboxInfo_obj.MANUFACTURER, tbox_mcu_info.supplierInfo, sizeof(tboxInfo_obj.MANUFACTURER) - 1);
-// 	strncpy(tboxInfo_obj.CAR, tbox_info_local.CAR, sizeof(tboxInfo_obj.CAR) - 1);
+	tboxInfo_obj = tbox_info_local;
 
-// 	memset(spdlog, 0 ,sizeof(spdlog));
-// 	sprintf(spdlog, "ID:%s, VIN:%s, CAR:%s, SIMU:%s\n", tboxInfo_obj.ID, tboxInfo_obj.VIN, tboxInfo_obj.CAR, tboxInfo_obj.SYS_VERSION);
-// 	log_d("ConfigParse", spdlog);
+	strncpy(tboxInfo_obj.VIN, tbox_s73_had_info.VIN, sizeof(tboxInfo_obj.VIN) - 1);
+	strncpy(tboxInfo_obj.ID, tbox_s73_had_info.ID, sizeof(tboxInfo_obj.ID) - 1);
+	strncpy(tboxInfo_obj.MANUFACTURER, S73_HAD_SUPPLIER, sizeof(tboxInfo_obj.MANUFACTURER) - 1);
+	strncpy(tboxInfo_obj.CAR, tbox_info_local.CAR, sizeof(tboxInfo_obj.CAR) - 1);
+
+	memset(spdlog, 0 ,sizeof(spdlog));
+	sprintf(spdlog, "ID:%s, VIN:%s, CAR:%s, MANUFACTURER:%s, SIMU:%s\n",
+		tboxInfo_obj.ID, tboxInfo_obj.VIN, tboxInfo_obj.CAR, tboxInfo_obj.MANUFACTURER, tboxInfo_obj.SYS_VERSION);
+	log_d("ConfigParse", spdlog);
 }
-
-int initCert(void)
-{
-	return 0;
-	// char cert[10240] = {0};
-	// int certLen = 10240;
-	// int read_len = 0;
-
-	// printf("init cert\n");
-	// /*create client certificate*/
-	// read_len = readCert("deviceCert", cert, certLen);
-	// if (read_len > 0)
-	// {
-	// 	//printf("len:%d, client cert:%s\n", len, cert);
-	// 	if (s_dev_cert)
-	// 	{
-	// 		free(s_dev_cert);
-	// 		s_dev_cert = NULL;
-	// 	}
-	// 	s_dev_cert = (uint8_t *)malloc(read_len + 1);
-	// 	if (s_dev_cert)
-	// 	{
-	// 		memset(s_dev_cert, 0, read_len + 1);
-	// 		memcpy(s_dev_cert, cert, read_len);
-	// 	}
-	// }
-	// else
-	// {
-	// 	log_e("ConfigParse", "read client certificate err!");
-	// }
-
-	// /*create client private key*/
-	// memset(cert, 0, sizeof(cert));
-	// read_len = readCert("deviceKey", cert, certLen);
-	// if (read_len > 0)
-	// {
-	// 	//printf("len:%d, client key:%s\n", len, cert);
-	// 	if (s_dev_key)
-	// 	{
-	// 		free(s_dev_key);
-	// 		s_dev_key = NULL;
-	// 	}
-	// 	s_dev_key = (uint8_t *)malloc(read_len + 1);
-	// 	if (s_dev_key)
-	// 	{
-	// 		memset(s_dev_key, 0, read_len + 1);
-	// 		memcpy(s_dev_key, cert, read_len);
-	// 	}
-
-	// }
-	// else
-	// {
-	// 	log_e("ConfigParse", "read client private key err");
-	// }
-
-	// /*create root certificate*/
-	// memset(cert, 0, sizeof(cert));
-	// read_len = readCert("rootCert", cert, certLen);
-	// if (read_len > 0)
-	// {
-	// 	//printf("len:%d, root cert:%s\n", len, cert);
-	// 	if (s_root_cert)
-	// 	{
-	// 		free(s_root_cert);
-	// 		s_root_cert = NULL;
-	// 	}
-	// 	s_root_cert = (uint8_t *)malloc(read_len + 1);
-	// 	if (s_root_cert)
-	// 	{
-	// 		memset(s_root_cert, 0, read_len + 1);
-	// 		memcpy(s_root_cert, cert, read_len);
-	// 	}
-	// }
-	// else
-	// {
-	// 	log_e("ConfigParse", "read root certificate err");
-	// }
-
-	// return 0;
-}
-
-
 
 char* getTCUID()
 {
@@ -1014,22 +905,6 @@ char* getManufacturer()
 int recordVesion(char *version)
 {
 	return writeVersion(BASE_VERSION_PATH, version);
-}
-
-unsigned char *get_pki_client_cert(void)
-{
-	return s_dev_cert;
-}
-
-
-unsigned char *get_pki_client_private_key(void)
-{
-	return s_dev_key;
-}
-
-unsigned char *get_pki_root_cert(void)
-{
-	return s_root_cert;
 }
 
 // 离线在线模式 1：在线 0：离线
@@ -1074,4 +949,36 @@ int init_sync_clock(void)
 	clockobj.sync_clock(timestamp);
 
 	return 0;
+}
+
+int conf_rw_path_init()
+{
+    DIR *dir = NULL;
+    char system_buff[128] = {0};
+	int result = -1;
+
+    dir = opendir(ROOT_PATH_RW"/config");
+    if (dir)
+    {
+        //printf("目录存在\n");
+        closedir(dir);
+    }
+    else
+    {
+        snprintf(system_buff, sizeof(system_buff), "mkdir -p %s", ROOT_PATH_RW"/config");
+        result = system(system_buff);
+    }
+
+    if (access(POLICY_CONFIG_PATH, F_OK) == 0)
+    {
+        //printf("文件存在\n");
+    }
+    else
+    {
+        memset(system_buff, 0, sizeof(system_buff));
+        snprintf(system_buff, sizeof(system_buff), "cp %s %s", ROOT_PATH_OR"/config/policy_config.json", POLICY_CONFIG_PATH);
+        result = system(system_buff);
+    }
+
+    return 0;
 }

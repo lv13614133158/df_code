@@ -67,7 +67,10 @@ void system_call_implthread(void){
 		if(c>tcpConnectAttachThreshold)
 		{
 			value_log(TCP_CONNECT_ATTACK, c, tcpConnectAttachThreshold);
-			report_log(TCP_CONNECT_ATTACK,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", c, tcpConnectAttachThreshold);
+			report_log(TCP_CONNECT_ATTACK,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER, net_info);
 		}
 	}
 } 

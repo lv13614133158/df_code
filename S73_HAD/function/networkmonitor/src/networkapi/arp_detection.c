@@ -40,15 +40,24 @@ void arp_parser_proc(void){
 	if(arp_pack_count>arpFloodThreshold)
 	{
 		value_log(ARP_ATTACK_0, arp_pack_count, arpFloodThreshold);
-		report_log(ARP_ATTACK_0,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER);
+
+		char net_info[128] = {0};
+		snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", arp_pack_count, arpFloodThreshold);
+		report_log(ARP_ATTACK_0,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER, net_info);
 	}
 	if(arp_pack_countarp1 >= arpAttackThreshold){
 		value_log(ARP_ATTACK_1, arp_pack_countarp1, arpAttackThreshold);
-		report_log(ARP_ATTACK_1,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER);
+
+		char net_info[128] = {0};
+		snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", arp_pack_countarp1, arpAttackThreshold);
+		report_log(ARP_ATTACK_1,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER, net_info);
 	}
 	if(arp_pack_countarp2 >= arpAttackThreshold){
 		value_log(ARP_ATTACK_1, arp_pack_countarp2, arpAttackThreshold);
-		report_log(ARP_ATTACK_2,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER);
+
+		char net_info[128] = {0};
+		snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", arp_pack_countarp2, arpAttackThreshold);
+		report_log(ARP_ATTACK_2,NONE_SRC_IDENTIFIER,NONE_PORT_IDENTIFIER, net_info);
 	}
 	arp_pack_count = 0;
 	arp_pack_countarp2 = 0;

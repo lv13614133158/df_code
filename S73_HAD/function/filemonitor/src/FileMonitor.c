@@ -369,7 +369,7 @@ static int fileIntegrityCheck(char* filePath, char *old_md5)
 
                 cJSON_AddNumberToObject(cjson_data,"timestamp",timestamp);
                 s = cJSON_PrintUnformatted(cjson_data);
-                websocketMangerMethodobj.sendEventData("0010101000122",s,"EVENT_TYPE_FILE_CHANGED");
+                websocketMangerMethodobj.sendEventData(EVENT_TYPE_FILE_CHANGED, s);
             }
         }
         else
@@ -385,7 +385,7 @@ static int fileIntegrityCheck(char* filePath, char *old_md5)
 
             cJSON_AddNumberToObject(cjson_data,"timestamp",timestamp);
             s = cJSON_PrintUnformatted(cjson_data);
-            websocketMangerMethodobj.sendEventData("0010101000122",s,"EVENT_TYPE_FILE_CHANGED");
+            websocketMangerMethodobj.sendEventData(EVENT_TYPE_FILE_CHANGED, s);
         }
 
         if (cjson_data)
@@ -542,7 +542,7 @@ static int onFileMonitorEvent(char* filePath, int mask,char *processInfo) {
     char *s = cJSON_PrintUnformatted(cjson_data);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-    websocketMangerMethodobj.sendEventData("0010101000122",s,"EVENT_TYPE_FILE_CHANGED");
+    websocketMangerMethodobj.sendEventData(EVENT_TYPE_FILE_CHANGED, s);
 
     if(s)
 	    free(s);

@@ -19,7 +19,7 @@
 
 #define ISOPATHSIZE 255
 #define BACKUPPATHSIZE 255
-#define PATH_MAXSIZE 256
+#define PATH_MAXSIZE 272
 #define MAX_LISTENERLEN 5  //隔离目录或者备份目录超过阈值时，最大回调个数
 
 static spaceListener mlistens[MAX_LISTENERLEN]={0};
@@ -64,8 +64,8 @@ int setFileWorkDir(const char *workDir)
     memcpy(backupDirectory,workDir,strlen(workDir));
     if(backupDirectory[strlen(workDir)-1]!='/')
         backupDirectory[strlen(workDir)]='/';
-    strncat(isolationPATH,isodir,strlen(isodir));
-    strncat(backupDirectory,backupdir,strlen(backupdir));
+    strncat(isolationPATH,isodir,sizeof(isolationPATH) -1);
+    strncat(backupDirectory,backupdir,sizeof(backupDirectory) -1);
     if( stat(workDir,&src_stat))
     {
         DERROR("stat: %s\n",strerror(errno));

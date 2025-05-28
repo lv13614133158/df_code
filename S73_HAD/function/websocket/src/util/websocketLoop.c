@@ -289,7 +289,7 @@ void wbsPrintMap()
             printf("key:%.3d,used:%d i:%lld len:%d\n",
                 i, map_data.array[i].used, map_data.array[i].key, map_data.array[i].len);
             if(map_data.array[i].data)
-                printf("data:%s",map_data.array[i].data); 
+                printf("data:%s",(char *)(map_data.array[i].data)); 
         } 
         if((++j) > map_data.size)return;
     }

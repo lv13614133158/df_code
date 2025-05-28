@@ -88,7 +88,7 @@ int viewIptable(char* tables)
     char cmd[255] ={0}, result_buf[255];
     
     if(tables)
-        sprintf(cmd, "iptables -t %s -L %s -s %s -j %s",tables);
+        sprintf(cmd, "iptables -t %s -L %s -s %s -j %s",tables, tables, tables, tables);
     else
         sprintf(cmd, "iptables -L");
 

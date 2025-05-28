@@ -38,7 +38,7 @@ enum _websocketstatus{
 
 void wbsClient_localStopWbClient(void);
 int  wbsClient_localWebSocketclient();
-void wbsClient_sendEventData(char* _postid,char* _data,char* _event);
+void wbsClient_sendEventData(char* _postid,char* _data);
 void wbsClient_sendInfoData(char* _data);
 void wbsClient_sendHeartBeat(void);
 void wbsClient_sendRpcAck(long long lseqnumber);

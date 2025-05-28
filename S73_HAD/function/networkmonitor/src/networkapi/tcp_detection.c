@@ -143,7 +143,10 @@ void tcpport_value_consumer(void)
 						u8 *tmp = inet_ntoa((struct in_addr){.s_addr=e->ip_properties.src_ip[0]});
 						memcpy(src_bytes,tmp,strlen(tmp));
 						value_log(TCP_ACK_FIN_DOS, e->flags.ack_flag, threshold);
-						report_log(TCP_ACK_FIN_DOS,tmp,e->port_number);
+
+						char net_info[128] = {0};
+						snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", e->flags.ack_flag, threshold);
+						report_log(TCP_ACK_FIN_DOS,tmp,e->port_number, net_info);
 					}
 					if((e->flags.ack_flag >= threshold) && (e->flags.rst_flag >= threshold))	//may be ack_rst flood
 					{
@@ -152,7 +155,10 @@ void tcpport_value_consumer(void)
 						u8 *tmp = inet_ntoa((struct in_addr){.s_addr=e->ip_properties.src_ip[0]});
 						memcpy(src_bytes,tmp,strlen(tmp));
 						value_log(TCP_ACK_RST_DOS, e->flags.ack_flag, threshold);
-						report_log(TCP_ACK_RST_DOS,tmp,e->port_number);
+
+						char net_info[128] = {0};
+						snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", e->flags.ack_flag, threshold);
+						report_log(TCP_ACK_RST_DOS,tmp,e->port_number, net_info);
 					}					
 					if((e->flags.fin_flag >= threshold) && (e->flags.rst_flag >= threshold))	//may be fin_rst flood
 					{
@@ -161,7 +167,10 @@ void tcpport_value_consumer(void)
 						u8 *tmp = inet_ntoa((struct in_addr){.s_addr=e->ip_properties.src_ip[0]});
 						memcpy(src_bytes,tmp,strlen(tmp));
 						value_log(TCP_FIN_RST_DOS, e->flags.fin_flag, threshold);
-						report_log(TCP_FIN_RST_DOS,tmp,e->port_number);
+
+						char net_info[128] = {0};
+						snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", e->flags.fin_flag, threshold);
+						report_log(TCP_FIN_RST_DOS,tmp,e->port_number, net_info);
 					}
 					if((e->flags.ack_flag >= threshold) && (e->flags.psh_flag >= threshold))        //may be ack_psh flood 
 					{
@@ -170,7 +179,10 @@ void tcpport_value_consumer(void)
 						u8 *tmp = inet_ntoa((struct in_addr){.s_addr=e->ip_properties.src_ip[0]});
 						memcpy(src_bytes,tmp,strlen(tmp));
 						value_log(TCP_ACK_PSH_FLOOD, e->flags.ack_flag, threshold);
-						report_log(TCP_ACK_PSH_FLOOD,tmp,e->port_number);
+
+						char net_info[128] = {0};
+						snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", e->flags.ack_flag, threshold);
+						report_log(TCP_ACK_PSH_FLOOD,tmp,e->port_number, net_info);
 					}
 
 					if(e->flags.syn_flag >= threshold)
@@ -182,7 +194,10 @@ void tcpport_value_consumer(void)
 							u8 *tmp = inet_ntoa((struct in_addr){.s_addr=e->ip_properties.src_ip[0]});
 							memcpy(src_bytes,tmp,strlen(tmp));
 							value_log(TCP_FIN_SYN_DOS, e->flags.fin_flag, threshold);
-							report_log(TCP_FIN_SYN_DOS,tmp,e->port_number);//may be fin_syn flood
+
+							char net_info[128] = {0};
+							snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", e->flags.fin_flag, threshold);
+							report_log(TCP_FIN_SYN_DOS,tmp,e->port_number, net_info);//may be fin_syn flood
 						}
 						else if(e->flags.ack_flag >= threshold)
 						{
@@ -191,7 +206,10 @@ void tcpport_value_consumer(void)
 							u8 *tmp = inet_ntoa((struct in_addr){.s_addr=e->ip_properties.src_ip[0]});
 							memcpy(src_bytes,tmp,strlen(tmp));
 							value_log(TCP_SYN_ACK_FLOOD, e->flags.ack_flag, threshold);
-							report_log(TCP_SYN_ACK_FLOOD,tmp,e->port_number);
+
+							char net_info[128] = {0};
+							snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", e->flags.ack_flag, threshold);
+							report_log(TCP_SYN_ACK_FLOOD,tmp,e->port_number, net_info);
 						}
 						else
 						{
@@ -200,7 +218,10 @@ void tcpport_value_consumer(void)
 							u8 *tmp = inet_ntoa((struct in_addr){.s_addr=e->ip_properties.src_ip[0]});
 							memcpy(src_bytes,tmp,strlen(tmp));
 							value_log(TCP_SYN_FLOOD, e->flags.syn_flag, threshold);
-							report_log(TCP_SYN_FLOOD,tmp,e->port_number);
+
+							char net_info[128] = {0};
+							snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", e->flags.syn_flag, threshold);
+							report_log(TCP_SYN_FLOOD,tmp,e->port_number, net_info);
 						}
 					}
 				}
@@ -265,35 +286,53 @@ void tcpport_value_consumer(void)
 		char log[256] = {0};
 		if(syn_flag_count>threshold)
 		{	
-			value_log(TCP_SYN_SCAN, syn_flag_count, threshold);		
-			report_log(TCP_SYN_SCAN,ip_str,NONE_PORT_IDENTIFIER);
+			value_log(TCP_SYN_SCAN, syn_flag_count, threshold);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", syn_flag_count, threshold);
+			report_log(TCP_SYN_SCAN,ip_str,NONE_PORT_IDENTIFIER, NULL);
 		}
 		if(fin_flag_count>threshold)
 		{
 			if(psh_flag_count>threshold && urg_flag_count>threshold){
 				value_log(TCP_XMAS_SCAN, psh_flag_count, threshold);
-				report_log(TCP_XMAS_SCAN,ip_str,NONE_PORT_IDENTIFIER);
+
+				char net_info[128] = {0};
+				snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", psh_flag_count, threshold);
+				report_log(TCP_XMAS_SCAN,ip_str,NONE_PORT_IDENTIFIER, net_info);
 			}
 			else{
 				value_log(TCP_FIN_SCAN, fin_flag_count, threshold);
-				report_log(TCP_FIN_SCAN,ip_str,NONE_PORT_IDENTIFIER);
+
+				char net_info[128] = {0};
+				snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", fin_flag_count, threshold);
+				report_log(TCP_FIN_SCAN,ip_str,NONE_PORT_IDENTIFIER, net_info);
 			}
 
 		}
 		if(ack_flag_count>threshold)  
 		{
 			value_log(TCP_ACK_SCAN, ack_flag_count, threshold);
-			report_log(TCP_ACK_SCAN,ip_str,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", ack_flag_count, threshold);
+			report_log(TCP_ACK_SCAN,ip_str,NONE_PORT_IDENTIFIER, net_info);
 		}
 		if(null_flag_count>threshold)  
 		{
 			value_log(TCP_NULL_SCAN, null_flag_count, threshold);
-			report_log(TCP_NULL_SCAN,ip_str,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", null_flag_count, threshold);
+			report_log(TCP_NULL_SCAN,ip_str,NONE_PORT_IDENTIFIER, net_info);
 		}
 		if(count_of_connect_scan > threshold)
 		{
 			value_log(TCP_CONNECT_SCAN, count_of_connect_scan, threshold);
-			report_log(TCP_CONNECT_SCAN,ip_str,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%d", count_of_connect_scan, threshold);
+			report_log(TCP_CONNECT_SCAN,ip_str,NONE_PORT_IDENTIFIER, net_info);
 		}
 		syn_flag_count = 0;
 		fin_flag_count = 0;
@@ -362,17 +401,17 @@ void tcp_parser(u32 src_addr,u32 dest_addr,struct tcphdr* tcp,u32 pack_length)
 	memcpy(src_bytes,tmp,strlen(tmp));
 	if(src_port==0)
 	{
-		report_log(TCP_SRC_PORT_ZERO,tmp,dst_port);
+		report_log(TCP_SRC_PORT_ZERO,tmp,dst_port, NULL);
 		return;
 	}
 	if(src_addr == dest_addr)
 	{
-		report_log(TCP_LAND_ATTACK,tmp,dst_port);
+		report_log(TCP_LAND_ATTACK,tmp,dst_port, NULL);
 		return;
 	}
 	if((tcp->fin==1)&&(tcp->syn==1))
 	{
-		report_log(TCP_FIN_SYN_STACK_ABNORMAL,tmp,dst_port);//7%
+		report_log(TCP_FIN_SYN_STACK_ABNORMAL,tmp,dst_port, NULL);//7%
 		//return;
 	}
 	// 在原先的tcp数据队列里找出对应的数据，以port号为key，并统计相同ip地址数量。

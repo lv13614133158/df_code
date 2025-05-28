@@ -68,7 +68,7 @@ char* getTerminalInfomation(char** _output)
 	cJSON_AddStringToObject(cjson_data1,"model",getCAR());
 	cJSON_AddStringToObject(cjson_data1,"brand","东风");
 	cJSON_AddStringToObject(cjson_data2,"sn",getTCUID());        
-	cJSON_AddStringToObject(cjson_data2,"idps_version","1.2.5");
+	cJSON_AddStringToObject(cjson_data2,"idps_version","1.2.3");
 	cJSON_AddStringToObject(cjson_data2,"manufacturer",getManufacturer());
 	cJSON_AddStringToObject(cjson_data2,"simu_sys_version", getSIMU());
 	char *addr =  get_monitor_mac();
@@ -168,7 +168,7 @@ __attribute__((unused)) int onLoginEvent(char* userName,char* loginAddress, long
     char *s = cJSON_PrintUnformatted(cjson_data);
     if(cjson_data)
         cJSON_Delete(cjson_data);
-	websocketMangerMethodobj.sendEventData("0010105000122",s,"EVENT_TYPE_USER_LOGIN");
+	websocketMangerMethodobj.sendEventData(EVENT_TYPE_USER_LOGIN, s);
 	if(s)free(s);
 	
 	return 0;

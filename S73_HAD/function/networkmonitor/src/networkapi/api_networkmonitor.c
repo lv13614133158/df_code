@@ -142,10 +142,10 @@ void on_FlowDataReport_callback(char* data){
 	}
 }
 // 回调函数，底层调用，网络攻击上报
-void on_NetEventReport_callback(int event_id,char *src_ip,int src_port)
+void on_NetEventReport_callback(int event_id,char *src_ip,int src_port, s8 *net_info)
 {
 	if(callbackfunction.onNetEventReport != NULL){
-		callbackfunction.onNetEventReport(event_id,src_ip,src_port);
+		callbackfunction.onNetEventReport(event_id,src_ip,src_port, net_info);
 	}
 }
 // 回调函数，底层调用，IP连接上报
@@ -309,7 +309,7 @@ void setNetAttackThreshold1(){
 		log_i("networkmonitor Attack", "addconfigure read...");
 		while(!feof(fp))
 		{
-			int result = fscanf(fp,"%s",&data);
+			int result = fscanf(fp,"%s",data);
 			log_i("networkmonitor Attack", data);
 			value = atoi(data);
 			if(value == 0)

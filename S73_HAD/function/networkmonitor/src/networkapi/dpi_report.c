@@ -32,6 +32,7 @@ typedef struct __report{
 	u8 event;
 	s32 port;
 	s8  s_addr[32];
+	s8  net_info[128];
 }report;
 report 	m_u8Buf[MAXLENGTH] = {0};
 static unsigned int fifoin = 0;
@@ -65,7 +66,7 @@ void *threadfifoout(void* arg){
 			if(m_u8Buf[fifooutp].event != 0xff){
 				if((event_last != m_u8Buf[fifooutp].event)||(loop > SING_MUX)){
 					loop = 0;
-					on_NetEventReport_callback(m_u8Buf[fifooutp].event,m_u8Buf[fifooutp].s_addr,m_u8Buf[fifooutp].port);
+					on_NetEventReport_callback(m_u8Buf[fifooutp].event,m_u8Buf[fifooutp].s_addr,m_u8Buf[fifooutp].port, m_u8Buf[fifooutp].net_info);
 				}
 				else{
 					loop ++;
@@ -124,7 +125,7 @@ void startlog(void)
 	}
 }
 
-void report_log(u8 event,s8 *s_addr,s32 port)
+void report_log(u8 event,s8 *s_addr,s32 port, s8 *net_info)
 {
 	//on_NetEventReport_callback(event,s_addr,port);
 	// 判断是否上报
@@ -138,6 +139,11 @@ void report_log(u8 event,s8 *s_addr,s32 port)
 	memset(m_u8Buf[fifoin].s_addr,0,32);
 	if(s_addr != NULL){
 		strncpy(m_u8Buf[fifoin].s_addr,s_addr,32);
+	}
+	if (net_info != NULL)
+	{
+		memset(m_u8Buf[fifoin].net_info, 0, sizeof(m_u8Buf[fifoin].net_info));
+		strncpy(m_u8Buf[fifoin].net_info, net_info, sizeof(m_u8Buf[fifoin].net_info) - 1);
 	}
 	fifoin = (fifoin + 1)%MAXLENGTH;
 #endif
@@ -167,7 +173,8 @@ void value_log(int index, int value, int threshold)
 		sprintf(log,"AttackType:%d, Value:%d, Threshold:%d", index, value, threshold);
 		log_i("networkmonitor Attack", log);
 	}
-}
+}
+
 void dpi_report_log_free(void)
 {
 	int ret = 0;

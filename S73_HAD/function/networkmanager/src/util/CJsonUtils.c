@@ -150,7 +150,7 @@ char* getJsonString(cJSON *cJSONParent, const char* jsonKey){
     if(dnsModelList.sn==NULL)           \
         return NULL;                    \
     memset(dnsModelList.sn,0,strlen(sn)+1);\
-    strncpy(dnsModelList.sn,sn,strlen(sn));\
+    memcpy(dnsModelList.sn,sn,strlen(sn));\
     dnsModelList.timestamp = get_current_time();    \
     cJSONArray = cJSON_Parse(data);   \
     if (!cJSONArray) {                       \

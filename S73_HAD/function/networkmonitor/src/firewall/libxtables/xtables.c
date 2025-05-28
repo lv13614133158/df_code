@@ -1243,7 +1243,7 @@ int xtables_ipmask_to_cidr(const struct in_addr *mask)
 
 const char *xtables_ipmask_to_numeric(const struct in_addr *mask)
 {
-	static char buf[20];
+	static char buf[24];
 	uint32_t cidr;
 
 	cidr = xtables_ipmask_to_cidr(mask);

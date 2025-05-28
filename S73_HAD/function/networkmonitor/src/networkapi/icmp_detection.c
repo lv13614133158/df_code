@@ -87,8 +87,11 @@ void icmp_value_consumer(void){
 		memset(src_bytes,0,sizeof(src_bytes));
 		u8 *tmp = inet_ntoa((struct in_addr){.s_addr=_icmp_body.s_addr[0]});
 		memcpy(src_bytes,tmp,strlen(tmp));
-		value_log(ICMP_ECHO_FLOODING, _icmp_body.echo_count, icmpFloodThreshold);	
-		report_log(ICMP_ECHO_FLOODING,tmp,_icmp_body.port_number);
+		value_log(ICMP_ECHO_FLOODING, _icmp_body.echo_count, icmpFloodThreshold);
+
+		char net_info[128] = {0};
+		snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", _icmp_body.echo_count, icmpFloodThreshold);
+		report_log(ICMP_ECHO_FLOODING,tmp,_icmp_body.port_number, net_info);
 	}
 
 	if(_icmp_body.src_addr_count==MAX_IP_SRC_ADDR_SIZE)
@@ -97,7 +100,7 @@ void icmp_value_consumer(void){
 		memset(src_bytes,0,sizeof(src_bytes));
 		u8 *tmp = inet_ntoa((struct in_addr){.s_addr=_icmp_body.s_addr[0]});
 		memcpy(src_bytes,tmp,strlen(tmp));	
-		report_log(ICMP_FORGE_SRC_ATTACK,tmp,_icmp_body.port_number);
+		report_log(ICMP_FORGE_SRC_ATTACK,tmp,_icmp_body.port_number, NULL);
 	}
 
 	if(icmp_smurf_attack == TRUE)
@@ -106,7 +109,7 @@ void icmp_value_consumer(void){
 		memset(src_bytes,0,sizeof(src_bytes));
 		u8 *tmp = inet_ntoa((struct in_addr){.s_addr=_icmp_body.s_addr[0]});
 		memcpy(src_bytes,tmp,strlen(tmp));
-		report_log(ICMP_SMURF_ATTACK,tmp,_icmp_body.port_number);
+		report_log(ICMP_SMURF_ATTACK,tmp,_icmp_body.port_number, NULL);
 		icmp_smurf_attack = FALSE;
 	}		
 	pthread_mutex_unlock(&request_icmp_lock);
@@ -173,7 +176,10 @@ void icmp_parser(struct iphdr *ip,struct icmphdr* icmp,u32 pack_length)
 			u8 *tmp = inet_ntoa((struct in_addr){.s_addr=ip->saddr});
 			memcpy(src_bytes,tmp,strlen(tmp));	
 			value_log(ICMP_DEATH_PING, tot_len, deathPingSizeThreshold);
-			report_log(ICMP_DEATH_PING,tmp,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", tot_len, deathPingSizeThreshold);
+			report_log(ICMP_DEATH_PING,tmp,NONE_PORT_IDENTIFIER, net_info);
 		}
 		else if(tot_len>largePingSizeThreshold)
 		{	
@@ -182,7 +188,10 @@ void icmp_parser(struct iphdr *ip,struct icmphdr* icmp,u32 pack_length)
 			u8 *tmp = inet_ntoa((struct in_addr){.s_addr=ip->saddr});
 			memcpy(src_bytes,tmp,strlen(tmp));	
 			value_log(ICMP_LARGE_PING, tot_len, largePingSizeThreshold);
-			report_log(ICMP_LARGE_PING,tmp,NONE_PORT_IDENTIFIER);
+
+			char net_info[128] = {0};
+			snprintf(net_info, sizeof(net_info), "Value:%d, Threshold:%ld", tot_len, largePingSizeThreshold);
+			report_log(ICMP_LARGE_PING,tmp,NONE_PORT_IDENTIFIER, net_info);
 		} 
 		else
 		{
@@ -191,7 +200,7 @@ void icmp_parser(struct iphdr *ip,struct icmphdr* icmp,u32 pack_length)
 			u8 *tmp = inet_ntoa((struct in_addr){.s_addr=ip->saddr});
 			memcpy(src_bytes,tmp,strlen(tmp));
 			//简单ping 不锁定
-			report_log(ICMP_TERMINAL_EXIST_DETECT,tmp,NONE_PORT_IDENTIFIER);
+			report_log(ICMP_TERMINAL_EXIST_DETECT,tmp,NONE_PORT_IDENTIFIER, NULL);
 		}
 	}	
 }

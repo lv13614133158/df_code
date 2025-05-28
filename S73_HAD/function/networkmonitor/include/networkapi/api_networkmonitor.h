@@ -20,7 +20,7 @@ extern "C" {
  */
 typedef struct _invokefunction{
 	void (*onFlowDataReport)(char* data);
-	void (*onNetEventReport)(int event_id,char *src_ip,int src_port);
+	void (*onNetEventReport)(int event_id,char *src_ip,int src_port, s8 *net_info);
 	void (*onPortOpenEvent)(unsigned int port, char* uid);
 	void (*onDnsInquireEvent)(char* dns);
 	void (*onDnsResponseEvent)(char* dns, char* ip_list);
@@ -137,7 +137,7 @@ void getTrafficUsageInfo(char* outstring,int out_string_maxlen);
  */
 void on_FlowDataReport_callback(char* data);
 
-void on_NetEventReport_callback(int event_id,char *src_ip,int src_port);
+void on_NetEventReport_callback(int event_id,char *src_ip,int src_port, s8 *net_info);
 
 void on_IpConnectEvent_callback(int ip_version,char* srcIp, int srcPort,char* desIp, int desPort, int protocol);
 

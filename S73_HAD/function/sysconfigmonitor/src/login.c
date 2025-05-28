@@ -160,6 +160,7 @@ static int login_check(LogNode_t *h)
 	{
 		login_append_list(h,&current_record);
 	}
+	close(utmpfd);
 	return 0;
 }
 /*
@@ -221,7 +222,7 @@ static int logical_judgment_user_log()
 				char *p1 = strrchr(temp->addr,':');
 				int len1 = p1 ? strlen(p1):0;
 				int len = strlen(temp->addr) - len1;
-				strncpy(addr,temp->addr,len);
+				memcpy(addr,temp->addr,len);
 			}
 			else
 				snprintf(addr,ADDRLEN,"%s",temp->terminal);
@@ -257,7 +258,7 @@ static int logical_judgment_user_log()
 					char *p1 = strrchr(temp->addr,':');
 					int len1 = p1 ? strlen(p1):0;
 					int len = strlen(temp->addr) - len1;
-					strncpy(addr,temp->addr,len);
+					memcpy(addr,temp->addr,len);
 				}
 				else
 					snprintf(addr,ADDRLEN,"%s",temp->terminal);

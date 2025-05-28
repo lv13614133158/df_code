@@ -323,7 +323,7 @@ static void prg_cache_load(void)
 {
 	char line[LINE_MAX],eacces=0;
 	int procfdlen,fd,cmdllen,lnamelen;
-	char lname[30],cmdlbuf[512],finbuf[PROGNAME_WIDTH];
+	char lname[30],cmdlbuf[512],finbuf[PROGNAME_WIDTH + 768] = {0};
 	long inode = 0;
 	const char *cs = NULL,*cmdlp = NULL;
 	DIR *dirproc=NULL,*dirfd=NULL;
@@ -525,7 +525,7 @@ static char* tcpudpraw_do_one(int lnr, const char *line,const int src_ip,const i
 			"%d: %64[0-9A-Fa-f]:%X %64[0-9A-Fa-f]:%X %X %lX:%lX %X:%lX %lX %d %d %ld %512s\n",
 				&d, local_addr, &local_port, rem_addr, &rem_port, &state,
 				&txq, &rxq, &timer_run, &time_len, &retr, &uid, &timeout, &inode, more);
-				printf("inode is %d\n",inode);
+				printf("inode is %ld\n",inode);
 				prg_cache_clear();
 		        prg_cache_load();
 				return prg_cache_get(inode);

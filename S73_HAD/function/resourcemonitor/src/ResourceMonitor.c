@@ -159,7 +159,7 @@ static void onCPULoadinfoEvent(pResourceCpuLoadavgData loadavgData, int cpuUsage
     cJSON_AddNumberToObject(snapshot, "cpu_load",loadavgData->loadavg1 / cpuCoreNum);
     cJSON_AddNumberToObject(snapshot, "cpu_usage",cpuUsageRate);
     s = cJSON_PrintUnformatted(snapshot);
-    websocketMangerMethodobj.sendEventData("0010106000222",s,"EVENT_TYPE_RESOURCE_USAGE");
+    websocketMangerMethodobj.sendEventData(EVENT_TYPE_CPU_RESOURCE_USAGE, s);
     if(snapshot)
         cJSON_Delete(snapshot);
     if(s)
@@ -173,7 +173,7 @@ static void onRAMUsagesizeEvent(long long ramUsageSize, long long ramUsageRate)
     cJSON_AddNumberToObject(snapshot, "ram_size",ramUsageSize);
     cJSON_AddNumberToObject(snapshot, "ram_rate",ramUsageRate);
     s = cJSON_PrintUnformatted(snapshot);
-    websocketMangerMethodobj.sendEventData("0010106000322",s,"EVENT_TYPE_RESOURCE_USAGE");
+    websocketMangerMethodobj.sendEventData(EVENT_TYPE_RAM_RESOURCE_USAGE, s);
     if(snapshot)
         cJSON_Delete(snapshot);
     if(s)
@@ -187,7 +187,7 @@ static void onROMUsagesizeEvent(long long romUsageSize, long long romUsageRate)
     cJSON_AddNumberToObject(snapshot, "rom_size",romUsageSize);
     cJSON_AddNumberToObject(snapshot, "rom_rate",romUsageRate);
     s = cJSON_PrintUnformatted(snapshot);
-    websocketMangerMethodobj.sendEventData("0010106000422",s,"EVENT_TYPE_RESOURCE_USAGE");
+    websocketMangerMethodobj.sendEventData(EVENT_TYPE_ROM_RESOURCE_USAGE, s);
     if(snapshot)
         cJSON_Delete(snapshot);
     if(s)
@@ -225,7 +225,7 @@ void uploadResourceSnapshot(void)
     cJSON_AddNumberToObject(snapshot, "rom_rate",getROMUsage());
     cJSON_AddNumberToObject(snapshot, "timestamp",timestamp);
     s = cJSON_PrintUnformatted(snapshot);
-    websocketMangerMethodobj.sendEventData("0010106000122",s,"EVENT_TYPE_RESOURCE_USAGE");
+    websocketMangerMethodobj.sendEventData(EVENT_TYPE_SNAPSHOT_RESOURCE_USAGE, s);
     if (loadavgData)
     {
         free(loadavgData->loadProcessRate);
