@@ -3,6 +3,11 @@ path=$( cd $( dirname " ${BASH_SOURCE[0]} " ) && pwd ) ##
 echo $path
 
 
+export TOOLCHAIN_DIR=/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu
+export CMAKE_C_COMPILER=$TOOLCHAIN_DIR/bin/aarch64-none-linux-gnu-gcc
+#export CMAKE_CXX_COMPILER=$TOOLCHAIN_DIR/bin/aarch64-none-linux-gnu-g++
+
+
 # cd /home/toolchain/S73/TBOX/oecore-x86_64/ql-ol-crosstool
 # # 设定环境，
 # source ql-ol-crosstool-env-init
@@ -28,7 +33,9 @@ mkdir -p $path/output/conf/config/
 cp $path/build/IDPS $path/output/bin/
 cp $path/script/IDPS_start.sh $path/output/bin/
 cp $path/script/IDPS_stop.sh $path/output/bin/
-#cp $path/lib/libwebsockets.so.19 $path/output/lib/
 cp $path/config/base_config.json $path/output/conf/config/
 cp $path/config/policy_config.json $path/output/conf/config/
 cp $path/config/device_info.conf $path/output/conf/config/
+
+#test
+$CMAKE_C_COMPILER $path/script/main_test.c -o $path/output/bin/main_test

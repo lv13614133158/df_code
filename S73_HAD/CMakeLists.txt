@@ -33,8 +33,12 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,noexecstack -Wl,-z,
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-error=unused-function -Wno-error=pointer-sign -fPIE -fstack-protector-all -fsigned-char")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-error=unused-function -Wno-error=pointer-sign -Wno-return-local-addr -fPIE -fstack-protector-all -fsigned-char")
 #无视错误警告
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-stringop-overflow")
-
+# 忽略 sqlite3.c 的局部变量返回警告
+set(SQLITE_SRC "${CMAKE_SOURCE_DIR}/function/common/src/sqlite/sqlite3.c")
+set_source_files_properties(${SQLITE_SRC} PROPERTIES COMPILE_FLAGS "-Wno-return-local-addr")
+# 禁用 data_dispatcher.c 的 -Wstringop-overflow 警告
+set(DATA_DISPATCHER_SRC "${CMAKE_SOURCE_DIR}/function/networkmonitor/src/networkapi/data_dispatcher.c")
+set_source_files_properties(${DATA_DISPATCHER_SRC} PROPERTIES COMPILE_FLAGS "-Wno-stringop-overflow")
 # 设置 strip 
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
 set(CMAKE_BUILD_TYPE "RELEASE")
@@ -77,6 +81,9 @@ include_directories(function/websocket/include/util)
 #spdlog 模块
 include_directories(function/spdlog)
 
+#交叉编译标准库
+# include_directories(/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/include/c++/12.2.1/aarch64-none-linux-gnu)
+# include_directories(/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/include/c++/12.2.1)
 set(SDK_USR_DIR /home/nvidia/df/HAD/S73a2/sdk/usr)
 
 include_directories(${SDK_USR_DIR}/hobot/include/aarch64-linux-gnu) #1.1.1
@@ -95,6 +102,8 @@ include_directories(tier1_part/quecte/Qualcomm/qmi)
 include_directories(tier1_part/quecte/Qualcomm/qmi-framework)
 include_directories(tier1_part/tbox_info/include)
 
+include_directories(tier1_part/variant/include)
+
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -106,7 +115,7 @@ link_directories(${CMAKE_SOURCE_DIR}/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/curl/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)  
-
+ link_directories(${CMAKE_SOURCE_DIR}/tier1_part/variant/lib)  
 
 
 
@@ -186,4 +195,6 @@ target_link_libraries( # Specifies the target library.
 	-lpcap
 	-lstdc++
 	${CMAKE_SOURCE_DIR}/lib/libwebsockets.a
+	-lvariant
 	)
+
