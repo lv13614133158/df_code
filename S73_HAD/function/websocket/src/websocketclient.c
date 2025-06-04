@@ -473,6 +473,24 @@ static int ConnectClient(void)
 	return 0;
 }
 
+void ssl_ca_init(struct lws_context_creation_info *info)
+{
+	// 服务器证书
+   info->server_ssl_cert_mem =NULL;
+   info->server_ssl_cert_mem_len =0;
+	// 服务器私钥
+   info->server_ssl_private_key_mem =NULL;
+   info->server_ssl_private_key_mem_len =0;
+    // ca证书
+   info->client_ssl_ca_mem =NULL;
+   info->client_ssl_ca_mem_len =0;
+    // 客户端证书
+   info->client_ssl_cert_mem =NULL;
+   info->client_ssl_cert_mem_len =0;
+    // 客户端私钥
+   info->client_ssl_key_mem =NULL;
+   info->client_ssl_key_mem_len =0;
+}
 int wbsClient_init(void)
 {
 	int ssl_chose = wbsGetSsl();
@@ -487,6 +505,11 @@ int wbsClient_init(void)
 	info.options   = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 	info.port      = CONTEXT_PORT_NO_LISTEN; /* we do not run any server */
 	info.protocols = protocols;
+
+
+	//ssl_ca_init(&info); //加载双向认证证书 私钥
+	//强制双向认证
+	//info.options |= LWS_SERVER_OPTION_REQUIRE_VALID_OPENSSL_CLIENT_CERT;
 	//info.client_ssl_ca_filepath = caPath;//如果服务器有CA证书则需要这行代码
 
 

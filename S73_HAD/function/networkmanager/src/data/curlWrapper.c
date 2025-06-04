@@ -10,6 +10,23 @@
 #include "data/ConfigConstData.h"
 #include "spdloglib.h"
 
+#include <openssl/x509.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/sha.h>
+#include <openssl/md5.h>
+#include <openssl/ssl.h>
+#include <openssl/engine.h>
+#include <openssl/pkcs12.h>
+#include <openssl/x509v3.h>
+#include <openssl/asn1.h>
+#include <curl/curl.h>
+#include "dfssphad.h"
+#include <time.h>
+#include <sys/times.h>
+#include <assert.h>
+#include <unistd.h>
+
 /**
  ******************************************************************************
  ** \简  述  线程保护
@@ -437,20 +454,73 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
     if(curlhandle == NULL){
         curlhandle = curl_easy_init();
     }
-    curl_mime*     mime  = NULL;
-    curl_mimepart* filed = NULL;
-    mime  = curl_mime_init(curlhandle);
-    filed = curl_mime_addpart(mime);
-    curl_mime_name(filed,"sendfile");
-    curl_mime_filedata(filed,localpath);
+    // CA 证书内存数据
+    char ca_cert[6000]= {'\0'};
+    size_t certLen=6000;
+    int ca_cert_res=DSec_ReadFile("rootCert", ca_cert, certLen);
+    printf("rootCert: \n%s\nlength: %d\n", ca_cert, ca_cert_res);
+    size_t ca_cert_size=ca_cert_res;       // CA 证书大小
 
-    filed = curl_mime_addpart(mime);
-    curl_mime_name(filed,"file");
-    curl_mime_filename(filed,filename);
+    // 客户端证书内存数据
+    char client_cert[6000]= {'\0'};
+    int client_cer_res=DSec_ReadFile("deviceCert", client_cert, certLen);
+    printf("deviceCert: \n%s\nlength: %d\n", client_cert, client_cer_res);
+    size_t client_cert_size=client_cer_res;   // 客户端证书大小
 
-    filed = curl_mime_addpart(mime);
-    curl_mime_name(filed,"submit");
-    curl_mime_data(filed,"send",CURL_ZERO_TERMINATED);
+    // 客户端私钥内存数据
+    char client_key[6000]= {'\0'};
+    int client_key_res=DSec_ReadFile("deviceKey", client_key, certLen);
+    printf("deviceKey: \n%s\nlength: %d\n", client_key, client_key_res);
+    size_t client_key_size=client_key_res; //客户端私钥大小
+
+    // --- CA 证书 ---
+    struct curl_blob cert_blob = {
+    .data = (void*)ca_cert,
+    .len = ca_cert_size,
+    .flags = CURL_BLOB_COPY
+    };
+    curl_easy_setopt(curlhandle, CURLOPT_CAINFO_BLOB, &cert_blob);
+    
+    // --- 客户端证书---
+    struct curl_blob client_blob = {
+        .data = (void*)client_cert,
+        .len = client_cert_size,
+        .flags = CURL_BLOB_COPY
+    };
+    curl_easy_setopt(curlhandle, CURLOPT_SSLCERT_BLOB, &client_blob);
+    // --- 客户端私钥 ---
+    struct curl_blob client_key_blob = {
+        .data = (void*)client_key,
+        .len = client_key_size,
+        .flags = CURL_BLOB_COPY
+    };
+   
+    curl_easy_setopt(curlhandle, CURLOPT_SSLKEY_BLOB, &client_key_blob);
+    
+
+    // 严格验证
+    curl_easy_setopt(curlhandle, CURLOPT_SSL_VERIFYPEER, 1L);  // 必须验证服务器证书
+    curl_easy_setopt(curlhandle, CURLOPT_SSL_VERIFYHOST, 2L);  // 严格检查主机名
+
+    // 3. 修改上传数据为内存方式（替换 curl_mime_filedata）
+    // curl_mime *mime = curl_mime_init(curlhandle);
+    // curl_mimepart *filed = curl_mime_addpart(mime);
+    // curl_mime_name(filed, "sendfile");
+    // curl_mime_data(filed, data, data_size);
+    // curl_mime*     mime  = NULL;
+    // curl_mimepart* filed = NULL;
+    // mime  = curl_mime_init(curlhandle);
+    // filed = curl_mime_addpart(mime);
+    // curl_mime_name(filed,"sendfile");
+    // curl_mime_filedata(filed,localpath);
+
+    // filed = curl_mime_addpart(mime);
+    // curl_mime_name(filed,"file");
+    // curl_mime_filename(filed,filename);
+
+    // filed = curl_mime_addpart(mime);
+    // curl_mime_name(filed,"submit");
+    // curl_mime_data(filed,"send",CURL_ZERO_TERMINATED);
     //设置http 头部处理函数
     struct curl_slist *list = NULL;
     cJSON *root = cJSON_Parse(header);
@@ -466,7 +536,7 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
             curl_easy_cleanup(curlhandle);
         }
         curlhandle = NULL;
-        curl_mime_free(mime);
+      //  curl_mime_free(mime);
         char spdlog[512] = {0};
         snprintf(spdlog,512,"upload file:%s header fail!!!", localpath);
         log_i("networkmanager",spdlog);
@@ -485,7 +555,7 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
     list = curl_slist_append(list, "Charset:UTF-8");
     list = curl_slist_append(list, "Expect:");
     curl_easy_setopt(curlhandle, CURLOPT_HTTPHEADER,list);//set header
-    curl_easy_setopt(curlhandle, CURLOPT_MIMEPOST,mime);
+   // curl_easy_setopt(curlhandle, CURLOPT_MIMEPOST,mime);
     curl_easy_setopt(curlhandle, CURLOPT_URL, remotepath);
 
     // curl_easy_setopt(curlhandle, CURLOPT_CAINFO,mqttpath);//指定证书信息
@@ -504,7 +574,7 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
     response = (BaseResponse_t *)malloc(sizeof(BaseResponse_t));
     memset(response,0,sizeof(BaseResponse_t));
     if(response == NULL){
-        curl_mime_free(mime);
+      //  curl_mime_free(mime);
         if(chunkheader.memory != NULL)free(chunkheader.memory);
         if(chunkwirte.memory != NULL)free(chunkwirte.memory);
         if(root != NULL)cJSON_Delete(root);
@@ -531,7 +601,7 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
         char spdlog[512] = {0};
         snprintf(spdlog,512,"upload file:%s sucess,header is %s body is: %s!!!", localpath,chunkheader.memory,chunkwirte.memory);
         log_v("networkmanager",spdlog);
-        curl_mime_free(mime);
+       // curl_mime_free(mime);
         if(chunkheader.memory != NULL){
             free(chunkheader.memory);
         }
@@ -548,7 +618,7 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
 	    return response;
     }
     else {
-	    curl_mime_free(mime);
+	   // curl_mime_free(mime);
         log_i("networkmanager","upload file error\n"); 
         size_t len = strlen(errbuf);
         if(len > 0){

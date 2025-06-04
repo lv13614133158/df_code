@@ -81,9 +81,7 @@ include_directories(function/websocket/include/util)
 #spdlog 模块
 include_directories(function/spdlog)
 
-#交叉编译标准库
-# include_directories(/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/include/c++/12.2.1/aarch64-none-linux-gnu)
-# include_directories(/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/include/c++/12.2.1)
+
 set(SDK_USR_DIR /home/nvidia/df/HAD/S73a2/sdk/usr)
 
 include_directories(${SDK_USR_DIR}/hobot/include/aarch64-linux-gnu) #1.1.1
@@ -91,18 +89,17 @@ include_directories(${SDK_USR_DIR}/hobot/include) #1.1.1
 include_directories(${SDK_USR_DIR}/include/aarch64-linux-gnu) #curl.h
 
 #第三方库
-# include_directories(third_part/curl/include)
-# include_directories(third_part/openssl/include)
- include_directories(third_part/pcap/include)
- include_directories(third_part/websocket/include)
 
+include_directories(third_part/pcap/include)
+include_directories(third_part/websocket/include)
+include_directories(tier1_part/ssphad/include) #dfssphadi.h
+include_directories(tier1_part/variant/include) #variant.h
 #硬件支持
 include_directories(tier1_part/quecte/include)
 include_directories(tier1_part/quecte/Qualcomm/qmi)
 include_directories(tier1_part/quecte/Qualcomm/qmi-framework)
 include_directories(tier1_part/tbox_info/include)
 
-include_directories(tier1_part/variant/include)
 
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
@@ -115,9 +112,9 @@ link_directories(${CMAKE_SOURCE_DIR}/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/curl/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)  
- link_directories(${CMAKE_SOURCE_DIR}/tier1_part/variant/lib)  
-
-
+link_directories(${CMAKE_SOURCE_DIR}/tier1_part/variant/lib)  
+link_directories(/home/nvidia/df/PKI/PKI) 
+set(PKI_USR_DIR /home/nvidia/df/PKI/PKI)
 
 
 #auto find src
@@ -190,11 +187,18 @@ target_link_libraries( # Specifies the target library.
 	-ldl
 	-lz
 	${CMAKE_SOURCE_DIR}/lib/libcurl.a
-	-lssl
-	-lcrypto
+	# -lssl
+	# -lcrypto
+	-lssphad
 	-lpcap
 	-lstdc++
 	${CMAKE_SOURCE_DIR}/lib/libwebsockets.a
 	-lvariant
+	libsysinfo_c.a
+    ${PKI_USR_DIR}/libssl.so.1.1
+    ${PKI_USR_DIR}/libcrypto.so.1.1
+    ${PKI_USR_DIR}/libteec.so.1
+    ${PKI_USR_DIR}/libsecure_storage.so.1
+    ${PKI_USR_DIR}/libalog.so.1
 	)
 
