@@ -1,25 +1,25 @@
 {
 	"commonModule":{
-		"dataBaseDir":"/storage/idps/conf/cache",
+		"dataBaseDir":"/userdata/idps/conf/cache",
 		"databaseName":"idps.db",
-		"dataspdlog":"/log/idps",
-		"certsPath":"/storage/idps/conf/CA/"
+		"dataspdlog":"/userdata/idps/log",
+		"certsPath":"/userdata/idps/conf/CA/"
 	},
 	"networkManager":{
 		"heartBeat":60,
 		"threadPoolNumber":2,
 		"readDbLoop":60,
 		"manageKeyStore":1,
-		"server":"https://vsocidps-prd.dfiov.com.cn",
-		"snPath":"/storage/idps/conf/cache",
+		"server":"https://vsocidps-prd.dfiov.com.cn", 
+		"snPath":"/userdata/idps/conf/cache",
 		"imeiNumber":"idpslinux",
 		"channelId":"T00001",
 		"equipmentType":"had",
-		"watchNicDevice":"eth0"
+		"watchNicDevice":"eth1"
 	},
 	"websocketModule":{
 		"channelId":"WEB001",
-		"equipmentType":"tbox",
+		"equipmentType":"had",
 		"url":"vsocidps-prd.dfiov.com.cn",
 		"port":443,
 		"defaultsn":"18253197878",
@@ -27,12 +27,12 @@
 		"sslshutdown":1,
 		"intervalheart":60,
 		"intervalsql":10,
-		"rpcconfigpath":"/storage/idps/conf/config/policy_config.json",
+		"rpcconfigpath":"/userdata/idps/conf/config/policy_config.json",
 		"intervalkey":2
 	},
 	"version":{
-		"releaseVersion":"V1.2.5_PRD",
-		"configVersion":"V1.2.5_PRD_DF",
-		"codeVersion":"V1.2.5"
+		"releaseVersion":"V1.0.0_PRD",
+		"configVersion":"V1.0.0_PRD_DF",
+		"codeVersion":"V1.0.0"
 	}
 }

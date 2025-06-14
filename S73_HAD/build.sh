@@ -4,15 +4,6 @@ echo $path
 
 
 
-
-
-# cd /home/toolchain/S73/TBOX/oecore-x86_64/ql-ol-crosstool
-# # 设定环境，
-# source ql-ol-crosstool-env-init
-# 指定路径，make extsdk
-#make extsdk -C /home/toolchain/WHDF/ 
-#make extsdk 
-
 mkdir -p $path/build
 cd $path/build
 rm -r *

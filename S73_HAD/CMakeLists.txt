@@ -113,8 +113,8 @@ link_directories(${CMAKE_SOURCE_DIR}/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)  
 link_directories(${CMAKE_SOURCE_DIR}/tier1_part/variant/lib)  
-link_directories(/home/nvidia/df/PKI/PKI) 
-set(PKI_USR_DIR /home/nvidia/df/PKI/PKI)
+link_directories(/home/nvidia/df/PKI/) 
+set(PKI_USR_DIR /home/nvidia/df/PKI/)
 
 
 #auto find src
@@ -187,8 +187,6 @@ target_link_libraries( # Specifies the target library.
 	-ldl
 	-lz
 	${CMAKE_SOURCE_DIR}/lib/libcurl.a
-	# -lssl
-	# -lcrypto
 	-lssphad
 	-lpcap
 	-lstdc++

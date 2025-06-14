@@ -35,7 +35,7 @@
 							"event_level":	3,
 							"md5":	"",
 							"watch_event":	774,
-							"watch_path":	"/home/had/"
+							"watch_path":	"/userdata/idps/"
 						}]
 				},
 				"desc":	"文件监控探针",
@@ -205,9 +205,6 @@
 						}, {
 							"process_id": 13366,
 							"process_name": "/IDPS"
-						}, {
-							 "process_id": 13367,
-							"process_name": "./main_test"
 						}]
 				},
 				"desc":	"进程监控探针",
