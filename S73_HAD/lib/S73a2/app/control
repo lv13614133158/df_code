@@ -1,6 +1,0 @@
-Package: PKG_NAME
-Version: PKG_VERSION
-Depends: PKG_DEPEND
-Architecture: PKG_ARCH
-Maintainer: shaohua.xu@cn.bosch.com
-Description: Contains PMT tools. It is used to PMT data recording.
