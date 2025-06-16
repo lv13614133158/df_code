@@ -21,8 +21,8 @@
 #define ROOT_PATH_OR  "/opt/app/idps/etc/conf"
 #elif POS_4
 	//#define ROOT_PATH  "../conf"
-	#define ROOT_PATH_RW  "../conf"
-	#define ROOT_PATH_OR  "../conf"
+	#define ROOT_PATH_RW  "/userdata/idps/conf"
+	#define ROOT_PATH_OR  "/userdata/idps/conf"
 #else
 	#define ROOT_PATH  "/mnt/sdcard/idps"
 #endif
