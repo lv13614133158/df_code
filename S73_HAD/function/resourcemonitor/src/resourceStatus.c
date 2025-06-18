@@ -337,7 +337,7 @@ long long getROMTotalSize()
 	mount_table = setmntent("/etc/mtab", "r");
 	if (!mount_table)
 	{
-		fprintf(stderr, "set mount entry error\n");
+		fprintf(stderr, "\n");
 		return -1;
 	}
 	while (1) {

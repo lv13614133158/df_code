@@ -337,8 +337,13 @@ long long getROMTotalSize()
 	mount_table = setmntent("/etc/mtab", "r");
 	if (!mount_table)
 	{
-		fprintf(stderr, "set mount entry error\n");
-		return -1;
+
+		mount_table = setmntent("/proc/mounts", "r");
+		if (!mount_table)
+		{
+			fprintf(stderr, "set /etc/mtab entry  and /proc/mounts entry error\n");
+			return -1;
+		}
 	}
 	while (1) {
 		bool ret;
@@ -400,8 +405,13 @@ long long getROMFreeSize()
 	mount_table = setmntent("/etc/mtab", "r");
 	if (!mount_table)
 	{
-		fprintf(stderr, "set mount entry error\n");
-		return -1;
+
+		mount_table = setmntent("/proc/mounts", "r");
+		if (!mount_table)
+		{
+			fprintf(stderr, "set /etc/mtab entry  and /proc/mounts entry error\n");
+			return -1;
+		}
 	}
 	while (1) {
 		bool ret;
@@ -469,8 +479,14 @@ int getROMUsage()
 	mount_table = setmntent("/etc/mtab", "r");
 	if (!mount_table)
 	{
-		fprintf(stderr, "set mount entry error\n");
-		return -1;
+
+		mount_table = setmntent("/proc/mounts", "r");
+		if (!mount_table)
+		{
+			fprintf(stderr, "set /etc/mtab entry  and /proc/mounts entry error\n");
+			return -1;
+		}
+		
 	}
 	while (1) {
 		bool ret;

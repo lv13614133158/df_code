@@ -13,7 +13,7 @@
 #include "secCrypto.h"
 
 // 配置文件目录位置设置
-#define POS_3  1
+#define POS_4  1
 #ifdef POS_1
 	#define ROOT_PATH  "./"
 #elif POS_2
@@ -22,7 +22,8 @@
 #define ROOT_PATH_RW  "/data/idps"
 #define ROOT_PATH_OR  "/vendor/etc/idps"
 #elif POS_4
-	#define ROOT_PATH  "../conf"
+	#define ROOT_PATH_RW  "../conf"
+	#define ROOT_PATH_OR  "../conf"
 #else
 	#define ROOT_PATH  "/mnt/sdcard/idps"
 #endif
@@ -714,7 +715,10 @@ int initTboxInfo()
 	{
 		memset(&sgw_mcu_info, 0, sizeof(sgw_mcu_info));
 		sgw_info_get_mcu_info(&sgw_mcu_info);
-
+		strncpy(sgw_mcu_info.vin,"VIN12345678900000",sizeof(sgw_mcu_info.vin) - 1);
+		sgw_mcu_info.vin[sizeof(sgw_mcu_info.vin)]='\0';
+		strncpy(sgw_mcu_info.sn,"SN123456789123456789",sizeof(sgw_mcu_info.sn) - 1);
+		sgw_mcu_info.sn[sizeof(sgw_mcu_info.sn)]='\0';
 		memset(spdlog, 0 ,sizeof(spdlog));
 		snprintf(spdlog, sizeof(spdlog),
 				"vin:%s, sn:%s, supplierInfo:%s, hardwareVersion:%s, softwareVersion:%s\n",

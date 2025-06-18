@@ -54,7 +54,7 @@ static int s_net_connect_fail_cnt = 0;
 #define SECOND_STAGE_RETRY_ALL_TIME ((20*SECOND_STAGE_RETRY_INTERVAL_TIME)+FIRST_STAGE_RETRY_ALL_TIME) //100 minute
 #define THIRD_STAGE_RETRY_INTERVAL_TIME (1800) //30 minute
 
-#define IDSVERSION 		"IDPS-Version-1.2.5"
+
 
 
 /**

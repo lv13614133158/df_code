@@ -17,6 +17,7 @@ extern "C" {
 #include "idps_main.h"
 #include "mysqlite.h"
 
+
 #if MODULE_CONFIGMONITOR
 /**
  * @name:   ConfigDBData

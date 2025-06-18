@@ -8,6 +8,7 @@ extern "C" {
 #include "common.h"
 #include "idps_main.h"
 #include "cJSON.h"
+#define IDSVERSION 	"IDPS-Version-1.2.5"
 
 #define INTERFACE_MAXSIZE     (128)    //网卡名长度
 #define GENERALSET 	bool switchFun;\

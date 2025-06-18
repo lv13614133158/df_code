@@ -29,7 +29,7 @@
 
 
 
-#define IDSVERSION 		"IDPS-Version-1.2.3"
+
 
 
 /**
