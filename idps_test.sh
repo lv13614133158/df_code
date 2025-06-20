@@ -3,20 +3,25 @@ file_path="./hping3.log"
 log_path="./idps_test.log"
 loop() {
  type=$1
+    
+    echo "**********"
+    echo "**********">>$log_path
     echo 'Find '$type
     echo 'Find '$type>>$log_path
     while true; 
     do
         content=$(cat "$file_path")
-        if  echo "$content" |grep "type"| grep -q $type; then
-        matched=$(echo "$content" |grep "type"| grep $type| tail -n 1 )
-        echo "**********"
-        echo "**********">>$log_path
-        echo "$matched"
-        echo "$matched">>$log_path
-        echo "**********"
-        echo "**********">>$log_path
-        break
+        matched=$(echo "$content" |grep "type"| grep  $type)
+        if  [ -n "$matched" ]; then
+            matched=$(echo "$matched" | tail -n 1 )
+
+            echo "$matched"
+            echo "$matched">>$log_path
+            echo "**********"
+            echo "**********">>$log_path
+            echo ""
+            echo "">>$log_path
+            break
         fi
     done
 }
@@ -24,7 +29,13 @@ loop() {
 test() { 
 
 clear 
-loop "TCP_SYN_SCAN"
+loop "123.txt"             #文件监控
+loop "main_test"          # 进程监控
+loop "user_name"          #用户监控
+loop "cpu_usage"          #CPU使用率
+loop "ram_rate"           #ARM使用率
+loop "rom_rate"           #AOM使用率
+loop "TCP_SYN_SCAN"       #网络攻击
 loop "TCP_NULL_SCAN"
 loop "TCP_FIN_SCAN"
 loop "TCP_ACK_SCAN"
