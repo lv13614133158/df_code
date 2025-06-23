@@ -10,7 +10,7 @@
 		"threadPoolNumber":2,
 		"readDbLoop":60,
 		"manageKeyStore":1,
-		"server":"https://vsocidps-prd.dfiov.com.cn",
+		"server":"https://vsocidps-uat.dfiov.com.cn",
 		"snPath":"/data/idps/data123",
 		"imeiNumber":"idpslinux",
 		"channelId":"T00001",
@@ -20,7 +20,7 @@
 	"websocketModule":{
 		"channelId":"WEB001",
 		"equipmentType":"tbox",
-		"url":"vsocidps-prd.dfiov.com.cn",
+		"url":"vsocidps-uat.dfiov.com.cn",
 		"port":443,
 		"defaultsn":"18253197878",
 		"version":1,

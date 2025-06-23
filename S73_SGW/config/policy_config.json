@@ -222,23 +222,23 @@
 				"terminal_type_id":	0
 			}, {
 				"config":	{
-					"collect_period":	60,
+					"collect_period":	905,
 					"cpu":	{
 						"collect_period":	910,
 						"event_level":	3,
 						"overload_threshold":	3,
-						"usage_rate_overload_threshold":	1
+						"usage_rate_overload_threshold":	85
 					},
 					"event_level":	3,
 					"ram":	{
-						"collect_period":	60,
+						"collect_period":	915,
 						"event_level":	3,
-						"overload_threshold":	1
+						"overload_threshold":	85
 					},
 					"rom":	{
-						"collect_period":	60,
+						"collect_period":	920,
 						"event_level":	3,
-						"overload_threshold":	1
+						"overload_threshold":	85
 					}
 				},
 				"desc":	"系统资源监控探针",

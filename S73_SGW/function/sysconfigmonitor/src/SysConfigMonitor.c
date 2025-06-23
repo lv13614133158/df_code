@@ -68,7 +68,7 @@ char* getTerminalInfomation(char** _output)
 	cJSON_AddStringToObject(cjson_data1,"model",getCAR());
 	cJSON_AddStringToObject(cjson_data1,"brand","东风");
 	cJSON_AddStringToObject(cjson_data2,"sn",getTCUID());        
-	cJSON_AddStringToObject(cjson_data2,"idps_version",IDSVERSION);
+	cJSON_AddStringToObject(cjson_data2,"idps_version",Version);
 	cJSON_AddStringToObject(cjson_data2,"manufacturer", getManufacturer());
 	cJSON_AddStringToObject(cjson_data2,"simu_sys_version", getSIMU());
 	char *addr =  get_monitor_mac();

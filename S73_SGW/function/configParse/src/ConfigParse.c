@@ -19,8 +19,8 @@
 #elif POS_2
 	#define ROOT_PATH  "/usr/local/idps"
 #elif POS_3
-#define ROOT_PATH_RW  "/data/idps"
-#define ROOT_PATH_OR  "/vendor/etc/idps"
+	#define ROOT_PATH_RW  "/data/idps"
+	#define ROOT_PATH_OR  "/vendor/etc/idps"
 #elif POS_4
 	#define ROOT_PATH_RW  "../conf"
 	#define ROOT_PATH_OR  "../conf"
@@ -714,11 +714,11 @@ int initTboxInfo()
 	while (1)
 	{
 		memset(&sgw_mcu_info, 0, sizeof(sgw_mcu_info));
-		sgw_info_get_mcu_info(&sgw_mcu_info);
-		strncpy(sgw_mcu_info.vin,"VIN12345678900000",sizeof(sgw_mcu_info.vin) - 1);
-		sgw_mcu_info.vin[sizeof(sgw_mcu_info.vin)]='\0';
-		strncpy(sgw_mcu_info.sn,"SN123456789123456789",sizeof(sgw_mcu_info.sn) - 1);
-		sgw_mcu_info.sn[sizeof(sgw_mcu_info.sn)]='\0';
+		//sgw_info_get_mcu_info(&sgw_mcu_info);
+		strncpy(sgw_mcu_info.vin, "VIN12345678900001",17);
+		sgw_mcu_info.vin[17]='\0';
+		strncpy(sgw_mcu_info.sn,"SN123456789123456781", 20);
+		sgw_mcu_info.sn[20]='\0';
 		memset(spdlog, 0 ,sizeof(spdlog));
 		snprintf(spdlog, sizeof(spdlog),
 				"vin:%s, sn:%s, supplierInfo:%s, hardwareVersion:%s, softwareVersion:%s\n",

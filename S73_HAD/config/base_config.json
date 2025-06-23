@@ -10,7 +10,7 @@
 		"threadPoolNumber":2,
 		"readDbLoop":60,
 		"manageKeyStore":1,
-		"server":"https://vsocidps-prd.dfiov.com.cn", 
+		"server":"https://vsocidps-uat.dfiov.com.cn", 
 		"snPath":"/userdata/idps/conf/cache",
 		"imeiNumber":"idpslinux",
 		"channelId":"T00001",
@@ -20,7 +20,7 @@
 	"websocketModule":{
 		"channelId":"WEB001",
 		"equipmentType":"had",
-		"url":"vsocidps-prd.dfiov.com.cn",
+		"url":"vsocidps-uat.dfiov.com.cn",
 		"port":443,
 		"defaultsn":"18253197878",
 		"version":1,
@@ -31,8 +31,8 @@
 		"intervalkey":2
 	},
 	"version":{
-		"releaseVersion":"V1.0.0_PRD",
-		"configVersion":"V1.0.0_PRD_DF",
+		"releaseVersion":"V1.2.5_PRD",
+		"configVersion":"V1.2.5_PRD_DF",
 		"codeVersion":"V1.2.5"
 	}
 }
