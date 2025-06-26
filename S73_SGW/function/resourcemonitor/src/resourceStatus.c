@@ -333,13 +333,18 @@ long long getROMTotalSize()
 	const char *disp_units_hdr = NULL;
 	listNode_t *head = NULL;
 
-	mount_table = NULL;
-	mount_table = setmntent("/etc/mtab", "r");
-	if (!mount_table)
-	{
-		fprintf(stderr, "set mount entry error\n");
-		return -1;
-	}
+	mount_table = NULL;	
+    mount_table = setmntent("/etc/mtab", "r");
+    if (!mount_table)
+    {
+        mount_table = setmntent("/proc/mounts", "r");
+        if (!mount_table)
+        {
+            fprintf(stderr, "set /etc/mtab and /proc/mounts entry error\n");
+            return -1;
+        }
+        
+    }
 	while (1) {
 		bool ret;
 		const char *device;
@@ -397,12 +402,17 @@ long long getROMFreeSize()
 	listNode_t *head = NULL;
 
 	mount_table = NULL;
-	mount_table = setmntent("/etc/mtab", "r");
-	if (!mount_table)
-	{
-		fprintf(stderr, "set mount entry error\n");
-		return -1;
-	}
+    mount_table = setmntent("/etc/mtab", "r");
+    if (!mount_table)
+    {
+        mount_table = setmntent("/proc/mounts", "r");
+        if (!mount_table)
+        {
+            fprintf(stderr, "set /etc/mtab and /proc/mounts entry error\n");
+            return -1;
+        }
+        
+    }
 	while (1) {
 		bool ret;
 		const char *device;
@@ -465,13 +475,18 @@ int getROMUsage()
 	const char *disp_units_hdr = NULL;
 	listNode_t *head = NULL;
 
-	mount_table = NULL;
-	mount_table = setmntent("/etc/mtab", "r");
-	if (!mount_table)
-	{
-		fprintf(stderr, "set mount entry error\n");
-		return -1;
-	}
+	mount_table = NULL;	
+    mount_table = setmntent("/etc/mtab", "r");
+    if (!mount_table)
+    {
+        mount_table = setmntent("/proc/mounts", "r");
+        if (!mount_table)
+        {
+            fprintf(stderr, "set /etc/mtab and /proc/mounts entry error\n");
+            return -1;
+        }
+        
+    }
 	while (1) {
 		bool ret;
 		const char *device;
