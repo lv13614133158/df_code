@@ -462,6 +462,10 @@ static int ConnectClient(void)
 		i.ssl_connection = ssl_connection;
 		i.protocol = pro;
 		i.local_protocol_name = pro;
+		if(LocalIp_enable)
+		{
+			i.iface  = LocalIp;     // 绑定本地 IP
+		}
 		//usleep(connection_delay);
 		char spdlog[255] ={0};
 		snprintf(spdlog, 255, "%s: %s:%d connecting...\n", __func__, i.address, i.port);

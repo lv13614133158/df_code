@@ -850,6 +850,85 @@ exit:
 	log_d("ConfigParse", spdlog);
 }
 
+
+
+int initCert(void)
+{
+	char cert[10240] = {0};
+	int read_len = 0;
+
+	printf("init cert\n");
+	
+	read_len = DSec_ReadFile("deviceCert", cert, sizeof(cert));
+	if (read_len > 0)
+	{
+		if (s_dev_cert)
+		{
+			free(s_dev_cert);
+			s_dev_cert = NULL;
+		}
+		s_dev_cert = (uint8_t *)malloc(read_len + 1);
+		if (s_dev_cert)
+		{
+			memset(s_dev_cert, 0, read_len + 1);
+			memcpy(s_dev_cert, cert, read_len);
+		}
+	}
+	else
+	{
+		log_e("ConfigParse", "read client certificate err!");
+	}
+
+	memset(cert, 0, sizeof(cert));
+	read_len = DSec_ReadFile("deviceKey", cert, sizeof(cert));
+	if (read_len > 0)
+	{
+		//printf("len:%d, client key:%s\n", len, cert);
+		if (s_dev_key)
+		{
+			free(s_dev_key);
+			s_dev_key = NULL;
+		}
+		s_dev_key = (uint8_t *)malloc(read_len + 1);
+		if (s_dev_key)
+		{
+			memset(s_dev_key, 0, read_len + 1);
+			memcpy(s_dev_key, cert, read_len);
+		}
+
+	}
+	else
+	{
+		log_e("ConfigParse", "read client private key err");
+	}
+
+	memset(cert, 0, sizeof(cert));
+	read_len = DSec_ReadFile("rootCert", cert, sizeof(cert));
+	if (read_len > 0)
+	{
+		//printf("len:%d, root cert:%s\n", len, cert);
+		if (s_root_cert)
+		{
+			free(s_root_cert);
+			s_root_cert = NULL;
+		}
+		s_root_cert = (uint8_t *)malloc(read_len + 1);
+		if (s_root_cert)
+		{
+			memset(s_root_cert, 0, read_len + 1);
+			memcpy(s_root_cert, cert, read_len);
+		}
+	}
+	else
+	{
+		log_e("ConfigParse", "read root certificate err");
+	}
+
+	return 0;
+}
+
+
+
 char* getTCUID()
 {
 	return tboxInfo_obj.ID;
@@ -881,7 +960,42 @@ int recordVesion(char *version)
 {
 	return writeVersion(BASE_VERSION_PATH, version);
 }
+#if 1
+unsigned char *get_pki_client_cert(void)
+{
+	return s_dev_cert;
+}
 
+
+unsigned char *get_pki_client_private_key(void)
+{
+	return s_dev_key;
+}
+
+unsigned char *get_pki_root_cert(void)
+{
+	return s_root_cert;
+}
+#endif 
+
+#if 0
+unsigned char *get_pki_client_cert(void)
+{
+	return s_pki_client_cert_buff;
+}
+
+
+unsigned char *get_pki_client_private_key(void)
+{
+	return s_pki_client_private_key_buff;
+}
+
+unsigned char *get_pki_root_cert(void)
+{
+	return s_pki_root_cert_buff;
+}
+
+#endif
 // 离线在线模式 1：在线 0：离线
 static int s_network_connection_enabled = 0;
 

@@ -26,7 +26,7 @@
 #include <sys/times.h>
 #include <assert.h>
 #include <unistd.h>
-
+#include "ConfigParse.h"
 /**
  ******************************************************************************
  ** \简  述  线程保护
@@ -104,6 +104,76 @@ static void setCurlComopt(CURL *curlget)
     //curl_easy_setopt(curlget, CURLOPT_CAPATH, caPath); //指定证书路径
     //curl_easy_setopt(curlget, CURLOPT_CAINFO, caInfo); //指定证书信息
     curl_easy_setopt(curlget, CURLOPT_VERBOSE, 1L);         //curl日志打印，0关闭，1打开
+    //pki获取   更改configparse中的
+    char *client_cert_buff = NULL;
+    int client_cert_len = 0;
+    char *client_private_key_buff = NULL;
+    int client_private_key_len = 0;
+    char *root_cert_buff = NULL;
+    int root_cert_len = 0;
+    struct curl_blob blob;
+
+    if (get_pki_root_cert())
+    {
+        root_cert_len = strlen(get_pki_root_cert());
+        root_cert_buff = malloc(root_cert_len);
+        if (root_cert_buff)
+        {
+            memcpy(root_cert_buff, get_pki_root_cert(), root_cert_len);
+        }
+    }
+
+    if (get_pki_client_cert())
+    {
+        client_cert_len = strlen(get_pki_client_cert());
+        client_cert_buff = malloc(client_cert_len);
+        if (client_cert_buff)
+        {
+            memcpy(client_cert_buff, get_pki_client_cert(), client_cert_len);
+        }
+    }
+
+    if (get_pki_client_private_key())
+    {
+        client_private_key_len = strlen(get_pki_client_private_key());
+        client_private_key_buff = malloc(client_private_key_len);
+        if (client_private_key_buff)
+        {
+            memcpy(client_private_key_buff, get_pki_client_private_key(), client_private_key_len);
+        }
+    }
+
+    if (root_cert_buff)
+    {
+        blob.data = root_cert_buff;
+        blob.len = root_cert_len;
+        blob.flags = CURL_BLOB_COPY;
+        curl_easy_setopt(curlget, CURLOPT_CAINFO_BLOB, &blob);
+        free(root_cert_buff);
+        root_cert_buff = NULL;
+    }
+
+    if (client_cert_buff)
+    {
+        curl_easy_setopt(curlget, CURLOPT_SSLCERTTYPE, "PEM");
+        blob.data = client_cert_buff;
+        blob.len = client_cert_len;
+        blob.flags = CURL_BLOB_COPY;
+        curl_easy_setopt(curlget, CURLOPT_SSLCERT_BLOB, &blob);
+        free(client_cert_buff);
+        client_cert_buff = NULL;
+    }
+
+    if (client_private_key_buff)
+    {
+        curl_easy_setopt(curlget, CURLOPT_SSLKEYTYPE, "PEM");
+        blob.data = client_private_key_buff;
+        blob.len = client_private_key_len;
+        blob.flags = CURL_BLOB_COPY;
+        curl_easy_setopt(curlget, CURLOPT_SSLKEY_BLOB, &blob);
+        free(client_private_key_buff);
+        client_private_key_buff = NULL;
+    }
 }
 
 static void setGetRequestopt(CURL *curlget)
@@ -167,6 +237,10 @@ BaseResponse_t *startGetRequest(char *url, char *header,void* __curl)
     curl_easy_setopt(curlget, CURLOPT_HEADERFUNCTION, headerFunctionCallback);
     curl_easy_setopt(curlget, CURLOPT_HEADERDATA,  (void *)&chunkheader);
     curl_easy_setopt(curlget, CURLOPT_URL,url);
+    if(LocalIp_enable)
+	{
+		curl_easy_setopt(curlget, CURLOPT_INTERFACE, LocalIp);
+	}
     curl_easy_setopt(curlget, CURLOPT_CUSTOMREQUEST, "GET");
 
     struct curl_slist *list = NULL;
@@ -302,6 +376,10 @@ BaseResponse_t *startPostRequest(char *url, char *header,int lengthheader,char *
     curl_easy_setopt(_curl->curlpost, CURLOPT_HEADERDATA,  (void *)&chunkheader);
     curl_easy_setopt(_curl->curlpost, CURLOPT_ERRORBUFFER, errbuf);//请求返回值不是CURLE_OK,则将错误码的信息存放到errbuf中
     curl_easy_setopt(_curl->curlpost, CURLOPT_URL,url);
+    if(LocalIp_enable)
+	{
+		curl_easy_setopt(_curl->curlpost, CURLOPT_INTERFACE, LocalIp);
+	}
     curl_easy_setopt(_curl->curlpost, CURLOPT_CUSTOMREQUEST, "POST"); 
 
     struct curl_slist *list = NULL;
@@ -557,7 +635,10 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
     curl_easy_setopt(curlhandle, CURLOPT_HTTPHEADER,list);//set header
    // curl_easy_setopt(curlhandle, CURLOPT_MIMEPOST,mime);
     curl_easy_setopt(curlhandle, CURLOPT_URL, remotepath);
-
+	if(LocalIp_enable)
+	{
+		curl_easy_setopt(curlhandle, CURLOPT_INTERFACE, LocalIp);
+	}
     // curl_easy_setopt(curlhandle, CURLOPT_CAINFO,mqttpath);//指定证书信息
     setCurlCApath(mqttpath);
     curl_easy_setopt(curlhandle, CURLOPT_CAPATH,caPath);
