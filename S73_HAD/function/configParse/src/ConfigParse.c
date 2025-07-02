@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include "Base_networkmanager.h"
 #include <libsysinfo.h>
+#include "dfssphad.h"
 // 配置文件目录位置设置
 #define POS_3  1
 #ifdef POS_1

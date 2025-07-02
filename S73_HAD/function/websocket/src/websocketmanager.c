@@ -213,7 +213,7 @@ static void *net_connect_task(void *arg)
 				wbsClient_set_reinit(false);
 
 				/*get certificate*/
-				//initCert();
+				initCert();
 
 				/*clear key*/
 				setSessionKeyToEmpty();

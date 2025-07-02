@@ -178,9 +178,31 @@ static void wbsClient_localWebsocketSend(long long lseqnumber, char *data, bool 
 
 	if (json)
 	{
+		#if 1
+		cJSON *item_body = cJSON_GetObjectItemCaseSensitive(json, "body");
+		if (item_body) {
+			char* bodyString = cJSON_GetStringValue(item_body);
+			cJSON *item_new_body = cJSON_Parse(bodyString);
+			if(item_new_body)
+			{
+				cJSON *item_latitude = cJSON_GetObjectItemCaseSensitive(item_new_body, "latitude");
+				if (item_latitude != NULL) {
+					cJSON_SetIntValue(item_latitude, 0); 
+				}
+				cJSON *item_longitude = cJSON_GetObjectItemCaseSensitive(item_new_body, "longitude");
+				if (item_longitude != NULL) {
+					cJSON_SetIntValue(item_longitude, 0); 
+				}
+				item_body->valuestring = cJSON_PrintUnformatted(item_new_body);
+			}
+		}
+		
+		#endif
 		char *print_data = cJSON_Print(json);
 		if (print_data)
 		{
+			/*隐藏gps信息*/
+
 			if (!wsisend && send_only_once == 1)
 			{
 				log_d("Not add Map", print_data);

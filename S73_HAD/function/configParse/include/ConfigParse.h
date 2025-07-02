@@ -129,14 +129,14 @@ char *getProcessWhileList(void);
 int   setProcessWhileList(char *white_process);
 
 void initTboxInfo();
-//int initCert(void);
+int initCert(void);
 char* getTCUID();
 char* getVIN();
 char* getCAR();
 char* getSIMU();
-//unsigned char *get_pki_client_cert(void);
-//unsigned char *get_pki_client_private_key(void);
-//unsigned char *get_pki_root_cert(void);
+unsigned char *get_pki_client_cert(void);
+unsigned char *get_pki_client_private_key(void);
+unsigned char *get_pki_root_cert(void);
 char* getManufacturer();
 
 int networkFunctionEnabled(void);

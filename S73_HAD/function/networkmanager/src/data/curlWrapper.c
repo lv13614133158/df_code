@@ -532,6 +532,8 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
     if(curlhandle == NULL){
         curlhandle = curl_easy_init();
     }
+
+    /*
     // CA 证书内存数据
     char ca_cert[6000]= {'\0'};
     size_t certLen=6000;
@@ -574,7 +576,7 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
     };
    
     curl_easy_setopt(curlhandle, CURLOPT_SSLKEY_BLOB, &client_key_blob);
-    
+    */
 
     // 严格验证
     curl_easy_setopt(curlhandle, CURLOPT_SSL_VERIFYPEER, 1L);  // 必须验证服务器证书
