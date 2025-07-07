@@ -12,7 +12,7 @@
 #include <libsysinfo.h>
 #include "dfssphad.h"
 // 配置文件目录位置设置
-#define POS_3  1
+#define POS_4  1
 #ifdef POS_1
 	#define ROOT_PATH  "./"
 #elif POS_2
@@ -22,8 +22,8 @@
 #define ROOT_PATH_OR  "/opt/app/idps/etc/conf"
 #elif POS_4
 	//#define ROOT_PATH  "../conf"
-	#define ROOT_PATH_RW  "/userdata/idps/conf"
-	#define ROOT_PATH_OR  "/userdata/idps/conf"
+	#define ROOT_PATH_RW  "../conf"
+	#define ROOT_PATH_OR  "../conf"
 #else
 	#define ROOT_PATH  "/mnt/sdcard/idps"
 #endif

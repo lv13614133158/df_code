@@ -36,7 +36,7 @@ automatic(){
     for i in $(seq 1 $max_num);do
          clear
          do_hping3 $i &
-         sleep 5
+         sleep 20
          killall hping3
      done
 

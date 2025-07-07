@@ -198,7 +198,7 @@ static void wbsClient_localWebsocketSend(long long lseqnumber, char *data, bool 
 		}
 		
 		#endif
-		char *print_data = cJSON_Print(json);
+		char *print_data = cJSON_PrintUnformatted(json);
 		if (print_data)
 		{
 			/*隐藏gps信息*/

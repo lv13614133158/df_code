@@ -1,42 +1,5 @@
 #!/bin/bash
 
-# ====================
-# 格式化JSON函数
-# ====================
-format_json() {
-    local input_file="$1"
-    local output_file="$2"
-
-    > "$output_file" # 清空输出文件
-
-    tab_level=0
-
-    while IFS= read -r line; do
-        while IFS= read -rn1 char; do
-            case "$char" in
-                "{")
-                    printf "{" >> "$output_file"
-                    ((tab_level++))
-                    printf "\n%*s" $((tab_level * 4)) "" >> "$output_file"
-                    ;;
-                "}")
-                    ((tab_level--))
-                    if ((tab_level < 0)); then
-                        tab_level=0
-                    fi
-                    printf "\n%*s}" $((tab_level * 4)) "" >> "$output_file"
-                    ;;
-                ",")
-                    printf ",\n%*s" $((tab_level * 4)) "" >> "$output_file"
-                    ;;
-                *)
-                    printf "%s" "$char" >> "$output_file"
-                    ;;
-            esac
-        done <<< "$line"
-        printf "\n" >> "$output_file"
-    done < "$input_file"
-}
 
 # ====================
 # IDPS 测试主逻辑
@@ -48,10 +11,10 @@ fi
 
 file_path="$1"
 output_file="idps_test.log"
-temp_output="./temp_idps_output.txt"
 
-# 清空临时文件
-echo -n "" > "$temp_output"
+
+# 清空输出文件
+echo -n "" > "$output_file"
 
 FileMonitor="10100"
 ProcessMonitor="10300"
@@ -65,27 +28,28 @@ Network="10900"
 test_event() {
     type=$1
     name=$2
-
+    echo "正在测试 $name $type"
+while true; do
     content=$(cat "$file_path")
     matched=$(echo "$content" | grep "$type" | grep -i "$name")
     if [ -n "$matched" ]; then
         matched=$(echo "$matched" | tail -n 1)
-        echo ""
-        echo "">> "$temp_output"
-        echo "$name $type"
-        echo "$name $type">> "$temp_output"
-        echo ""
-        echo "">> "$temp_output"
-        echo "$matched"
-        echo "$matched" >> "$temp_output"
+        echo "">> "$output_file"
+        echo "$name $type">> "$output_file"
+        echo "">> "$output_file"
+        echo "$matched" >> "$output_file"
+        echo "测试完成 已保存"
+        break
     fi
+done
+    
 }
 
 # 测试事件列表
 test_event "data" "register_key"
 test_event "data" "session_key"
 test_event "$FileMonitor" "1.txt"
-test_event "$ProcessMonitor" "main_test"
+test_event "$ProcessMonitor" "11"
 test_event "$ShellLoginMonitor" "user_name"
 test_event "$ResourceMonitor" "cpu_usage"
 test_event "$ResourceMonitor_cpu" "cpu_usage"
@@ -112,5 +76,5 @@ test_event "$Network" "TCP_FIN_SYN_DOS"
 test_event "$Network" "UDP_PORT_SCAN"
 
 # 格式化临时文件中的内容
-format_json "$temp_output" "$output_file"
-echo "格式化完成，结果已保存到 $output_file"
+
+echo "测试完成  保存文件： $output_file"
