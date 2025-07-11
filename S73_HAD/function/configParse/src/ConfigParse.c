@@ -11,8 +11,9 @@
 #include "Base_networkmanager.h"
 #include <libsysinfo.h>
 #include "dfssphad.h"
+
 // 配置文件目录位置设置
-#define POS_4  1
+#define POS_3  1
 #ifdef POS_1
 	#define ROOT_PATH  "./"
 #elif POS_2
@@ -769,8 +770,8 @@ void initTboxInfo()
 
 
 	/*get TBOX info from local configuration files*/
-	//strncpy(tbox_s73_had_info.VIN, "LDC913L2240000001", sizeof(tbox_s73_had_info.VIN) - 1);
-	//strncpy(tbox_s73_had_info.ID, "XY202505280001", sizeof(tbox_s73_had_info.ID) - 1);
+	// strncpy(tbox_s73_had_info.VIN, "LDC913L2240000001", sizeof(tbox_s73_had_info.VIN) - 1);
+	// strncpy(tbox_s73_had_info.ID, "XY202505280001", sizeof(tbox_s73_had_info.ID) - 1);
 	
 	if(readLocalJson(DEVICE_INFO_PATH, buf, sizeof(buf)) == -1){
 		goto exit;
@@ -852,7 +853,6 @@ exit:
 }
 
 
-
 int initCert(void)
 {
 	char cert[10240] = {0};
@@ -863,6 +863,7 @@ int initCert(void)
 	read_len = DSec_ReadFile("deviceCert", cert, sizeof(cert));
 	if (read_len > 0)
 	{
+		//printf("len:%d, device Cert:%s\n", read_len, cert);
 		if (s_dev_cert)
 		{
 			free(s_dev_cert);
@@ -884,7 +885,7 @@ int initCert(void)
 	read_len = DSec_ReadFile("deviceKey", cert, sizeof(cert));
 	if (read_len > 0)
 	{
-		//printf("len:%d, client key:%s\n", len, cert);
+		//printf("len:%d, client key:%s\n", read_len, cert);
 		if (s_dev_key)
 		{
 			free(s_dev_key);
@@ -907,7 +908,7 @@ int initCert(void)
 	read_len = DSec_ReadFile("rootCert", cert, sizeof(cert));
 	if (read_len > 0)
 	{
-		//printf("len:%d, root cert:%s\n", len, cert);
+		//printf("len:%d, root cert:%s\n", read_len, cert);
 		if (s_root_cert)
 		{
 			free(s_root_cert);

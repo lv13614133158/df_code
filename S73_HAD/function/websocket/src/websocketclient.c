@@ -26,6 +26,7 @@
 #include "websocketLoop.h"
 #include "websocketrpc.h"
 #include "websocketTool.h"
+#include <sys/stat.h>
 #include "ConfigParse.h"
 
 // websocket 连接部分
@@ -178,6 +179,7 @@ static void wbsClient_localWebsocketSend(long long lseqnumber, char *data, bool 
 
 	if (json)
 	{
+		
 		#if 1
 		cJSON *item_body = cJSON_GetObjectItemCaseSensitive(json, "body");
 		if (item_body) {
@@ -198,6 +200,7 @@ static void wbsClient_localWebsocketSend(long long lseqnumber, char *data, bool 
 		}
 		
 		#endif
+
 		char *print_data = cJSON_PrintUnformatted(json);
 		if (print_data)
 		{
@@ -402,10 +405,9 @@ static int CallBack(struct lws *wsi, enum lws_callback_reasons reason,
 		break;
 
 	case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-		s_wbs_connection_succ = false;
 		snprintf(spdlog, logLen, "websocket connection err: %s\n", in ? (char *)in :"(null)");
 		log_e("idps_websocket",spdlog);
-        wsisend = NULL;
+		wsisend = NULL;
 		break;
 	
 	case LWS_CALLBACK_CLIENT_ESTABLISHED: // 第一次建立连接
@@ -522,10 +524,47 @@ int wbsClient_init(void)
 	int ssl_chose = wbsGetSsl();
 	char caPath[128] = {0};
 	strncpy(caPath, wbsGetPath(),128);
-    strcat(caPath,"ca.pem");
+    	strcat(caPath,"ca.pem");
 
 	struct lws_context_creation_info info;
 	int logs = LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE;//LLL_INFO | LLL_DEBUG
+	char *client_cert_buff = NULL;
+	int client_cert_len = 0;
+	char *client_private_key_buff = NULL;
+	int client_private_key_len = 0;
+	char *root_cert_buff = NULL;
+	int root_cert_len = 0;
+
+	/*init certificate buff*/
+	if (get_pki_root_cert())
+	{
+		root_cert_len = strlen(get_pki_root_cert());
+		root_cert_buff = malloc(root_cert_len);
+		if (root_cert_buff)
+		{
+			memcpy(root_cert_buff, get_pki_root_cert(), root_cert_len);
+		}
+	}
+
+	if (get_pki_client_cert())
+	{
+		client_cert_len = strlen(get_pki_client_cert());
+		client_cert_buff = malloc(client_cert_len);
+		if (client_cert_buff)
+		{
+			memcpy(client_cert_buff, get_pki_client_cert(), client_cert_len);
+		}
+	}
+
+	if (get_pki_client_private_key())
+	{
+		client_private_key_len = strlen(get_pki_client_private_key());
+		client_private_key_buff = malloc(client_private_key_len);
+		if (client_private_key_buff)
+		{
+			memcpy(client_private_key_buff, get_pki_client_private_key(), client_private_key_len);
+		}
+	}
 	lws_set_log_level(logs, NULL);
 	memset(&info, 0, sizeof info);
 	info.options   = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
@@ -533,16 +572,55 @@ int wbsClient_init(void)
 	info.protocols = protocols;
 
 
-	//ssl_ca_init(&info); //加载双向认证证书 私钥
-	//强制双向认证
-	//info.options |= LWS_SERVER_OPTION_REQUIRE_VALID_OPENSSL_CLIENT_CERT;
-	//info.client_ssl_ca_filepath = caPath;//如果服务器有CA证书则需要这行代码
+	/*Method 1. load the certificate in memory*/
+	if (root_cert_buff)
+	{
+		info.client_ssl_ca_filepath = NULL;  // 不使用文件方式，改为内存块方式
+		info.client_ssl_ca_mem = root_cert_buff;  // 将CA证书作为内存块传入
+		info.client_ssl_ca_mem_len = root_cert_len; // 内存块大小
+ 	}
 
+	if (client_cert_buff)
+	{
+		info.client_ssl_cert_filepath = NULL;  // 不使用文件方式，改为内存块方式
+		info.client_ssl_cert_mem = client_cert_buff;  // 将客户端证书作为内存块传入
+		info.client_ssl_cert_mem_len = client_cert_len; // 内存块大小
+ 	}
 
+	if (client_private_key_buff)
+	{
+		info.client_ssl_private_key_filepath = NULL;  // 不使用文件方式，改为内存块方式
+		info.client_ssl_key_mem = client_private_key_buff;	// 将客户端私钥作为内存块传入
+		info.client_ssl_key_mem_len = client_private_key_len; // 内存块大小
+ 	}
+	
+#if 0
+	info.client_ssl_ca_filepath = get_pki_root_cert();//如果服务器有CA证书则需要这行代码
+	info.client_ssl_cert_filepath = get_pki_client_cert();
+	info.client_ssl_private_key_filepath = get_pki_client_private_key();
+#endif
 	if(ssl_chose == 1)
-		ssl_connection |= LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK | LCCSCF_ALLOW_INSECURE | LCCSCF_ALLOW_EXPIRED;
+
+	ssl_connection |= LCCSCF_USE_SSL;
 	info.fd_limit_per_thread = (unsigned int)(1 + 1 + 1);//1 + clients + 1
-	context = lws_create_context(&info);  
+	context = lws_create_context(&info);
+
+
+	if (root_cert_buff)
+	{
+		free(root_cert_buff);
+		root_cert_buff = NULL;
+	}
+	if (client_cert_buff)
+	{
+		free(client_cert_buff);
+		client_cert_buff = NULL;
+	}
+	if (client_private_key_buff)
+	{
+		free(client_private_key_buff);
+		client_private_key_buff = NULL;
+	}
 	if (!context) {
 		log_e("idps_websocket", "lws init failed\n");
 		return -1;

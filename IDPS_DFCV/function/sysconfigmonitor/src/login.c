@@ -316,7 +316,8 @@ static int logical_judgment_user_log_login_fail()
     int ret = 0;
     int i = 0, j = 0;
 
-    fp = popen("lastb -n 1", "r");
+    // fp = popen("lastb -n 1", "r");
+	fp = popen("last -f /var/log/btmp", "r");
     if (NULL == fp)
     {
         printf("popen\" lastb -n 1 \" error\n");

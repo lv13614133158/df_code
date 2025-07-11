@@ -100,7 +100,7 @@ static void setCurlComopt(CURL *curlget)
     curl_easy_setopt(curlget, CURLOPT_SSL_VERIFYPEER, 0L); //验证证书
     curl_easy_setopt(curlget, CURLOPT_SSL_VERIFYHOST, 0L); //检查证书中的公用名是否存在，并且是否与提供的主机名匹配
     //curl_easy_setopt(curlget, CURLOPT_CAPATH,"/etc/ssl/certs/");
-    setCurlCApath(mqttpath);
+    // setCurlCApath(mqttpath);
     //curl_easy_setopt(curlget, CURLOPT_CAPATH, caPath); //指定证书路径
     //curl_easy_setopt(curlget, CURLOPT_CAINFO, caInfo); //指定证书信息
     curl_easy_setopt(curlget, CURLOPT_VERBOSE, 1L);         //curl日志打印，0关闭，1打开
@@ -195,6 +195,7 @@ static void setPostRequestopt(CURL *curlget)
     curl_easy_setopt(curlget, CURLOPT_NOSIGNAL, 1);
 }
 
+
 /**
  ******************************************************************************
  ** \简  述  启动get请求，返回一个相应的结构体指针，
@@ -228,7 +229,10 @@ BaseResponse_t *startGetRequest(char *url, char *header,void* __curl)
         free(chunkwirte.memory);
         return NULL;
     }
-   
+    
+    
+
+    
     setGetRequestopt(curlget);
     setCurlComopt(curlget);
     curl_easy_setopt(curlget, CURLOPT_ERRORBUFFER, errbuf);//请求返回值不是CURLE_OK,则将错误码的信息存放到errbuf中
@@ -533,50 +537,7 @@ BaseResponse_t *startPostfile(char* header,const char* remotepath, const char* l
         curlhandle = curl_easy_init();
     }
 
-    /*
-    // CA 证书内存数据
-    char ca_cert[6000]= {'\0'};
-    size_t certLen=6000;
-    int ca_cert_res=DSec_ReadFile("rootCert", ca_cert, certLen);
-    printf("rootCert: \n%s\nlength: %d\n", ca_cert, ca_cert_res);
-    size_t ca_cert_size=ca_cert_res;       // CA 证书大小
-
-    // 客户端证书内存数据
-    char client_cert[6000]= {'\0'};
-    int client_cer_res=DSec_ReadFile("deviceCert", client_cert, certLen);
-    printf("deviceCert: \n%s\nlength: %d\n", client_cert, client_cer_res);
-    size_t client_cert_size=client_cer_res;   // 客户端证书大小
-
-    // 客户端私钥内存数据
-    char client_key[6000]= {'\0'};
-    int client_key_res=DSec_ReadFile("deviceKey", client_key, certLen);
-    printf("deviceKey: \n%s\nlength: %d\n", client_key, client_key_res);
-    size_t client_key_size=client_key_res; //客户端私钥大小
-
-    // --- CA 证书 ---
-    struct curl_blob cert_blob = {
-    .data = (void*)ca_cert,
-    .len = ca_cert_size,
-    .flags = CURL_BLOB_COPY
-    };
-    curl_easy_setopt(curlhandle, CURLOPT_CAINFO_BLOB, &cert_blob);
-    
-    // --- 客户端证书---
-    struct curl_blob client_blob = {
-        .data = (void*)client_cert,
-        .len = client_cert_size,
-        .flags = CURL_BLOB_COPY
-    };
-    curl_easy_setopt(curlhandle, CURLOPT_SSLCERT_BLOB, &client_blob);
-    // --- 客户端私钥 ---
-    struct curl_blob client_key_blob = {
-        .data = (void*)client_key,
-        .len = client_key_size,
-        .flags = CURL_BLOB_COPY
-    };
    
-    curl_easy_setopt(curlhandle, CURLOPT_SSLKEY_BLOB, &client_key_blob);
-    */
 
     // 严格验证
     curl_easy_setopt(curlhandle, CURLOPT_SSL_VERIFYPEER, 1L);  // 必须验证服务器证书

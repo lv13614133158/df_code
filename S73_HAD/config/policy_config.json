@@ -35,7 +35,7 @@
 							"event_level":	3,
 							"md5":	"",
 							"watch_event":	774,
-							"watch_path":	"/userdata/idps/"
+							"watch_path":	"/userdata/idps/conf"
 						}]
 				},
 				"desc":	"文件监控探针",
@@ -80,7 +80,7 @@
 				"terminal_type_id":	0
 			}, {
 				"config":	{
-					"collect_period":	60,
+					"collect_period":	300,
 					"event_level":	3,
 					"white_list":	[{
 							"process_id": 1,
@@ -243,23 +243,23 @@
 				"terminal_type_id":	0
 			}, {
 				"config":	{
-					"collect_period":	30,
+					"collect_period":	60,
 					"cpu":	{
-						"collect_period":	10,
+						"collect_period":	60,
 						"event_level":	3,
 						"overload_threshold":	2,
-						"usage_rate_overload_threshold":	50
+						"usage_rate_overload_threshold":	1
 					},
 					"event_level":	3,
 					"ram":	{
-						"collect_period":	10,
+						"collect_period":	60,
 						"event_level":	3,
-						"overload_threshold":	50
+						"overload_threshold":	1
 					},
 					"rom":	{
-						"collect_period":	10,
+						"collect_period":	60,
 						"event_level":	3,
-						"overload_threshold":	20
+						"overload_threshold":	1
 					}
 				},
 				"desc":	"系统资源监控探针",

@@ -43,7 +43,6 @@ set_source_files_properties(${DATA_DISPATCHER_SRC} PROPERTIES COMPILE_FLAGS "-Wn
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
 set(CMAKE_BUILD_TYPE "RELEASE")
 
-
 #头文件路径
 include_directories(function)
 include_directories(function/common/include)
@@ -87,7 +86,7 @@ set(SDK_USR_DIR /home/nvidia/df/HAD/S73a2/sdk/usr)
 include_directories(${SDK_USR_DIR}/hobot/include/aarch64-linux-gnu) #1.1.1
 include_directories(${SDK_USR_DIR}/hobot/include) #1.1.1
 include_directories(${SDK_USR_DIR}/include/aarch64-linux-gnu) #curl.h
-
+include_directories(/home/nvidia/df/HAD/S73a2/sdk/usr/include) #curl.h
 #第三方库
 
 include_directories(third_part/pcap/include)
@@ -113,8 +112,9 @@ link_directories(${CMAKE_SOURCE_DIR}/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
 # link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)  
 link_directories(${CMAKE_SOURCE_DIR}/tier1_part/variant/lib)  
-link_directories(/home/nvidia/df/PKI/) 
-set(PKI_USR_DIR /home/nvidia/df/PKI/)
+link_directories(/home/nvidia/git/df/PKI/) 
+link_directories(/home/nvidia/df/HAD/S73a2/sdk/usr/lib/aarch64-linux-gnu) 
+set(PKI_USR_DIR /home/nvidia/git/df/PKI/)
 
 
 #auto find src
@@ -177,7 +177,7 @@ add_executable(IDPS
 		${SOURCE_CONFIGPARSE}
 		${SOURCE_NETWORKFIREWALL}
 		)
-
+set_target_properties(IDPS PROPERTIES LINK_FLAGS "-Wl,-rpath-link,/home/nvidia/df/HAD/S73a2/toolchain/sysroot/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,/home/nvidia/git/df/PKI")
 #预编译好的库
 target_link_libraries( # Specifies the target library.
 	IDPS
@@ -196,7 +196,8 @@ target_link_libraries( # Specifies the target library.
     ${PKI_USR_DIR}/libssl.so.1.1
     ${PKI_USR_DIR}/libcrypto.so.1.1
     ${PKI_USR_DIR}/libteec.so.1
-    ${PKI_USR_DIR}/libsecure_storage.so.1
+    #${PKI_USR_DIR}/libsecure_storage.so.1
+	-lpersist
     ${PKI_USR_DIR}/libalog.so.1
 	)
 
