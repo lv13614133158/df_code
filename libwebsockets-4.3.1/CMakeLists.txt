@@ -22,26 +22,6 @@
 # IN THE SOFTWARE.
 #
 
-
-set(CMAKE_INSTALL_PREFIX ${TOOLCHAIN_DIR}/build/install)
-set(TOOLCHAIN_DIR "/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu")
-set(CMAKE_C_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-none-linux-gnu-gcc)
-set(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-none-linux-gnu-g++)
-set(CMAKE_LINKER ${TOOLCHAIN_DIR}/bin/aarch64-none-linux-gnu-ld)
-
-
-set(OPENSSL_INCLUDE_DIR
-    /home/nvidia/df/HAD/S73a2/sdk/usr/hobot/include
-  	/home/nvidia/df/HAD/S73a2/sdk/usr/hobot/include/aarch64-linux-gnu
-)
-include_directories(${OPENSSL_INCLUDE_DIR})
-SET(DOPENSSL_ROOT_DIR "/home/nvidia/df/HAD/S73a2/sdk/usr/hobot")
-
-set(OPENSSL_SSL_LIBRARY /home/nvidia/df/HAD/S73a2/sdk/usr/hobot/lib/aarch64-linux-gnu/libssl.so)
-set(OPENSSL_CRYPTO_LIBRARY /home/nvidia/df/HAD/S73a2/sdk/usr/hobot/lib/aarch64-linux-gnu/libcrypto.so)
-list(APPEND LIB_LIST ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-
-project(websockets C CXX)
 cmake_minimum_required(VERSION 2.8.12)
 include(CheckFunctionExists)
 include(CheckSymbolExists)
@@ -50,8 +30,6 @@ include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(CheckTypeSize)
 include(CheckCSourceCompiles)
-
-
 
 if (POLICY CMP0048)
 	cmake_policy(SET CMP0048 NEW)

@@ -5,6 +5,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 void libsysinfo_Init();
 void libsysinfo_Deinit();
 const char* GetVinDataIdentifier(int *len);  // C接口声明

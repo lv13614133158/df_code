@@ -13,34 +13,38 @@ mem_Tsp=""
 fun() {
     # 获取top输出
     TOP_OUTPUT=`top -b -n 1`
-
-    # 判断是否为新风格输出（包含 "MiB Mem"）
-    if echo "$TOP_OUTPUT" | grep -q "MiB Mem"; then
-        # 新风格（Solaris-style）
-        cpu_total=`echo "$TOP_OUTPUT" | grep 'Cpu(s)' | awk '{print $2, "," $4, "," $8}' | tr -d '%'`
-        mem_total=`echo "$TOP_OUTPUT" | grep 'MiB Mem' | awk '{print $4, "," $6, "," $8}'`
-    else
-        # 旧风格（BSD-style）
-        cpu_total=`echo "$TOP_OUTPUT" | sed -n '2p' | awk '{print $2, "," $4, "," $8}' | tr -d '%'`
-        mem_total=`echo "$TOP_OUTPUT" | sed -n '1p' | awk '{print $2, "," $4, "," $8}' | tr -d 'K'`
-    fi
-
-    # 获取Tsp CPU百分比
-    cpu_Tsp=$(echo "$TOP_OUTPUT"  | grep -v 'grep' | grep './IDPS' | grep -v 'sh'| awk '{print $7}')
-
     # pid获取
-    Tsp_pid=$(echo "$TOP_OUTPUT"  | grep -v 'grep' | grep  './IDPS' | grep -v 'sh'| awk '{print $1}')
+    Tsp_pid=$(echo "$TOP_OUTPUT"  | grep -v 'grep' | grep  'IDPS' | grep -v 'sh'| awk '{print $1}')
 
     if [ -n "$Tsp_pid" ]; then
         if [ -f "/proc/$Tsp_pid/status" ]; then
             mem_Tsp=`cat /proc/$Tsp_pid/status | grep VmRSS | awk '{print $2}'`
         else
-            mem_Tsp="N/A"
+            mem_Tsp="0"
         fi
     else
-        cpu_Tsp="N/A"
-        mem_Tsp="N/A"
+        cpu_Tsp="0"
+        mem_Tsp="0"
     fi
+    # 判断是否为新风格输出（包含 "MiB Mem"）
+    if echo "$TOP_OUTPUT" | grep -q "MiB Mem"; then
+        # 新风格（Solaris-style）
+        cpu_total=`echo "$TOP_OUTPUT" | grep 'Cpu(s)' | awk '{print $2, "," $4, "," $8}' | tr -d '%'`
+        mem_total=`echo "$TOP_OUTPUT" | grep 'MiB Mem' | awk '{print $4, "," $6, "," $8}'`
+            # 获取Tsp CPU百分比
+        cpu_Tsp=$(echo "$TOP_OUTPUT"  | grep -v 'grep' | grep 'IDPS' | grep -v 'sh'| awk '{print $9}')
+        mem_Tsp=$((mem_Tsp / 1024)) 
+    else
+        # 旧风格（BSD-style）
+        cpu_total=`echo "$TOP_OUTPUT" | sed -n '2p' | awk '{print $2, "," $4, "," $8}' | tr -d '%'`
+        mem_total=`echo "$TOP_OUTPUT" | sed -n '1p' | awk '{print $2, "," $4, "," $8}' | tr -d 'K'`
+            # 获取Tsp CPU百分比
+        cpu_Tsp=$(echo "$TOP_OUTPUT"  | grep -v 'grep' | grep 'IDPS' | grep -v 'sh'| awk '{print $7}')
+    fi
+
+
+
+
 
     # 写入csv
     echo `date +"%Y/%m/%d %H:%M:%S, $cpu_total, $mem_total, $cpu_Tsp, $mem_Tsp"` >> $ptah_file

@@ -716,14 +716,12 @@ void initTboxInfo()
 
 	int ret = -1;
 	int fd  = -1;
-
+	const char *VIN_str=NULL,*SN_str=NULL;
+	int vin_len,sn_len;
 	while (1)
 	{
 		memset(&tbox_s73_had_info, 0, sizeof(tbox_s73_had_info));
 
-	
-		const char *VIN_str,*SN_str;
-		int vin_len,sn_len;
 		libsysinfo_Init();
 		VIN_str = GetVinDataIdentifier(&vin_len);
 		SN_str = GetEcuSerialNumber(&sn_len);
@@ -764,7 +762,7 @@ void initTboxInfo()
 				}
 			}
 		}
-
+		libsysinfo_Deinit();
 		sleep(5);
 	}
 

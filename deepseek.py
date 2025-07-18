@@ -52,20 +52,7 @@ avg_buff_mem = df["buff_mem"].mean()
 
 # 打印详细数据信息
 total_cpu = avg_usr + avg_sys + avg_idle
-print(f"\n📊 CPU 使用详情:")
-print(f"用户态 CPU 使用率: {avg_usr:.1f}%")
-print(f"内核态 CPU 使用率: {avg_sys:.1f}%")
-print(f"CPU 空闲率: {avg_idle:.1f}%")
-print(f"总 CPU 使用率: {avg_usr + avg_sys:.1f}%")
 
-print(f"\n💾 内存使用详情:")
-print(f"已使用内存: {avg_used_mem:.0f} KB")
-print(f"剩余内存: {avg_free_mem:.0f} KB")
-print(f"缓冲区内存: {avg_buff_mem:.0f} KB")
-
-print(f"\n🚗 IDPS 程序资源占用:")
-print(f"IDPS CPU 占用率: {avg_idps_cpu:.1f}%")
-print(f"IDPS 内存占用: {avg_idps_mem:.0f} KB")
 
 # 添加 IDPS 程序信息到标签
 if avg_idps_cpu > 0:
@@ -134,7 +121,7 @@ axs[1].set_title("内存使用率与 IDPS 占比", fontsize=14)
 plt.tight_layout()
 
 # 添加系统资源详情文本到窗口左下角
-resource_info = (
+resource_info_kb = (
     "CPU 使用详情:\n"
     f"用户态 CPU 使用率: {avg_usr:.1f}%\n"
     f"内核态 CPU 使用率: {avg_sys:.1f}%\n"
@@ -148,8 +135,21 @@ resource_info = (
     f"IDPS CPU 占用率: {avg_idps_cpu:.1f}%\n"
     f"IDPS 内存占用: {avg_idps_mem:.0f} KB\n"
 )
-
-fig.text(0.01, 0.01, resource_info, fontsize=9, ha='left', va='bottom',
+resource_info_mb = (
+    "CPU 使用详情:\n"
+    f"用户态 CPU 使用率: {avg_usr:.1f}%\n"
+    f"内核态 CPU 使用率: {avg_sys:.1f}%\n"
+    f"CPU 空闲率: {avg_idle:.1f}%\n"
+    f"总 CPU 使用率: {avg_usr + avg_sys:.1f}%\n\n"
+    "内存使用详情:\n"
+    f"已使用内存: {avg_used_mem:.0f} MB\n"
+    f"剩余内存: {avg_free_mem:.0f} MB\n"
+    f"缓冲区内存: {avg_buff_mem:.0f} MB\n\n"
+    "IDPS 程序资源占用:\n"
+    f"IDPS CPU 占用率: {avg_idps_cpu:.1f}%\n"
+    f"IDPS 内存占用: {avg_idps_mem:.0f} MB\n"
+)
+fig.text(0.01, 0.01, resource_info_mb, fontsize=9, ha='left', va='bottom',
          bbox=dict(boxstyle='round,pad=0.5', facecolor='white', edgecolor='gray', alpha=0.9))
 
 plt.show()

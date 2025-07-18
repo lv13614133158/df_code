@@ -103,18 +103,13 @@ include_directories(tier1_part/tbox_info/include)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-#set(CMAKE_INSTALL_RPATH $ORIGIN/../lib:${CMAKE_SOURCE_DIR}/lib:/oemapp/idps/lib)
+
 
 #依赖库的路径
 link_directories(${CMAKE_SOURCE_DIR}/lib)
-# link_directories(${CMAKE_SOURCE_DIR}/tier1_part/tbox_info/lib)
-# link_directories(${CMAKE_SOURCE_DIR}/third_part/curl/lib)
-# link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
-# link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)  
 link_directories(${CMAKE_SOURCE_DIR}/tier1_part/variant/lib)  
-link_directories(/home/nvidia/git/df/PKI/) 
 link_directories(/home/nvidia/df/HAD/S73a2/sdk/usr/lib/aarch64-linux-gnu) 
-set(PKI_USR_DIR /home/nvidia/git/df/PKI/)
+
 
 
 #auto find src
@@ -177,27 +172,30 @@ add_executable(IDPS
 		${SOURCE_CONFIGPARSE}
 		${SOURCE_NETWORKFIREWALL}
 		)
-set_target_properties(IDPS PROPERTIES LINK_FLAGS "-Wl,-rpath-link,/home/nvidia/df/HAD/S73a2/toolchain/sysroot/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,/home/nvidia/git/df/PKI")
+
 #预编译好的库
+
+
 target_link_libraries( # Specifies the target library.
 	IDPS
+	-Wl,--whole-archive
+	libcurl.a
+	libsysinfo_c.a
+    libssl.so.1.1
+    libcrypto.so.1.1
+	-Wl,--no-whole-archive
+	-lwebsockets
+	-lteec
+	-lalog
 	-lspdlog
 	-lpthread
 	-lrt
 	-ldl
 	-lz
-	${CMAKE_SOURCE_DIR}/lib/libcurl.a
+	-lvariant
 	-lssphad
 	-lpcap
 	-lstdc++
-	${CMAKE_SOURCE_DIR}/lib/libwebsockets.a
-	-lvariant
-	libsysinfo_c.a
-    ${PKI_USR_DIR}/libssl.so.1.1
-    ${PKI_USR_DIR}/libcrypto.so.1.1
-    ${PKI_USR_DIR}/libteec.so.1
-    #${PKI_USR_DIR}/libsecure_storage.so.1
 	-lpersist
-    ${PKI_USR_DIR}/libalog.so.1
 	)
 

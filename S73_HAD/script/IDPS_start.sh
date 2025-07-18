@@ -1,7 +1,7 @@
 #!/bin/bash    
 # IDPS start up script 
 #添加本地执行路径
-export LD_LIBRARY_PATH=/opt/app/pki/lib:/opt/app/lib/:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/opt/app/pki/lib:/opt/app/lib/:$LD_LIBRARY_PATH
 while true; 
 do
 	num=$(ps aux | grep ./IDPS | grep -v 'IDPS_start' |  grep -v grep|wc -l)

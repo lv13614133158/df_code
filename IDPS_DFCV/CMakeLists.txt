@@ -86,10 +86,7 @@ set(CMAKE_INSTALL_RPATH $ORIGIN/../lib:${CMAKE_SOURCE_DIR}/lib:/oemapp/idps/lib)
 #依赖库的路径
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 link_directories(${CMAKE_SOURCE_DIR}/tier1_part/tbox_info/lib)
-#link_directories(${CMAKE_SOURCE_DIR}/third_part/curl/lib)
-#link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
-#link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)
-#link_directories(${CMAKE_SOURCE_DIR}/third_part/websocket/lib)
+
 
 
 #auto find src
