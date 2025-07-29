@@ -19,15 +19,14 @@
 #elif POS_2
 	#define ROOT_PATH  "/usr/local/idps"
 #elif POS_3
-#define ROOT_PATH_RW  "/userdata/idps/conf"
-#define ROOT_PATH_OR  "/opt/app/idps/etc/conf"
+	#define ROOT_PATH_OR  "/opt/app/idps/etc/conf"
 #elif POS_4
-	//#define ROOT_PATH  "../conf"
-	#define ROOT_PATH_RW  "../conf"
 	#define ROOT_PATH_OR  "../conf"
 #else
 	#define ROOT_PATH  "/mnt/sdcard/idps"
 #endif
+
+#define ROOT_PATH_RW  "/userdata/idps/conf"
 #define DEVICE_INFO_PATH      ROOT_PATH_OR "/config/device_info.conf"
 #define BASE_CONFIG_PATH   ROOT_PATH_OR "/config/base_config.json"
 #define POLICY_CONFIG_PATH ROOT_PATH_RW "/config/policy_config.json"

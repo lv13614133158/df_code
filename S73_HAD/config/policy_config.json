@@ -243,21 +243,21 @@
 				"terminal_type_id":	0
 			}, {
 				"config":	{
-					"collect_period":	60,
+					"collect_period":	300,
 					"cpu":	{
-						"collect_period":	60,
+						"collect_period":	300,
 						"event_level":	3,
 						"overload_threshold":	2,
 						"usage_rate_overload_threshold":	1
 					},
 					"event_level":	3,
 					"ram":	{
-						"collect_period":	60,
+						"collect_period":	300,
 						"event_level":	3,
 						"overload_threshold":	1
 					},
 					"rom":	{
-						"collect_period":	60,
+						"collect_period":	300,
 						"event_level":	3,
 						"overload_threshold":	1
 					}
@@ -281,7 +281,7 @@
 				"terminal_type_id":	0
 			}, {
 				"config":	{
-					"collect_period":	925,
+					"collect_period":	300,
 					"event_level":	3
 				},
 				"desc":	"网络流量监控探针",
@@ -355,20 +355,20 @@
 							"type":	"UDP_PORT_SCAN"
 						}],
 					"threshold":	{
-						"ARPATTACK":	-1,
-						"ARPFLOOD":	-1,
-						"ICMPDEATH":	-1,
-						"ICMPLARGE":	-1,
-						"ICMPLOOD":	-1,
-						"IGMPFLOOD":	-1,
-						"IMPLATTCK":	-1,
-						"TCPCONNECT":	-1,
-						"TCPDOSRET":	-1,
-						"TCPPORTS":	-1,
-						"TCPSCANRET":	-1,
-						"UDPDOSRET":	-1,
-						"UDPFRAGGLE":	-1,
-						"UDPPORTS":	-1
+					"ARPFLOOD": 512,
+					"ARPATTACK": 6,
+					"ICMPLOOD": 400,
+					"ICMPDEATH": 65502,
+					"ICMPLARGE": 1500,
+					"IGMPFLOOD": 512,
+					"IMPLATTCK": 64,
+					"TCPSCANRET": 2,
+					"TCPDOSRET": 250,
+					"TCPPORTS": 10,
+					"TCPCONNECT": 85,
+					"UDPDOSRET": 9000,
+					"UDPPORTS": 400,
+					"UDPFRAGGLE": 16
 					}
 				},
 				"desc":	"网络入侵探针",

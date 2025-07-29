@@ -166,8 +166,6 @@ void inotify_all_observer(struct inotify_event *event)
 		inotifytools_watch_recursively(obj.path,IN_CREATE | IN_DELETE | IN_MODIFY);
 	}
 	 processData = gather_proc_info(obj.path);
-	// //调用java的回调方法
-	// Java_Level_Method_notify_callback(obj.path,obj.mask,processData);
 #if 1
 	//调用c层的检测者，暂时不用
 	for(i = 0;i < MAX_LISTENER;i++)

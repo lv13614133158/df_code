@@ -14,7 +14,7 @@ static unsigned char *s_dev_cert = NULL;
 static unsigned char *s_dev_key = NULL;
 
 #define CodeVersion  	"IDPS-Version-1.2.6"
-#define Version			"1.2.6"
+#define Version			"1.2.7"
 #define IDSVERSION 		"IDPS-Version-" Version
 #define LocalIp_enable 		1
 #define LocalIp 		"172.16.5.30"

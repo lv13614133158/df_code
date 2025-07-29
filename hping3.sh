@@ -1,5 +1,5 @@
 #!/bin/bash
-IP=127.0.0.1
+IP=172.20.10.4
 type=0
 max_num=19
 

@@ -1,0 +1,156 @@
+
+1.txt 001010100011
+
+07-24 14:30:56.813  6180 10386 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010101000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"source\":\"\",\"path\":\"\\\/system\\\/1.txt\",\"action\":4,\"md5\":\"d41d8cd98f00b204e9800998ecf8427e\",\"sha1\":\"da39a3ee5e6b4b0d3255bfef95601890afd80709\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"uid\":0,\"gid\":0,\"mode\":\"-rw-rw-rw-\",\"file_context\":\"\",\"size\":0,\"timestamp\":1753338655305},\"level\":3,\"version\":\"1.7.0\"}",
+
+body 0010102000211
+
+07-25 16:57:34.021  6625  7864 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010102000211\",\"latitude\":0,\"longitude\":0,\"data\":{\"uid\":1000,\"pid\":1000,\"path\":\"com.qinggan.audiopolicy_ext.service\",\"local_ip\":\"172.20.10.4\",\"local_port\":57738,\"remote_ip\":\"ecs-139-159-151-105.compute.hwclouds-dns.com\",\"remote_port\":443,\"state\":\"ESTABLISHED\",\"timestamp\":1753433853573},\"level\":3,\"version\":\"1.7.0\"}",
+
+body 0010102000311
+
+07-25 14:04:01.801 18629 19690 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010102000311\",\"latitude\":0,\"longitude\":0,\"data\":{\"uid\":10038,\"pid\":10038,\"path\":\"com.baidu.che.codriver\",\"local_ip\":\"172.20.10.4\",\"local_port\":56998,\"remote_ip\":\"180.101.83.121\",\"remote_port\":443,\"state\":\"ESTABLISHED\",\"timestamp\":1753423440151},\"level\":3,\"version\":\"1.7.0\"}",
+
+body 0010102000611
+
+07-25 15:39:08.645 17383 17821 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010102000611\",\"latitude\":0,\"longitude\":0,\"data\":{\"uid\":10059,\"pid\":10059,\"path\":\"ir.shz.shzkisi\",\"port\":56482,\"timestamp\":1753429138447},\"level\":3,\"version\":\"1.7.0\"}",
+
+191 001010400011
+
+07-24 14:00:26.331  6139  8683 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"name\":\"AIDA64\",\"package\":\"com.finalwire.aida64\",\"uid\":10058,\"version_code\":191,\"version_name\":\"1.91\",\"is_power_boot\":false,\"is_system\":false,\"path\":\"\\\/data\\\/app\\\/~~bB5g_fHX5a__TRzYG6ylVA==\\\/com.finalwire.aida64-1oUdmQB2596h7_DiEVfveA==\\\/base.apk\",\"permissions\":\"3\",\"file_md5\":\"A94EC2CE996FE4FA4D47568A5980A483\",\"file_sha1\":\"33FA0C8D7765E6077727196314F59105DA489288\",\"sign_md5\":\"A1A727F5B4B50756BC71A5EE31FA43AD\",\"sign_sha1\":\"E8D1D89A2D0CAB875F9B2E3FE7A6A488BAF08ED2\",\"action\":3,\"file_size\":9449197,\"timestamp\":1753336811776},\"level\":3,\"version\":\"1.7.0\"}",
+
+480 001010400011
+
+07-24 14:03:03.676  6139  8684 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"name\":\"Kingo ROOT\",\"package\":\"com.kingoapp.apk\",\"uid\":10060,\"version_code\":480,\"version_name\":\"4.8.0\",\"is_power_boot\":false,\"is_system\":false,\"path\":\"\\\/data\\\/app\\\/~~QIe4DHkBzIl7oigcTmRU-A==\\\/com.kingoapp.apk--m9Wv_bf4phE6YVt8gxU0Q==\\\/base.apk\",\"permissions\":\"10|6|19|18|3|8|7\",\"file_md5\":\"984DC0ADB3ABF6F4174DD21E9D946123\",\"file_sha1\":\"E82D633525F54682F2ECFA4EA8C5A5FFB7A991F4\",\"sign_md5\":\"78B80790A0065C645047B35C19726E73\",\"sign_sha1\":\"A8D4EEFFDE8B57BA755EEC8B7671764BDF813D86\",\"action\":3,\"file_size\":6615009,\"timestamp\":1753336965798},\"level\":3,\"version\":\"1.7.0\"}",
+
+Kingo ROOT 001010400011
+
+07-24 14:03:03.676  6139  8684 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"name\":\"Kingo ROOT\",\"package\":\"com.kingoapp.apk\",\"uid\":10060,\"version_code\":480,\"version_name\":\"4.8.0\",\"is_power_boot\":false,\"is_system\":false,\"path\":\"\\\/data\\\/app\\\/~~QIe4DHkBzIl7oigcTmRU-A==\\\/com.kingoapp.apk--m9Wv_bf4phE6YVt8gxU0Q==\\\/base.apk\",\"permissions\":\"10|6|19|18|3|8|7\",\"file_md5\":\"984DC0ADB3ABF6F4174DD21E9D946123\",\"file_sha1\":\"E82D633525F54682F2ECFA4EA8C5A5FFB7A991F4\",\"sign_md5\":\"78B80790A0065C645047B35C19726E73\",\"sign_sha1\":\"A8D4EEFFDE8B57BA755EEC8B7671764BDF813D86\",\"action\":3,\"file_size\":6615009,\"timestamp\":1753336965798},\"level\":3,\"version\":\"1.7.0\"}",
+
+:- 001010400011
+
+07-24 16:04:59.441  6137  8863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"name\":\"\",\"package\":\"com.qihoo360.idps.test\",\"uid\":-1,\"version_code\":-1,\"version_name\":\"\",\"is_power_boot\":false,\"is_system\":false,\"path\":\"\",\"permissions\":\"\",\"file_md5\":\"\",\"file_sha1\":\"\",\"sign_md5\":\"\",\"sign_sha1\":\"\",\"action\":2,\"file_size\":0,\"timestamp\":1753344299210},\"level\":3,\"version\":\"1.7.0\"}",
+
+FINE_LOCATION 0010104000211
+
+07-25 16:57:18.475  6625  7861 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000211\",\"latitude\":0,\"longitude\":0,\"data\":{\"uid\":100038,\"package\":\"com.baidu.che.codriver\",\"permission\":\"FINE_LOCATION\",\"permission_result\":\"allow\",\"access\":\"fgsvc-s\",\"timestamp\":1753433830077},\"level\":3,\"version\":\"1.7.0\"}",
+
+RECORD_AUDIO 0010104000211
+
+07-24 16:06:23.518  6137  8861 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000211\",\"latitude\":0,\"longitude\":0,\"data\":{\"uid\":100062,\"package\":\"com.qihoo360.idps.test\",\"permission\":\"RECORD_AUDIO\",\"permission_result\":\"allow\",\"access\":\"top-s\",\"timestamp\":1753344318787},\"level\":3,\"version\":\"1.7.0\"}",
+
+GPS 0010104000211
+
+07-25 16:56:36.605  6625  7862 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000211\",\"latitude\":0,\"longitude\":0,\"data\":{\"uid\":1000,\"package\":\"com.dfrd.caridps\",\"permission\":\"GPS\",\"permission_result\":\"allow \\\/ switch COARSE_LOCATION=allow\",\"access\":\"pers-s\",\"timestamp\":1753433735665},\"level\":3,\"version\":\"1.7.0\"}",
+
+READ_CLIPBOARD 0010104000211
+
+07-24 16:03:59.175  6137  8862 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010104000211\",\"latitude\":0,\"longitude\":0,\"data\":{\"uid\":100062,\"package\":\"com.qihoo360.idps.test\",\"permission\":\"READ_CLIPBOARD\",\"permission_result\":\"allow\",\"access\":\"top-s\",\"timestamp\":1753344219861},\"level\":3,\"version\":\"1.7.0\"}",
+
+body 002011000011
+
+07-24 13:59:46.539  6139  8684 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020110000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"risk_class\":800,\"risk_description\":\"该软件涉嫌存在危险行为代码，可能给您造成不必要的损失。\\r\\n\",\"is_virus\":true,\"type\":\"VIRUS_TYPE_MUMA\",\"package\":\"ir.shz.shzkisi\",\"path\":\"\\\/data\\\/app\\\/~~18usxqltU0T29qamLK8jBw==\\\/ir.shz.shzkisi-1m6vAK5-Ii2Mpz5Fo6CSnw==\\\/base.apk\",\"md5\":\"99AA1332E282F6C59DEDB68146BA2CCC\",\"sha1\":\"DF8C7C2A4BF971065092183DAB1121D61BA011B5\",\"version_code\":1,\"version_name\":\"\",\"trojan_name\":\"Backdoor..AndroidV.Basdoor.C\",\"app_label\":\"￾Live\",\"file_type\":1,\"file_size\":3423058,\"uid\":10059,\"timestamp\":1753336786014},\"level\":6,\"version\":\"1.7.0\"}",
+
+data 0010106000111
+
+07-25 16:57:33.384  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010106000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"load_avg1\":2.55,\"load_avg5\":2.41,\"load_avg15\":1.72,\"cpu_num\":8,\"cpu_load\":0.31875,\"ram_rate\":35,\"ram_size\":6045308,\"rom_rate\":45,\"rom_size\":8377630720,\"sd_rate\":62,\"sd_size\":8003272704,\"timestamp\":1753433853280},\"level\":3,\"version\":\"1.7.0\"}",
+
+cpu_num 0020106000211
+
+07-25 11:43:02.877 15297 15543 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020106000211\",\"latitude\":0,\"longitude\":0,\"data\":{\"load_avg1\":42.47,\"load_avg5\":27.53,\"load_avg15\":11.97,\"cpu_num\":8,\"cpu_load\":5.30875,\"app_cpu_usage\":\"[\\\"  17% 10540\\\\\\\/system_server: 10% user + 7.4% kernel \\\\\\\/ faults: 36021 minor 209 major\\\",\\\"  11% 10925\\\\\\\/com.qinggan.app.wallpaper: 8.2% user + 2.9% kernel \\\\\\\/ faults: 20427 minor 8 major\\\",\\\"  10% 10992\\\\\\\/com.android.car: 5.5% user + 4.6% kernel \\\\\\\/ faults: 7937 minor 6 major\\\",\\\"  9.4% 12532\\\\\\\/com.bosch.adas.cluster: 6.8% user + 2.6% kernel \\\\\\\/ faults: 28580 minor 8 major\\\",\\\"  9.3% 13344\\\\\\\/com.alipay.arome.app: 6.3% user + 2.9% kernel \\\\\\\/ faults: 30162 minor 62 major\\\",\\\"  7.7% 12312\\\\\\\/com.qinggan.app.vehiclecontrol: 6.5% user + 1.1% kernel \\\\\\\/ faults: 41371 minor 41 major\\\",\\\"  7.2% 455\\\\\\\/carwatchdogd: 3.5% user + 3.7% kernel \\\\\\\/ faults: 23 minor\\\",\\\"  6.9% 13094\\\\\\\/com.qinggan.app.vehiclecontrol:remote: 5.9% user + 0.9% kernel \\\\\\\/ faults: 37619 minor 28 major\\\",\\\"  6.1% 10923\\\\\\\/com.baidu.che.codriver: 4.9% user + 1.1% kernel \\\\\\\/ faults: 39187 minor 22 major\\\",\\\"  4.8% 774\\\\\\\/surfaceflinger: 1.7% user + 3% kernel \\\\\\\/ faults: 493 minor\\\"]\",\"timestamp\":1753414982714},\"level\":3,\"version\":\"1.7.0\"}",
+
+ram_rate 0020106000311
+
+07-25 16:57:35.458  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020106000311\",\"latitude\":0,\"longitude\":0,\"data\":{\"ram_rate\":35,\"ram_size\":6045308,\"app_ram_usage\":\"[\\\"    800,319K: com.qinggan.app.wallpaper (pid 1880)\\\",\\\"    438,057K: com.baidu.che.codriver (pid 1898)\\\",\\\"    284,375K: dvr_service (pid 4407)\\\",\\\"    260,446K: com.bosch.adas.cluster (pid 3442 \\\\\\\/ activities)\\\",\\\"    152,206K: com.qinggan.app.vehiclecontrol (pid 3280)\\\",\\\"    147,506K: com.qinggan.app.launcher (pid 2336 \\\\\\\/ activities)\\\",\\\"    146,708K: system (pid 1547)\\\",\\\"    143,103K: com.alipay.arome.app (pid 4247)\\\",\\\"    138,144K: com.qinggan.app.vehiclecontrol:remote (pid 4099)\\\",\\\"    126,592K: com.qiyi.video (pid 5964)\\\"]\",\"timestamp\":1753433855369},\"level\":3,\"version\":\"1.7.0\"}",
+
+rom_rate 0020106000411
+
+07-25 16:57:33.378  6625  7864 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020106000411\",\"latitude\":0,\"longitude\":0,\"data\":{\"rom_rate\":45,\"rom_size\":8377630720,\"timestamp\":1753433853278},\"level\":3,\"version\":\"1.7.0\"}",
+
+iface_data 001010800011
+
+07-25 15:39:38.505 17383 17823 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010108000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"end_time\":1753429182583,\"start_time\":1753429112611,\"iface_data\":[{\"iface_ip\":\"172.20.10.4\\\/28\",\"iface_name\":\"WIFI\",\"total_received_bytes\":977274,\"total_send_bytes\":575760,\"app_data\":[{\"name\":\"0\",\"package\":\"0\",\"received_bytes\":274,\"send_bytes\":428371,\"uid\":0},{\"name\":\"com.android.networkstack|com.android.networkstack.tethering\",\"package\":\"com.android.networkstack|com.android.networkstack.tethering\",\"received_bytes\":127,\"send_bytes\":157,\"uid\":1073},{\"name\":\"语音助手\",\"package\":\"com.baidu.che.codriver\",\"received_bytes\":62117,\"send_bytes\":24819,\"uid\":10038},{\"name\":\"Android 系统\",\"package\":\"system\",\"received_bytes\":79290,\"send_bytes\":67532,\"uid\":1000},{\"name\":\"1051\",\"package\":\"1051\",\"received_bytes\":11,\"send_bytes\":17,\"uid\":1051},{\"name\":\"支付宝车载助手\",\"package\":\"com.alipay.arome.app\",\"received_bytes\":2472,\"send_bytes\":2881,\"uid\":10027},{\"name\":\"￾Live\",\"package\":\"ir.shz.shzkisi\",\"received_bytes\":26,\"send_bytes\":241,\"uid\":10059},{\"name\":\"1020\",\"package\":\"1020\",\"received_bytes\":111440,\"send_bytes\":11633,\"uid\":1020},{\"name\":\"全景声\",\"package\":\"com.wanos.media\",\"received_bytes\":345,\"send_bytes\":332,\"uid\":10028},{\"name\":\"爱奇艺\",\"package\":\"com.qiyi.video\",\"received_bytes\":721172,\"send_bytes\":39777,\"uid\":10061}]}]},\"level\":3,\"version\":\"1.7.0\"}",
+
+su 001010100011
+
+07-24 14:31:09.317  6180 10383 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0010101000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"source\":\"\",\"path\":\"\\\/system\\\/bin\\\/su\",\"action\":4,\"md5\":\"d41d8cd98f00b204e9800998ecf8427e\",\"sha1\":\"da39a3ee5e6b4b0d3255bfef95601890afd80709\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"uid\":0,\"gid\":0,\"mode\":\"-rw-rw-rw-\",\"file_context\":\"\",\"size\":0,\"timestamp\":1753338668247},\"level\":3,\"version\":\"1.7.0\"}",
+
+body 002010700011
+
+07-25 14:37:20.116 17192 18170 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020107000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"debug_status\":true,\"timestamp\":1753425386147},\"level\":3,\"version\":\"1.7.0\"}",
+
+TCP_SYN_SCAN 0020109000111
+
+07-25 16:51:41.410  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_SYN_SCAN\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433501305},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_NULL_SCAN 0020109000111
+
+07-25 16:52:02.432  6625  7865 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_NULL_SCAN\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433522344},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_FIN_SCAN 0020109000111
+
+07-25 16:52:23.457  6625  7861 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_FIN_SCAN\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433543369},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_ACK_SCAN 0020109000111
+
+07-25 16:52:44.501  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_ACK_SCAN\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433564390},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_FIN_RST_DOS 0020109000111
+
+07-25 16:53:02.509  6625  7861 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_FIN_RST_DOS\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433582406},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_ACK_FIN_DOS 0020109000111
+
+07-25 16:53:23.534  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_ACK_FIN_DOS\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433603429},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_SYN_ACK_FLOOD 0020109000111
+
+07-25 16:53:41.555  6625  7862 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_SYN_ACK_FLOOD\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433621464},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_ACK_RST_DOS 0020109000111
+
+07-25 16:54:02.562  6625  7864 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_ACK_RST_DOS\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433642470},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_ACK_PSH_FLOOD 0020109000111
+
+07-25 16:54:23.585  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_ACK_PSH_FLOOD\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433663489},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_SYN_FLOOD 0020109000111
+
+07-25 16:54:44.625  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_SYN_FLOOD\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433684522},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_XMAS_SCAN 0020109000111
+
+07-25 16:55:05.640  6625  7861 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_XMAS_SCAN\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433705534},\"level\":6,\"version\":\"1.7.0\"}",
+
+UDP_SRC_PORT_ZERO 0020109000111
+
+07-25 16:57:37.849  6625  7864 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"UDP_SRC_PORT_ZERO\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433857738},\"level\":6,\"version\":\"1.7.0\"}",
+
+FRAGGLE_ATTACK 0020109000111
+
+07-25 16:56:36.489  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"FRAGGLE_ATTACK\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433762602},\"level\":6,\"version\":\"1.7.0\"}",
+
+UDP_PORT_FLOOD 0020109000111
+
+07-25 16:56:36.698  6625  7861 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"UDP_PORT_FLOOD\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433735583},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_LAND_ATTACK 0020109000111
+
+07-25 16:57:05.181  6625  7862 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_LAND_ATTACK\",\"srcIp\":\"172.20.10.4\",\"localPort\":0,\"timestamp\":1753433825092},\"level\":6,\"version\":\"1.7.0\"}",
+
+ICMP_LARGE_PING 0020109000111
+
+07-25 16:57:31.648  6625  7865 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"ICMP_LARGE_PING\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433851557},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_SRC_PORT_ZERO 0020109000111
+
+07-25 16:57:34.157  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_SRC_PORT_ZERO\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433854061},\"level\":6,\"version\":\"1.7.0\"}",
+
+TCP_FIN_SYN_DOS 0020109000111
+
+07-25 16:57:34.221  6625  7865 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"TCP_FIN_SYN_DOS\",\"srcIp\":\"172.20.10.7\",\"localPort\":5000,\"timestamp\":1753433854118},\"level\":6,\"version\":\"1.7.0\"}",
+
+UDP_PORT_SCAN 0020109000111
+
+07-25 16:57:43.838  6625  7863 I SPDLOG  :   "body": "{\"sn\":\"T1000VEaf615b648d04791\",\"type\":\"0020109000111\",\"latitude\":0,\"longitude\":0,\"data\":{\"event\":\"UDP_PORT_SCAN\",\"srcIp\":\"172.20.10.7\",\"localPort\":0,\"timestamp\":1753433863747},\"level\":6,\"version\":\"1.7.0\"}",
