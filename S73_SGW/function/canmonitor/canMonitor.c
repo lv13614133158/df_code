@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
@@ -8,11 +9,11 @@
 #include "canmanage.h"
 #include "idsFrame.h"
 #include "can_udp_fun.h"
-
+#include "can_parser.h"
 static void *can_connect_task(void *arg)
 {
 	pthread_detach(pthread_self());
-#if 0
+#if 1
     
         CAN_DATA_INFO_T outputData[128];
     
@@ -49,8 +50,8 @@ static void *can_connect_task(void *arg)
             }
             else
             {
-                //printf("解析成功：共解析到 %d 条数据\n", numData);
-                /*
+                printf("解析成功：共解析到 %d 条数据\n", numData);
+              
                 for (int i = 0; i < numData; i++) {
                     printf("时间戳：%u, CAN ID：%u, 方向：%u, 通道：%u, Payload：", outputData[i].time_stamps, outputData[i].canid,
                            outputData[i].direction, outputData[i].channel);
@@ -58,8 +59,8 @@ static void *can_connect_task(void *arg)
                         printf("%02X ", outputData[i].payload[j]);
                     }
                     printf("\n");
-                }*/
-            }
+               
+               
     
         }
 #else
