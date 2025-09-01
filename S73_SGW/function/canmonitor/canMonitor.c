@@ -13,7 +13,7 @@
 static void *can_connect_task(void *arg)
 {
 	pthread_detach(pthread_self());
-#if 1
+#if 0
     
         CAN_DATA_INFO_T outputData[128];
     

@@ -2,7 +2,7 @@
 # documentation: https://d.android.com/studio/projects/add-native-code.html
 
 # Sets the minimum version of CMake required to build the native library.
-SET(TOOLCHAIN_DIR "/home/toolchain/S73/SGW/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu")
+SET(TOOLCHAIN_DIR "/home/nvidia/df/S73/SGW/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu")
 SET(CMAKE_C_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-linux-gnu-gcc)
 SET(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-linux-gnu-g++)
 SET(CMAKE_LINKER ${TOOLCHAIN_DIR}/bin/aarch64-linux-gnu-ld)
@@ -17,7 +17,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-error=unused-function -Wno-error=pointer-sign -fsigned-char")
 
 SET(CMAKE_SYSTEM_NAME Linux)
-SET(TOOLCHAIN_DIR "/home/toolchain/S73/SGW/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu")
+SET(TOOLCHAIN_DIR "/home/nvidia/df/S73/SGW/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu")
 set(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-linux-gnu-g++)
 set(CMAKE_C_COMPILER   ${TOOLCHAIN_DIR}/bin/aarch64-linux-gnu-gcc)
 

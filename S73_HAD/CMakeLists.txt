@@ -2,7 +2,7 @@
 # documentation: https://d.android.com/studio/projects/add-native-code.html
 
 # Sets the minimum version of CMake required to build the native library.
-set(TOOLCHAIN_DIR "/home/nvidia/df/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu")
+set(TOOLCHAIN_DIR "/home/nvidia/df/S73/HAD/S73a2/toolchain/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu")
 set(CMAKE_C_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-none-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/bin/aarch64-none-linux-gnu-g++)
 
@@ -81,12 +81,12 @@ include_directories(function/websocket/include/util)
 include_directories(function/spdlog)
 
 
-set(SDK_USR_DIR /home/nvidia/df/HAD/S73a2/sdk/usr)
+set(SDK_USR_DIR /home/nvidia/df/S73/HAD/S73a2/sdk/usr)
 
 include_directories(${SDK_USR_DIR}/hobot/include/aarch64-linux-gnu) #1.1.1
 include_directories(${SDK_USR_DIR}/hobot/include) #1.1.1
 include_directories(${SDK_USR_DIR}/include/aarch64-linux-gnu) #curl.h
-include_directories(/home/nvidia/df/HAD/S73a2/sdk/usr/include) #curl.h
+include_directories(/home/nvidia/df/S73/HAD/S73a2/sdk/usr/include) #curl.h
 #第三方库
 
 include_directories(third_part/pcap/include)
@@ -108,7 +108,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #依赖库的路径
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 link_directories(${CMAKE_SOURCE_DIR}/tier1_part/variant/lib)  
-link_directories(/home/nvidia/df/HAD/S73a2/sdk/usr/lib/aarch64-linux-gnu) 
+link_directories(/home/nvidia/df/S73/HAD/S73a2/sdk/usr/lib/aarch64-linux-gnu) 
 
 
 

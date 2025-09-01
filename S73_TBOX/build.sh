@@ -3,7 +3,7 @@ path=$( cd $( dirname " ${BASH_SOURCE[0]} " ) && pwd ) ##
 echo $path
 
 
-cd /home/toolchain/S73/TBOX/oecore-x86_64/ql-ol-crosstool
+cd /home/nvidia/df/S73/TBOX/oecore-x86_64/ql-ol-crosstool
 # 设定环境，
 source ql-ol-crosstool-env-init
 # 指定路径，make extsdk
