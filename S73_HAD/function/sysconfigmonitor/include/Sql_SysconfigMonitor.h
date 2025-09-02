@@ -15,8 +15,8 @@ extern "C" {
 #include "util.h"
 #include "common.h"
 #include "idps_main.h"
-#include "mysqlite.h"
-#if MODULE_CONFIGMONITOR
+
+#if 0
 /**
  * @name:   ConfigDBDataStruct
  * @Author: qihoo360

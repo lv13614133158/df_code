@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include "Sql_FileMonitor.h"
 
-#if MODULE_FILEMONITOR
+#if 0
 /**
  * @name:   const val
  * @Author: qihoo360

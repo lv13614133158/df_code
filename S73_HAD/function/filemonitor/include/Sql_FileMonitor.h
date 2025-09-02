@@ -15,8 +15,8 @@ extern "C" {
 #include "util.h"
 #include "common.h"
 #include "idps_main.h"
-#include "mysqlite.h"
-#if MODULE_FILEMONITOR
+
+#if 0
 /**
  * @name:   filemonitor format
  * @Author: qihoo360

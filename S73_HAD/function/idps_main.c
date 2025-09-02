@@ -66,14 +66,14 @@ static int GetImei(char *udid, configData configObj)
 static int InitSql(configData configObj)
 {
 	// 密钥目录
-    char databasepath[256] = {0};
-    cryptoobj.setWorkDirectory(configObj.commonModuleObj.dataBaseDir);  
-    memcpy(databasepath, configObj.commonModuleObj.dataBaseDir, strlen(configObj.commonModuleObj.dataBaseDir));
+    // char databasepath[256] = {0};
+    // cryptoobj.setWorkDirectory(configObj.commonModuleObj.dataBaseDir);  
+    // memcpy(databasepath, configObj.commonModuleObj.dataBaseDir, strlen(configObj.commonModuleObj.dataBaseDir));
 
 	// 数据库的目录
-    strcat(databasepath, "/");
-    strcat(databasepath, configObj.commonModuleObj.databaseName);
-    sqliteMedthodobj.initDataBase(databasepath);  
+    // strcat(databasepath, "/");
+    // strcat(databasepath, configObj.commonModuleObj.databaseName);
+    // sqliteMedthodobj.initDataBase(databasepath);  
 
 	return 0;
 }

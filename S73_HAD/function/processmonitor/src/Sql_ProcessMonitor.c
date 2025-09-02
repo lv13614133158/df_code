@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include "util.h"
 
-#if MODULE_PROCESSMONITOR
+#if 0
 
 /**
  * @name:   const val

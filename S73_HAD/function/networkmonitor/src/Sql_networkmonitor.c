@@ -12,7 +12,7 @@
 #include "common.h"
 #include <string.h>
 #include <stdlib.h>
-#if MODULE_NETWORKMONITOR
+#if 0
 
 /**
  * @name:   sql create tring
