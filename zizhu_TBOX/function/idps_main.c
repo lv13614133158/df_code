@@ -360,7 +360,11 @@ int main(){
 	}
 	
 	InitLog(configObj);
-	initTboxInfo();                 //初始化tbox的硬件信息
+	if(initTboxInfo()==-1)
+	{
+		printf("initTboxInfo failed, exit IDPS!\n");
+		return -1;
+	}                //初始化tbox的硬件信息
 	//InitSql(configObj);
 	char imei[72] = {0};
 	GetImei(imei, configObj);

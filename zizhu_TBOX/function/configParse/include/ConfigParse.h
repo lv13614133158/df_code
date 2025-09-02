@@ -23,7 +23,7 @@ extern "C" {
 	#define ROOT_PATH_RW  "/oemdata/idps"
 #elif POS_4
 	#define ROOT_PATH_OR  "../conf"
-	#define ROOT_PATH_RW  "/oemdata/idps"
+	#define ROOT_PATH_RW  "../conf"
 #else
 	#define ROOT_PATH  "/mnt/sdcard/idps"
 #endif
@@ -46,8 +46,8 @@ static unsigned char *s_dev_key = NULL;
 #define PKI_CLIENT_CERT_NAME        PKI_CERT_PATH "/d2e64f06c8855b171ed9c0d952c1"
 #define PKI_CLIENT_PRIVATE_KEY_NAME PKI_CERT_PATH "/d2e64f06c8855b171ed9c0d952c2"
 #define PKI_ROOT_CERT_NAME          PKI_CERT_PATH "/d2e64f06c8855b171ed9c0d952c3"
-
-#define IDS_VERSION "1.2.5"
+#define IDS_CODE_VERSION "1.2.7"
+#define IDS_VERSION "1.0.5"
 #define INTERFACE_MAXSIZE     (128)    //网卡名长度
 #define GENERALSET 	bool switchFun;\
 					int  policyType;\
@@ -162,7 +162,7 @@ int recordVesion(char* version);
 char *getProcessWhileList(void);
 int   setProcessWhileList(char *white_process);
 int conf_rw_path_init();
-void initTboxInfo();
+int initTboxInfo();
 int initCert(void);
 char* getTCUID();
 char* getVIN();

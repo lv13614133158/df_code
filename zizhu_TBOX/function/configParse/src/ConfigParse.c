@@ -740,7 +740,7 @@ bool extract_field(const char *line, const char *field, char *dest, size_t dest_
     return false;
 }
 
-void tbox_get_info(tboxInfo_t *p_tbox_mcu_info) {
+int tbox_get_info(tboxInfo_t *p_tbox_mcu_info) {
     char SN[50] = {0};
     char VIN[50] = {0};
     char MANUFACTURER[50] = {0};
@@ -750,7 +750,7 @@ void tbox_get_info(tboxInfo_t *p_tbox_mcu_info) {
     FILE *file = fopen(TBOX_INFO_PATH, "r");
     if (file == NULL) {
         log_e("tbox_get_info", "Failed to open tboxinfo file");
-        return;
+        return 1;
     }
 
     while (fgets(line, sizeof(line), file)) {
@@ -775,6 +775,7 @@ void tbox_get_info(tboxInfo_t *p_tbox_mcu_info) {
     snprintf(p_tbox_mcu_info->ID, sizeof(p_tbox_mcu_info->ID), "%s", SN);
     snprintf(p_tbox_mcu_info->MANUFACTURER, sizeof(p_tbox_mcu_info->MANUFACTURER), "%s", MANUFACTURER);
     snprintf(p_tbox_mcu_info->SYS_VERSION, sizeof(p_tbox_mcu_info->SYS_VERSION), "%s", SYS_VERSION);
+	return 0;
 }
 
 void gnss_callback(struct SdkGnssInfo gnss)
@@ -808,20 +809,25 @@ static void *get_gps_task(void *arg)
     return NULL;
 }
 
-void initTboxInfo()
+int initTboxInfo()
 {
 	char spdlog[512] = {0};
 	tboxInfo_t tbox_info_local = {0};	//从本地获取的信息
 	tboxInfo_t tbox_mcu_info; //从mcu中获取的信息
 	int use_default_info[5] = {0};
 	char buf[512]={0};
+	int ret = 0;
 	pthread_t pthread_get_gps = 0;
 	
 	while (1)
 	{
 		memset(&tbox_mcu_info, 0, sizeof(tbox_mcu_info));
 		//tbox_info_get_mcu_info(&tbox_mcu_info, tbox_info_get_gps_callback_fun);
-		tbox_get_info(&tbox_mcu_info);
+		if(tbox_get_info(&tbox_mcu_info))
+		{
+			sleep(5);
+			continue;
+		}
 
 		memset(spdlog, 0 ,sizeof(spdlog));
 		snprintf(spdlog, sizeof(spdlog),
@@ -852,11 +858,14 @@ void initTboxInfo()
 
 		sleep(5);
 	}
-
+		/*get TBOX info from local configuration files*/
+	//strncpy(tbox_mcu_info.VIN, "LQH913L2240000001", sizeof(tbox_mcu_info.VIN) - 1);
+	//strncpy(tbox_mcu_info.ID, "LQH02505280001", sizeof(tbox_mcu_info.ID) - 1);
 	
 	pthread_create(&pthread_get_gps, NULL, get_gps_task, NULL);
 
 	if(readLocalJson(DEVICE_INFO_PATH, buf, sizeof(buf)) == -1){
+		ret=-1;
 		goto exit;
 	}
 
@@ -864,6 +873,7 @@ void initTboxInfo()
 	if(!root)      
 	{
 		log_d("ConfigParse","tboxinfo file format error");
+		ret=-1;
 		goto exit;
 	}
 
@@ -931,7 +941,7 @@ exit:
 	memset(spdlog, 0 ,sizeof(spdlog));
 	sprintf(spdlog, "ID:%s, VIN:%s, CAR:%s, SIMU:%s\n", tboxInfo_obj.ID, tboxInfo_obj.VIN, tboxInfo_obj.CAR, tboxInfo_obj.SYS_VERSION);
 	log_d("ConfigParse", spdlog);
-	return;
+	return ret;
 }
 
 /*return: 1,str is AllZero; 0,str is not AllZero*/
