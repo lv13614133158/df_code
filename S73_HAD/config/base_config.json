@@ -31,8 +31,8 @@
 		"intervalkey":2
 	},
 	"version":{
-		"releaseVersion":"V1.2.7_PRD",
-		"configVersion":"V1.2.7_PRD_DF",
-		"codeVersion":"V1.2.7"
+		"releaseVersion":"V1.2.8_PRD",
+		"configVersion":"V1.2.8_PRD_DF",
+		"codeVersion":"V1.2.8"
 	}
 }
