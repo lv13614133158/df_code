@@ -188,7 +188,7 @@ captive_portal_detect_request(struct lws_context *context)
 {
 	struct lws_client_connect_info i;
 
-	memset(&i, 0, sizeof i);
+	memset(&i, 0, sizeof(i));
 	i.context = context;
 	i.port = 80;
 	i.address = "connectivitycheck.android.com";
@@ -243,7 +243,7 @@ app_system_state_nf(lws_state_manager_t *mgr, lws_state_notify_link_t *link,
 				break;
 			}
 
-			memset(&i, 0, sizeof i);
+			memset(&i, 0, sizeof(i));
 			i.context = context;
 			i.ssl_connection = LCCSCF_USE_SSL;
 			i.ssl_connection |= LCCSCF_H2_QUIRK_OVERFLOWS_TXCR |

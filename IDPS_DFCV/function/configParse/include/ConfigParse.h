@@ -8,7 +8,7 @@ extern "C" {
 #include "common.h"
 #include "idps_main.h"
 #include "cJSON.h"
-#define Version			"1.0.2"
+#define Version			"1.0.3"
 #define IDSVERSION 		"IDPS-Version-" Version
 #define _IDPS_CA 	"rootcertclient.cer"
 #define _IDPS_CRT	"TBOX-C.pem"

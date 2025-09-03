@@ -89,7 +89,7 @@ try_connect(struct lws_context *cx)
 	struct args *a = lws_context_user(cx);
 	const char *p;
 
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 	i.context = cx;
 	if (!lws_cmdline_option(a->argc, a->argv, "-n")) {
 		i.ssl_connection = LCCSCF_USE_SSL;

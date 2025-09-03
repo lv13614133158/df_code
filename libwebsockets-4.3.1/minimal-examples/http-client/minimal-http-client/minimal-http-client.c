@@ -229,7 +229,7 @@ system_notify_cb(lws_state_manager_t *mgr, lws_state_notify_link_t *link,
 
 	lwsl_info("%s: operational\n", __func__);
 
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 	i.context = context;
 	if (!lws_cmdline_option(a->argc, a->argv, "-n")) {
 		i.ssl_connection = LCCSCF_USE_SSL;

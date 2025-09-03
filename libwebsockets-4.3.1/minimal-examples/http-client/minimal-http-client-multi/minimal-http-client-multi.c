@@ -526,7 +526,7 @@ int main(int argc, const char **argv)
 #endif
 
 	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 
 	lws_cmdline_option_handle_builtin(argc, argv, &info);
 

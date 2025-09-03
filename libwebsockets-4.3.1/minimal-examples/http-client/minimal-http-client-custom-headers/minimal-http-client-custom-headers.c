@@ -190,7 +190,7 @@ int main(int argc, const char **argv)
 		return 1;
 	}
 
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 	i.context = context;
 
 	if (!lws_cmdline_option(argc, argv, "-n"))

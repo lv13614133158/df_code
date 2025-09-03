@@ -129,7 +129,7 @@ attach_callback(struct lws_context *context, int tsi, void *opaque)
 	 * they can happen asynchronously
 	 */
 
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 	i.context = context;
 	i.ssl_connection = LCCSCF_USE_SSL;
 	i.ssl_connection |= LCCSCF_H2_QUIRK_OVERFLOWS_TXCR |

@@ -361,7 +361,7 @@ do_client_conn(void)
 {
 	struct lws_client_connect_info i;
 
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 
 	i.context		= context;
 

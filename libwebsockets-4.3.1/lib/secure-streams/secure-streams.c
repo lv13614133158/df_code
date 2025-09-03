@@ -756,7 +756,7 @@ _lws_ss_client_connect(lws_ss_handle_t *h, int is_retry, void *conn_if_sspc_onw)
 		ipath = _ipath;
 	}
 
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 	i.context = h->context;
 	tls = !!(h->policy->flags & LWSSSPOLF_TLS);
 
@@ -1193,7 +1193,7 @@ lws_ss_create(struct lws_context *context, int tsi, const lws_ss_info_t *ssi,
 		 * instantiate a corresponding vhost for it
 		 */
 
-		memset(&i, 0, sizeof i);
+		memset(&i, 0, sizeof(i));
 
 		i.iface		= h->policy->endpoint;
 		i.vhost_name	= h->policy->streamtype;

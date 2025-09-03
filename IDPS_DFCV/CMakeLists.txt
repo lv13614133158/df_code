@@ -20,7 +20,8 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,noexecstack -Wl,-z,
 
 # 设置 空间随机化 堆栈保护
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-error=unused-function -Wno-error=pointer-sign")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-error=unused-function -Wno-error=pointer-sign -Wno-error=stringop-overflow -Wno-error=format-overflow -fPIE -fstack-protector-all -Wno-error=format-truncation -fsigned-char")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-error=unused-function -Wno-error=pointer-sign -Wno-error=stringop-overflow -Wno-error=format-overflow -fPIE -fstack-protector-all -Wno-error=format-truncation -fsigned-char")
+Set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-error=unused-function -Wno-error=pointer-sign -Wno-stringop-overflow -Wno-format-overflow -fPIE -fstack-protector-all -Wno-format-truncation -fsigned-char")
 
 
 # 设置 strip 

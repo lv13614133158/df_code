@@ -184,7 +184,7 @@ sequencer_start_client(struct myseq *s)
 
 	lws_strncpy(uri, url_paths[s->state], sizeof(uri));
 
-	memset(&i, 0, sizeof i);
+	memset(&i, 0, sizeof(i));
 	i.context = lws_seq_get_context(lws_seq_from_user(s));
 
 	if (lws_parse_uri(uri, &prot, &i.address, &i.port, &path1)) {

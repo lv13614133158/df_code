@@ -119,7 +119,7 @@ connect_client(struct lws_context *context, struct test_item *item)
 {
 	struct lws_client_connect_info i;
 
-	memset(&i, 0, sizeof i);
+	memset(&i, 0, sizeof(i));
 
 	i.mqtt_cp = &client_connect_param;
 	i.opaque_user_data = item;

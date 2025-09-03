@@ -101,7 +101,7 @@ lws_sspc_sul_retry_cb(lws_sorted_usec_list_t *sul)
 	 * a sul to retry at 1Hz
 	 */
 
-	memset(&i, 0, sizeof i);
+	memset(&i, 0, sizeof(i));
 	i.context = h->context;
 	if (h->context->ss_proxy_port) { /* tcp */
 		i.address = h->context->ss_proxy_address;

@@ -186,7 +186,7 @@ int main(int argc, const char **argv)
 		return 1;
 	}
 
-	memset(&i, 0, sizeof i); /* otherwise uninitialized garbage */
+	memset(&i, 0, sizeof(i)); /* otherwise uninitialized garbage */
 	i.context = context;
 	i.ssl_connection = LCCSCF_USE_SSL;
 
