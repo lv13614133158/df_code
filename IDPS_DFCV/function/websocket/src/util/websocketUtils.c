@@ -4,6 +4,7 @@
 #include "runtimemanager.h"
 #include "cJSON.h"
 #include <string.h>
+#include <ConfigParse.h>
 
 enum webProcessType wbsDispatchData(char* _iflowdata){
 	//decode json
@@ -63,7 +64,7 @@ char* wbsGetformEvent(char* data, char* postid, long long* plSeqNumber)
 	cJSON_AddStringToObject(CjsonSecond,"type",postid);
 	cJSON_AddNumberToObject(CjsonSecond,"latitude", wbsClient_getPositionLat());
 	cJSON_AddNumberToObject(CjsonSecond,"longitude",wbsClient_getPositionLong());
-	cJSON_AddStringToObject(CjsonSecond,"version","1.5.0");
+	cJSON_AddStringToObject(CjsonSecond,"version",Version);
 	cJSON_AddItemToObject(CjsonSecond,"data",CjsonThird);
 
 	char* boy = cJSON_PrintUnformatted(CjsonSecond);
