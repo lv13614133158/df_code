@@ -784,7 +784,7 @@ void gnss_callback(struct SdkGnssInfo gnss)
 
 	memset(spdlog, 0 ,sizeof(spdlog));
 	snprintf(spdlog, sizeof(spdlog),
-				"location update:latitude(%f),longitude(%f),altitude(%f)", gnss.latitude, gnss.longitude, gnss.altitude);
+				"location update:latitude(%f),longitude(%f),altitude(%f) v(%d)", gnss.latitude, gnss.longitude, gnss.altitude,gnss.valid);
 	//log_d("gnss_callback", spdlog);
     wbsClient_setPosition(gnss.latitude, gnss.longitude);
 }
