@@ -63,7 +63,7 @@ char* wbsGetformEvent(char* data, char* postid, long long* plSeqNumber)
 	cJSON_AddStringToObject(CjsonSecond,"type",postid);
 	cJSON_AddNumberToObject(CjsonSecond,"latitude", wbsClient_getPositionLat());
 	cJSON_AddNumberToObject(CjsonSecond,"longitude",wbsClient_getPositionLong());
-	cJSON_AddStringToObject(CjsonSecond,"version",IDS_VERSION);
+	cJSON_AddStringToObject(CjsonSecond,"version",Version);
 	cJSON_AddItemToObject(CjsonSecond,"data",CjsonThird);
 
 	char* boy = cJSON_PrintUnformatted(CjsonSecond);
