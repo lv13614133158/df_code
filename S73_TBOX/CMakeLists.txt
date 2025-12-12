@@ -10,6 +10,17 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 #生成gdb的调试信息和不进行代码优化
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
 
+# 设置交叉编译工具链
+set(COMPILE_TOOL_PATH /home/nvidia/df/S73/ql-ag35-1806e-gcc-8.4.0-glibc-v1-toolchain)
+set(SDKTARGETSYSROOT /home/nvidia/df/S73/ql-ol-extsdk-ag35cetcar01a08m2g_ocpu/ql-sysroots)
+set(CMAKE_C_COMPILER ${COMPILE_TOOL_PATH}/bin/arm-openwrt-linux-gcc)
+set(CMAKE_CXX_COMPILER ${COMPILE_TOOL_PATH}/bin/arm-openwrt-linux-g++)
+
+project(idps C CXX)
+
+# 设置包含和链接路径
+link_directories(${COMPILE_TOOL_PATH}/lib ${SDKTARGETSYSROOT}/usr/lib)
+#include_directories(${COMPILE_TOOL_PATH}/include ${SDKTARGETSYSROOT}/usr/include)
 # 设置编译时缓冲区溢出检查
 add_definitions(-D_FORTIFY_SOURCE=2)
 #add_compile_definitions(-D_FORTIFY_SOURCE=2)
@@ -67,11 +78,11 @@ include_directories(function/spdlog)
 
 
 #第三方库
-include_directories(third_part/curl/include)
-#include_directories(third_part/openssl/include)
+#include_directories(third_part/curl/include)
+#include_directories(third_part/openssl/iude)
 #include_directories(third_part/pcap/include)
 include_directories(third_part/websocket/include)
-
+include_directories(${SDKTARGETSYSROOT}/usr/include)
 #硬件支持
 include_directories(tier1_part/quecte/include)
 include_directories(tier1_part/quecte/Qualcomm/qmi)
@@ -81,12 +92,15 @@ include_directories(tier1_part/tbox_info/include)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-set(CMAKE_INSTALL_RPATH $ORIGIN/../lib:${CMAKE_SOURCE_DIR}/lib:/oemapp/idps/lib)
+
+#TODO 需要修改lib路径
+#set(CMAKE_INSTALL_RPATH $ORIGIN/../lib:${CMAKE_SOURCE_DIR}/lib:/oemapp/idps/lib)
 
 #依赖库的路径
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 link_directories(${CMAKE_SOURCE_DIR}/tier1_part/tbox_info/lib)
-link_directories(${CMAKE_SOURCE_DIR}/third_part/curl/lib)
+link_directories(${CMAKE_SOURCE_DIR}/tier1_part/lib)
+#link_directories(${CMAKE_SOURCE_DIR}/third_part/curl/lib)
 #link_directories(${CMAKE_SOURCE_DIR}/third_part/openssl/lib)
 #link_directories(${CMAKE_SOURCE_DIR}/third_part/pcap/lib)
 #link_directories(${CMAKE_SOURCE_DIR}/third_part/websocket/lib)
@@ -166,10 +180,29 @@ target_link_libraries( # Specifies the target library.
 	-lcrypto
 	-lpcap
 	-lwebsockets
-	-lstdc++
-	-lnvapi
-	-lcommon_base
-	-lidpsReadInfo
+	-lnghttp2
+	-lssptbox
+	-ldfsdkapi
+	-lfdbus
+	-ldfsdkproto
+	-lprotobuf
+	-labsl_log_internal_check_op
+	-labsl_log_internal_message
+	-llog
+	-lprop2uci
+	-luci
+	-lubox
+	-ldf_utils
+	-ldfsdkproto
+	-ldf_log
+	-lql_sdk
+	-lql_sys_log
+	-lql_lib_ipc
+	-lql_lib_utils
+	-lteec
 	-lql-tee-service
+	-lm
 	-lstdc++
+
 	)
+

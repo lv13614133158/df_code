@@ -26,6 +26,7 @@
 #include "websocketLoop.h"
 #include "websocketrpc.h"
 #include "websocketTool.h"
+#include <sys/stat.h>
 #include "ConfigParse.h"
 
 // websocket 连接部分
@@ -40,7 +41,8 @@ static bool s_reinit_wbs_connect = false;
 static bool s_wbs_connection_succ = false;
 
 // 接收数据处理
-#define MAXLISTSIZE   （512）
+#define MAXLISTSIZE   (512)
+
 static list listwebsockettx;
 static list listwebsocketrx;
 static list listwebsocketrpc;
@@ -207,7 +209,7 @@ static void wbsClient_localWebsocketSend(long long lseqnumber, char *data, bool 
 		
 		#endif
 
-		char *print_data = cJSON_Print(json);
+		char *print_data = cJSON_PrintUnformatted(json);
 		if (print_data)
 		{
 			if (!wsisend && send_only_once == 1)
@@ -544,13 +546,13 @@ int wbsClient_init(void)
 			memcpy(client_private_key_buff, get_pki_client_private_key(), client_private_key_len);
 		}
 	}
-	/*init certificate buff end*/
-
 	lws_set_log_level(logs, NULL);
 	memset(&info, 0, sizeof info);
 	info.options   = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 	info.port      = CONTEXT_PORT_NO_LISTEN; /* we do not run any server */
 	info.protocols = protocols;
+
+	
 
 	/*Method 1. load the certificate in memory*/
 	if (root_cert_buff)
@@ -558,56 +560,49 @@ int wbsClient_init(void)
 		info.client_ssl_ca_filepath = NULL;  // 不使用文件方式，改为内存块方式
 		info.client_ssl_ca_mem = root_cert_buff;  // 将CA证书作为内存块传入
 		info.client_ssl_ca_mem_len = root_cert_len; // 内存块大小
-	}
+ 	}
 
 	if (client_cert_buff)
 	{
 		info.client_ssl_cert_filepath = NULL;  // 不使用文件方式，改为内存块方式
 		info.client_ssl_cert_mem = client_cert_buff;  // 将客户端证书作为内存块传入
 		info.client_ssl_cert_mem_len = client_cert_len; // 内存块大小
-	}
+ 	}
 
 	if (client_private_key_buff)
 	{
 		info.client_ssl_private_key_filepath = NULL;  // 不使用文件方式，改为内存块方式
 		info.client_ssl_key_mem = client_private_key_buff;	// 将客户端私钥作为内存块传入
 		info.client_ssl_key_mem_len = client_private_key_len; // 内存块大小
-	}
-	/*Method 1. end*/
-
-	/*Method 2. load the certificate as a file*/
+ 	}
+	
 #if 0
 	info.client_ssl_ca_filepath = get_pki_root_cert();//如果服务器有CA证书则需要这行代码
 	info.client_ssl_cert_filepath = get_pki_client_cert();
 	info.client_ssl_private_key_filepath = get_pki_client_private_key();
 #endif
-	/*Method 2. end*/
-
 	if(ssl_chose == 1)
-	 	ssl_connection |= LCCSCF_USE_SSL;
+
+	ssl_connection |= LCCSCF_USE_SSL;
 	info.fd_limit_per_thread = (unsigned int)(1 + 1 + 1);//1 + clients + 1
 	context = lws_create_context(&info);
 
-	/*release certificate buff*/
+
 	if (root_cert_buff)
 	{
 		free(root_cert_buff);
 		root_cert_buff = NULL;
 	}
-
 	if (client_cert_buff)
 	{
 		free(client_cert_buff);
 		client_cert_buff = NULL;
 	}
-
 	if (client_private_key_buff)
 	{
 		free(client_private_key_buff);
 		client_private_key_buff = NULL;
 	}
-	/*release certificate end*/
-
 	if (!context) {
 		log_e("idps_websocket", "lws init failed\n");
 		return -1;
@@ -626,7 +621,7 @@ int wbsClient_localWebSocketclient()
 
 	if (-1 == wbsClient_init())
 	{
-		//return 1;
+		return 1;
 	}
 	
 	while(!interrupted){

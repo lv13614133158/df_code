@@ -1,7 +1,7 @@
 #include <net/ethernet.h>
 #include <stdio.h>
 #include <string.h>
-#include <pcap.h>
+#include <pcap/pcap.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
@@ -70,10 +70,10 @@ void ipWhiteCheckInit(list *listName)
 
 void updateNetConnectReportInterval(int interval)
 {
-	if (interval <= 0)
-	{
+	if (interval <= 0) {
 		interval = 30;
 	}
+	
 	s_net_connect_report_interval = interval;
 }
 
@@ -97,6 +97,7 @@ void sniffer_stop()
 {
 	if(pcap_dumper)
 		pcap_dump_close(pcap_dumper);
+	
 	pcap_dumper = NULL;
 }
 
@@ -124,11 +125,13 @@ static void get_local_mac(char *if_name)
 {
 	struct ifreq m_ifreq;
 	int sock = 0;
+	int i = 0;
+
 	sock = socket(AF_INET,SOCK_STREAM,0);
 	strcpy(m_ifreq.ifr_name,if_name);
 	
 	ioctl(sock,SIOCGIFHWADDR,&m_ifreq);
-	int i = 0;
+
 	for(i = 0; i < 6; i++){
 		local_net_mac_hex[i] = m_ifreq.ifr_hwaddr.sa_data[i];
 	}
@@ -723,101 +726,99 @@ void call(u_char *argument,const struct pcap_pkthdr* pack,const u_char *content)
 	{
 		pcap_dump((char *)pcap_dumper, pack, content);
 	}
-	ethernet=(struct ETHERNET_FRAME_HEAD *)content;
+	ethernet = (struct ETHERNET_FRAME_HEAD *)content;
 
-	if(ntohs(ethernet->ether_type)==ETHERTYPE_IP)
+	if(ntohs(ethernet->ether_type) == ETHERTYPE_IP)
 	{
-		ip=(struct iphdr*)(content+ETHERNET_HEADER);	
+		ip = (struct iphdr*)(content + ETHERNET_HEADER);	
 		ipNtoA(src_bytes, ip->saddr);
 		ipNtoA(dst_bytes, ip->daddr);
 
 		//网络连接事件、数据发送分析
 		switch(ip->protocol)
 		{
-			
 			case IP_PROTCOL_TCP:
 			{
-				tcp=(struct tcphdr*)(content+ ETHERNET_HEADER + IP_HEADER);
+				tcp = (struct tcphdr*)(content + ETHERNET_HEADER + IP_HEADER);
 
-				if (tcp->source == htons(21))//FTP port
-				{
+				//FTP port 
+				if (tcp->source == htons(21)) {				
 					int tcp_header_length = tcp->doff * 4;
 					char *data = (char*)(content + ETHERNET_HEADER + IP_HEADER + tcp_header_length);
+					
 					// Check if the packet contains a FTP command
-					if (strncmp(data, "530", 3) == 0)
-					{
+					if (strncmp(data, "530", 3) == 0) {
 						report_user_login_log(dst_bytes);
 					}
 				}
 
-				if(0 != memcmp(local_net_ip, src_bytes, strnlen(local_net_ip,sizeof(local_net_ip)) + 1))break;
-				if (tcp->syn != 1)break;
+				if(0 != memcmp(local_net_ip, src_bytes, strnlen(local_net_ip, sizeof(local_net_ip)) + 1))
+					break;
+
+				if (tcp->syn != 1)
+					break;
 				//ip 
 				ret = search_network_list(&pHeadNetList,(unsigned int)ip->daddr,0); 
-				if(ret == 0 || ret == 2)
-				{
-					on_IpConnectEvent_callback(IPV4_VERSION,src_bytes,ntohs(tcp->source),dst_bytes,ntohs(tcp->dest),IP_PROTCOL_TCP);
-					if(ret == 0)
-					{
-						append_network_list(&pHeadNetList,(unsigned int)ip->daddr);
+				if(ret == 0 || ret == 2) {
+					on_IpConnectEvent_callback(IPV4_VERSION, src_bytes, 
+												ntohs(tcp->source), dst_bytes, ntohs(tcp->dest), IP_PROTCOL_TCP);
+					if(ret == 0) {
+						append_network_list(&pHeadNetList, (unsigned int)ip->daddr);
 					}
-					change_network_list_state(&pHeadNetList,(unsigned int)ip->daddr,0);
+					
+					change_network_list_state(&pHeadNetList, (unsigned int)ip->daddr, 0);
 				}
+				
 				//tcp
-				ret = search_network_list(&pHeadNetList,(unsigned int)ip->daddr,1); 
-				if(ret == 2)
-				{
-					on_TcpConnectEvent_callback(src_bytes,ntohs(tcp->source),dst_bytes,ntohs(tcp->dest));
-					change_network_list_state(&pHeadNetList,(unsigned int)ip->daddr,1);
+				ret = search_network_list(&pHeadNetList, (unsigned int)ip->daddr,1); 
+				if(ret == 2) {
+					on_TcpConnectEvent_callback(src_bytes, ntohs(tcp->source), dst_bytes, ntohs(tcp->dest));
+					change_network_list_state(&pHeadNetList, (unsigned int)ip->daddr, 1);
 				}
 				break;
 			}
 			case IP_PROTCOL_UDP:
 			{
-				udp=(struct udphdr*)(content+ETHERNET_HEADER+IP_HEADER);
+				udp = (struct udphdr*)(content + ETHERNET_HEADER+IP_HEADER);
 					// dns
-				if(0 != memcmp(local_net_ip, src_bytes, strnlen(local_net_ip,sizeof(local_net_ip)) + 1))
-				{
-					dns_parser(src_bytes,dst_bytes,udp, 0);
+				if(0 != memcmp(local_net_ip, src_bytes, strnlen(local_net_ip,sizeof(local_net_ip)) + 1)) {
+					dns_parser(src_bytes, dst_bytes,udp, 0);
 					break;
+				} else {
+					dns_parser(src_bytes, dst_bytes,udp, 1);
 				}
-				else
-				{
-					dns_parser(src_bytes,dst_bytes,udp, 1);
-				}
+				
 				//ip
-				ret = search_network_list(&pHeadNetList,(unsigned int)ip->daddr,0); 
-				if(ret == 0 || ret == 2)
-				{
-					on_IpConnectEvent_callback(IPV4_VERSION,src_bytes,ntohs(udp->source),dst_bytes,ntohs(udp->dest),IP_PROTCOL_UDP);
-					if(ret == 0)
-					{
-						append_network_list(&pHeadNetList,(unsigned int)ip->daddr);
+				ret = search_network_list(&pHeadNetList, (unsigned int)ip->daddr,0); 
+				if(ret == 0 || ret == 2) {
+					on_IpConnectEvent_callback(IPV4_VERSION, src_bytes, ntohs(udp->source), dst_bytes, ntohs(udp->dest),IP_PROTCOL_UDP);
+					if(ret == 0) {
+						append_network_list(&pHeadNetList, (unsigned int)ip->daddr);
 					}
-					change_network_list_state(&pHeadNetList,(unsigned int)ip->daddr,0);
+					change_network_list_state(&pHeadNetList, (unsigned int)ip->daddr, 0);
 				}
+				
 				//udp
-				ret = search_network_list(&pHeadNetList,(unsigned int)ip->daddr,2); 
-				if(ret == 2)
-				{
-					on_UdpConnectEvent_callback(src_bytes,ntohs(udp->source),dst_bytes,ntohs(udp->dest));
-					change_network_list_state(&pHeadNetList,(unsigned int)ip->daddr,2);
+				ret = search_network_list(&pHeadNetList, (unsigned int)ip->daddr, 2); 
+				if(ret == 2) {
+					on_UdpConnectEvent_callback(src_bytes, ntohs(udp->source), dst_bytes, ntohs(udp->dest));
+					change_network_list_state(&pHeadNetList, (unsigned int)ip->daddr, 2);
 				}
 				break;
 			}
 			default:
 			{
-				if(0 != memcmp(local_net_ip, src_bytes, strnlen(local_net_ip,sizeof(local_net_ip)) + 1))break;
+				if(0 != memcmp(local_net_ip, src_bytes, strnlen(local_net_ip, sizeof(local_net_ip)) + 1))
+					break;
 				//ip
-				ret = search_network_list(&pHeadNetList,(unsigned int)ip->daddr,0); 
-				if(ret == 0 || ret == 2)
-				{
-					on_IpConnectEvent_callback(IPV4_VERSION,src_bytes,0,dst_bytes,0,ip->protocol);
-					if(ret == 0)
-					{
-						append_network_list(&pHeadNetList,(unsigned int)ip->daddr);
+				ret = search_network_list(&pHeadNetList, (unsigned int)ip->daddr, 0); 
+				if(ret == 0 || ret == 2) {
+					on_IpConnectEvent_callback(IPV4_VERSION, src_bytes, 0, dst_bytes, 0, ip->protocol);
+					
+					if(ret == 0) {
+						append_network_list(&pHeadNetList, (unsigned int)ip->daddr);
 					}
-					change_network_list_state(&pHeadNetList,(unsigned int)ip->daddr,0);
+					change_network_list_state(&pHeadNetList, (unsigned int)ip->daddr, 0);
 				}
 				break;
 			}
@@ -828,29 +829,30 @@ void call(u_char *argument,const struct pcap_pkthdr* pack,const u_char *content)
 		{
 			case IP_PROTCOL_TCP:
 			{
-				tcp=(struct tcphdr*)(content+ ETHERNET_HEADER + IP_HEADER);//skip ether and ip header
-				if(0 != memcmp(local_net_ip, dst_bytes, strnlen(local_net_ip,sizeof(local_net_ip)) + 1)) return;
+				tcp=(struct tcphdr*)(content + ETHERNET_HEADER + IP_HEADER);//skip ether and ip header
+				if(0 != memcmp(local_net_ip, dst_bytes, strnlen(local_net_ip, sizeof(local_net_ip)) + 1))
+					return;
 				
-				tcp_parser(ip->saddr,ip->daddr,tcp,pack->len);
+				tcp_parser(ip->saddr, ip->daddr, tcp,pack->len);
 				break;
 			}
 			case IP_PROTCOL_UDP:
 			{
-				udp=(struct udphdr*)(content+ETHERNET_HEADER+IP_HEADER);
+				udp=(struct udphdr*)(content + ETHERNET_HEADER + IP_HEADER);
 				
-				udp_parser(ip->saddr,ip->daddr,udp,pack->len);	 
+				udp_parser(ip->saddr, ip->daddr, udp, pack->len);	 
 				break;
 			}
 			case IP_PROTCOL_ICMP:
 			{
-				icmp=(struct icmphdr*)(content+ETHERNET_HEADER+IP_HEADER);
+				icmp=(struct icmphdr*)(content + ETHERNET_HEADER + IP_HEADER);
 					
-				icmp_parser(ip,icmp,pack->len); 
+				icmp_parser(ip, icmp, pack->len); 
 				break;
 			}
 			case IP_PROTCOL_IGMP:
 			{
-				igmp=(struct igmphdr*)(content+ETHERNET_HEADER+IP_HEADER);
+				igmp=(struct igmphdr*)(content + ETHERNET_HEADER + IP_HEADER);
 				
 				igmp_parser();
 				break;
@@ -858,13 +860,12 @@ void call(u_char *argument,const struct pcap_pkthdr* pack,const u_char *content)
 			default:
 				break;
 		}
-	}
-	else if(ntohs (ethernet->ether_type) == ETHERTYPE_ARP)
-	{
-		arp = (struct arphdr *)(content+ETHERNET_HEADER);
+	} else if(ntohs (ethernet->ether_type) == ETHERTYPE_ARP) {
+		arp = (struct arphdr *)(content + ETHERNET_HEADER);
 		arp_parser(arp);
 	}
-//	api_data(argument,pack,content);//flow count
+	
+	//	api_data(argument,pack,content);//flow count
 	return;
 }
 /**
@@ -901,17 +902,20 @@ static void *thread_parser(void *args){
  * @param   对收集的数据进行分析处理
  * @return: 
  */
-void create_parserthread(void){
+void create_parserthread(void) 
+{
 	int stacksize = 6*1024*1024; 
 	pthread_attr_t attr;
 	int ret = pthread_attr_init(&attr); 
-	if((ret = pthread_attr_setstacksize(&attr, stacksize)) != 0){
+	
+	if((ret = pthread_attr_setstacksize(&attr, stacksize)) != 0) {
 		char log[256] = {0};
 		sprintf(log,"%s""statcksize set error");
 		log_i("networkmonitor", log);
 	}
-	pthread_create(&thread_parser_thd,&attr,thread_parser,NULL);
-	if((ret = pthread_attr_destroy(&attr)) != 0){
+	
+	pthread_create(&thread_parser_thd, &attr, thread_parser,NULL);
+	if((ret = pthread_attr_destroy(&attr)) != 0) {
 		char log[256] = {0};
 		sprintf(log,"%s","thread attr destory error");
 		log_i("networkmonitor", log);

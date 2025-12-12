@@ -9,41 +9,20 @@
 #include <sys/time.h>
 #include "Base_networkmanager.h"
 #include "websocketTool.h"
-#include "idpsReadInfo.h"
-#include "ql_tee_service.h"
-#include "ql_tee_asymm_utils.h"
-#include "ql_tee_symm_utils.h"
+#include "pthread.h"
+#include "dfssptbox.h"
+#include "DfsdkAPIC.h"
 
-// 配置文件目录位置设置
-#define POS_3  1
-#ifdef POS_1
-	#define ROOT_PATH  "./"
-#elif POS_2
-	#define ROOT_PATH  "/usr/local/idps"
-#elif POS_3
-#define ROOT_PATH_RW  "/oemdata/idps/conf"
-#define ROOT_PATH_OR  "/oemapp/idps/conf"
-#elif POS_4
-	#define ROOT_PATH  "../conf"
-#else
-	#define ROOT_PATH  "/mnt/sdcard/idps"
-#endif
-
-#define DEVICE_INFO_PATH      ROOT_PATH_OR "/config/device_info.conf"
-#define BASE_CONFIG_PATH   ROOT_PATH_OR "/config/base_config.json"
-#define POLICY_CONFIG_PATH ROOT_PATH_RW "/config/policy_config.json"
-#define PROCESS_WLIST_PATH ROOT_PATH_RW "/config/process_list.json"
-#define POLICY_CONFIG_MD5  ROOT_PATH_RW "/config/save_conf.json"
-#define BASE_VERSION_PATH  ROOT_PATH_RW "/version/version.ver"
-
-#define GETREQUEST_DATALEN  (1024*5)
 const char* GET_MONITOR_CONFIG = "/api/v1.2/policy/config";
+#define TBOX_INFO_PATH "/tmp/dftbox.info"
+
 tboxInfo_t tboxInfo_obj;
 
-static unsigned char *s_root_cert = NULL;
-static unsigned char *s_dev_cert = NULL;
-static unsigned char *s_dev_key = NULL;
-
+/*
+#define  ID_HSM_ROOT_CERT kHalTeeSsSlot0
+#define  ID_HSM_DEV_CERT  kHalTeeSsSlot4
+#define  ID_HSM_DEV_KEY   kHalTeeSsSlot5
+*/
 // buf为空时读取文件长度，
 static int readLocalJson(char* path, char* buf, int len)
 {
@@ -72,10 +51,28 @@ static int readLocalJson(char* path, char* buf, int len)
 	return ret;
 }
 
+static int mk_dir_exist(char *path)
+{
+    struct stat stat_buf; //useless, but ...
+	if(stat(path, &stat_buf) == -1) {
+		/*create dir*/
+		mkdir(path, 0755);
+        return 0;
+	}
+    return 1;
+}
+
 // 写入Json文件
 static int writeLocalJson(char* path, char* buf, int len)
 {
 	int ret = -1;
+	char verPath[255] = {0};
+
+	memcpy(verPath, path, strlen(path)<255 ? strlen(path):255);
+    char *p = strrchr(verPath,'/');
+    *p = 0; //去掉尾部
+    mk_dir_exist(verPath);
+	
 	FILE* fp = fopen(path, "w");
 	if(fp)
 	{
@@ -397,6 +394,27 @@ static int setPolicyConfigMd5(char *md5)
     return -1;
 }
 
+// 检查文件是否存在
+int file_exists(const char *file_path) {
+    int fd = open(file_path, O_RDONLY);
+    if (fd == -1) {
+        return 0; // 文件不存在
+    }
+	
+    close(fd);
+    return 1; // 文件存在
+}
+
+// 根据文件是否存在选择合适的路径
+char* select_config_path(void) {
+    if (file_exists(POLICY_CONFIG_PATH)) {
+        return POLICY_CONFIG_PATH;
+    } else {
+        return DEFAULT_POLICY_CONFIG_PATH;
+    }
+
+	return NULL;
+}
 
 /*return: -1. err; 0,use local conf;1,use cloud conf*/
 int selectParseConfig(char* responses, configSet* configSetObj)
@@ -404,20 +422,25 @@ int selectParseConfig(char* responses, configSet* configSetObj)
 	int ret = -1;
     if(strstr(responses,"error") || strlen(responses) < 64) //未从平台拉取到配置,或者拉取为空
     {
-        char* reasult = NULL;
-		int len = readLocalJson(POLICY_CONFIG_PATH, NULL, 0);
+        char *result = NULL;
+		char *path = select_config_path();
+
+		if (!path)
+			return -1;
+		
+		int len = readLocalJson(path, NULL, 0);
 		if(len < 0)
 			return -1;
 	
-		reasult = (char*)malloc(len);  
-		if(reasult == NULL){
+		result = (char*)malloc(len);  
+		if(result == NULL){
 			log_e("ConfigParse","policy config malloc error");
 			return -1;
 		}
 
-		readLocalJson(POLICY_CONFIG_PATH, reasult, len);
-		ret = parseCloudConfig(reasult, configSetObj); //使用上次保存的配置
-		free(reasult);
+		readLocalJson(path, result, len);
+		ret = parseCloudConfig(result, configSetObj); //使用上次保存的配置
+		free(result);
 
 		if(ret == -1){
 			return -1;
@@ -439,6 +462,32 @@ int selectParseConfig(char* responses, configSet* configSetObj)
 	return 0;
 }
 
+void parse_json_updatetime(char *path, long long *update_time) {
+    int length = 0;
+    char *result = NULL;
+
+    if ((length = readLocalJson(path, NULL, 0)) > 0) {
+        result = (char*)malloc(length);
+        if (!result) {
+            return;
+        }
+		
+        memset(result, 0, length);
+
+        if (readLocalJson(path, result, length) < 0) {
+            // 读取失败
+            free(result);
+            return;
+        }
+
+        // 解析时间
+        *update_time = parseCloudTime(result, NULL);
+
+        // 清理资源
+        free(result);
+    }
+}
+
 /*return: -1. err; 0,use local conf; 1,use cloud conf*/
 int getCloudConfig(configSet* configSetObj)
 {
@@ -458,20 +507,11 @@ int getCloudConfig(configSet* configSetObj)
 	memset(configSetObj, 0, sizeof(configSet));
     memset(response, 0, GETREQUEST_DATALEN);
 
-	//从本地读取时间戳
-	if((length = readLocalJson(POLICY_CONFIG_PATH, NULL, 0)) > 0)
-	{
-		char* reasult = NULL;
-		reasult = (char*)malloc(length);
-		if(reasult){
-			memset(reasult,0,length);
-			readLocalJson(POLICY_CONFIG_PATH, reasult, length);
-			updateTime = parseCloudTime(reasult, NULL);
-			free(reasult);
-			length = 0;
-		}
+	parse_json_updatetime(POLICY_CONFIG_PATH, &updateTime);
+	if (updateTime == 0) {
+		parse_json_updatetime(DEFAULT_POLICY_CONFIG_PATH, &updateTime);
 	}
-
+	
     /*md5 check*/
 #if 0
     getPolicyConfigMd5(save_md5_buff, sizeof(save_md5_buff));
@@ -663,59 +703,6 @@ static int getOutInfoAPI(char* VIN, char* SN)
 	return ret;
 }
 
-static int readCert(const char *name, char *dataCert, unsigned int len)
-{
-	uint32_t object = 0, count = 0;
-	ql_tee_error_t ret = QL_TEE_OK;
-	char spdlog[512] = {0};
-
-	ret = ql_ss_initialize();
-	if (QL_TEE_OK != ret)
-	{
-		memset(spdlog, 0 ,sizeof(spdlog));
-		snprintf(spdlog, sizeof(spdlog), "ql_ss_initialize err:%d", ret);
-		log_e("ConfigParse", spdlog);
-
-		return -1;
-	}
-
-	ret = ql_ss_open((void*)name, strlen(name), &object);
-	if (QL_TEE_OK != ret)
-	{
-		ql_ss_deinitialize();
-		memset(spdlog, 0 ,sizeof(spdlog));
-		snprintf(spdlog, sizeof(spdlog), "ql_ss_open err:%d", ret);
-		log_e("ConfigParse", spdlog);
-
-		return -2;
-	}
-
-	ret = ql_ss_read(object, (void*)dataCert, len, &count);
-	if (QL_TEE_OK != ret)
-	{
-		ql_ss_deinitialize();
-		memset(spdlog, 0 ,sizeof(spdlog));
-		snprintf(spdlog, sizeof(spdlog), "ql_ss_read err:%d,count:%d", ret, count);
-		log_e("ConfigParse", spdlog);
-
-		return -3;
-	}
-
-	ret = ql_ss_close(object);
-	if (QL_TEE_OK != ret)
-	{
-		ql_ss_deinitialize();
-		memset(spdlog, 0 ,sizeof(spdlog));
-		snprintf(spdlog, sizeof(spdlog), "ql_ss_close err:%d", ret);
-		log_e("ConfigParse", spdlog);
-
-		return -4;
-	}
-
-	ql_ss_deinitialize();
-	return count;
-}
-
 /*return: 1,data is String; 0,data is not String*/
 int isString(const char *data)
 {
@@ -733,77 +720,132 @@ int isString(const char *data)
 	return 1;
 }
 
-/*return: 1,str is AllZero; 0,str is not AllZero*/
-int isAllZero(const char *str)
-{
-	while (*str != '\0')
-	{
-		if (*str != '0')
-		{
-			return 0;
-		}
-		str++;
-	}
-
-	return 1;
+bool extract_field(const char *line, const char *field, char *dest, size_t dest_size) {
+    char *value = strstr(line, field);
+    if (value) {
+        value += strlen(field); // Move past the field name
+        while (*value == ' ') value++; // Skip any leading spaces
+        size_t len = strlen(value);
+        if (len > 0 && value[len - 1] == '\n') {
+            value[len - 1] = '\0'; // Remove trailing newline
+			len--; // Decrease length by 1
+			if (len > 0 && value[len - 1] == '\r') {
+                value[len - 1] = '\0'; // Remove trailing carriage return
+            }
+        }
+        strncpy(dest, value, dest_size - 1);
+        dest[dest_size - 1] = '\0'; // Ensure null termination
+        return true;
+    }
+    return false;
 }
 
-static void tbox_info_get_gps_callback_fun(double latitude, double longitude)
-{
-	static int get_gps_callback_cnt = 60;
+int tbox_get_info(tboxInfo_t *p_tbox_mcu_info) {
+    char SN[50] = {0};
+    char VIN[50] = {0};
+    char MANUFACTURER[50] = {0};
+    char SYS_VERSION[50] = {0};
+    char line[1024] = {0};
 
-	get_gps_callback_cnt++;
-	if (get_gps_callback_cnt >= 60)
-	{
-		get_gps_callback_cnt = 0;
-		wbsClient_setPosition(latitude, longitude);
-	}
+    FILE *file = fopen(TBOX_INFO_PATH, "r");
+    if (file == NULL) {
+        log_e("tbox_get_info", "Failed to open tboxinfo file");
+        return 1;
+    }
 
-	/*char spdlog[512] = {0};
-	snprintf(spdlog, sizeof(spdlog),
-			"latitude:%lf, longitude:%lf\n", latitude, longitude);
-	log_d("ConfigParse", spdlog);*/
+    while (fgets(line, sizeof(line), file)) {
+        if (extract_field(line, "vin:", VIN, sizeof(VIN))) {
+            log_d("tbox_get_info", "get vin success");
+        }
+        if (extract_field(line, "sn:", SN, sizeof(SN))) {
+            log_d("tbox_get_info", "get SN success");
+        }
+        if (extract_field(line, "vendorInfo:", MANUFACTURER, sizeof(MANUFACTURER))) {
+            log_d("tbox_get_info", "get MANUFACTURER success");
+        }
+        if (extract_field(line, "sdkSwVersion:", SYS_VERSION, sizeof(SYS_VERSION))) {
+            log_d("tbox_get_info", "get SYS_VERSION success");
+        }
+    }
+
+    fclose(file);
+
+    // Copy extracted values to p_tbox_mcu_info
+    snprintf(p_tbox_mcu_info->VIN, sizeof(p_tbox_mcu_info->VIN), "%s", VIN);
+    snprintf(p_tbox_mcu_info->ID, sizeof(p_tbox_mcu_info->ID), "%s", SN);
+    snprintf(p_tbox_mcu_info->MANUFACTURER, sizeof(p_tbox_mcu_info->MANUFACTURER), "%s", MANUFACTURER);
+    snprintf(p_tbox_mcu_info->SYS_VERSION, sizeof(p_tbox_mcu_info->SYS_VERSION), "%s", SYS_VERSION);
+	return 0;
 }
 
-/**
- *  获取 SN、VIN、MODEL、SYS_version信息
- *  保存信息到内存
- *  use_default_info代表获取信息状态
- *	b0位: SN b1位: VIN，b2位: vehicle_model，b3位: simu_info
-**/
-void initTboxInfo()
+void gnss_callback(struct SdkGnssInfo gnss)
 {
 	char spdlog[512] = {0};
-	tboxInfo_t tbox_info_local = {0};
+
+	memset(spdlog, 0 ,sizeof(spdlog));
+	snprintf(spdlog, sizeof(spdlog),
+				"location update:latitude(%f),longitude(%f),altitude(%f) v(%d)", gnss.latitude, gnss.longitude, gnss.altitude,gnss.valid);
+	//log_d("gnss_callback", spdlog);
+    wbsClient_setPosition(gnss.latitude, gnss.longitude);
+}
+
+static void *get_gps_task(void *arg)
+{
+	pthread_detach(pthread_self());
+
+	if (dfsdkapi_init("Dfsdk"))
+    {
+        log_e("get_gps_task", "init client fail");
+        return NULL;
+    }
+    
+    dfsdkapi_setGnssNotify(gnss_callback);
+    while(1)
+    {
+		
+        sleep(1);
+    }
+
+    return NULL;
+}
+
+int initTboxInfo()
+{
+	char spdlog[512] = {0};
+	tboxInfo_t tbox_info_local = {0};	//从本地获取的信息
+	tboxInfo_t tbox_mcu_info; //从mcu中获取的信息
 	int use_default_info[5] = {0};
 	char buf[512]={0};
-	tbox_mcu_info_t tbox_mcu_info;
-
-	// 特定接口 getOutInfoAPI，返回值是use_default_info
+	int ret = 0;
+	pthread_t pthread_get_gps = 0;
 	
 	while (1)
 	{
 		memset(&tbox_mcu_info, 0, sizeof(tbox_mcu_info));
-		tbox_info_get_mcu_info(&tbox_mcu_info, tbox_info_get_gps_callback_fun);
+		//tbox_info_get_mcu_info(&tbox_mcu_info, tbox_info_get_gps_callback_fun);
+		if(tbox_get_info(&tbox_mcu_info))
+		{
+			sleep(5);
+			continue;
+		}
 
 		memset(spdlog, 0 ,sizeof(spdlog));
 		snprintf(spdlog, sizeof(spdlog),
-				"vin:%s, sn:%s, supplierInfo:%s, hardwareVersion:%s, softwareVersion:%s\n",
-				tbox_mcu_info.vin, tbox_mcu_info.sn, tbox_mcu_info.supplierInfo, tbox_mcu_info.hardwareVersion, tbox_mcu_info.softwareVersion);
-		log_d("ConfigParse", spdlog);
+				"vin:%s, sn:%s, supplierInfo:%s, softwareVersion:%s\n",
+				tbox_mcu_info.VIN, tbox_mcu_info.ID, tbox_mcu_info.MANUFACTURER, tbox_mcu_info.SYS_VERSION);
+		
 
-		/*判断是否为字符串*/
-		if (isString(tbox_mcu_info.vin) && isString(tbox_mcu_info.sn))
+		if (isString(tbox_mcu_info.VIN) && isString(tbox_mcu_info.ID))
 		{
-			/*判断字符串长度*/
-			if (strlen(tbox_mcu_info.vin) == 0 || strlen(tbox_mcu_info.sn) == 0)
+			log_d("ConfigParse", spdlog);
+			if (strlen(tbox_mcu_info.VIN) == 0 || strlen(tbox_mcu_info.ID) == 0)
 			{
 				log_i("ConfigParse", "device_num or diag_vin len is 0");
 			}
 			else
 			{
-				/*判断字符串是否全部由0组成*/
-				if (isAllZero(tbox_mcu_info.vin) || isAllZero(tbox_mcu_info.sn))
+				
+				if (isAllZero(tbox_mcu_info.VIN) || isAllZero(tbox_mcu_info.ID))
 				{
 					log_i("ConfigParse", "device_num or diag_vin is all zero");
 				}
@@ -816,18 +858,22 @@ void initTboxInfo()
 
 		sleep(5);
 	}
+		/*get TBOX info from local configuration files*/
+	//strncpy(tbox_mcu_info.VIN, "LQH913L2240000001", sizeof(tbox_mcu_info.VIN) - 1);
+	//strncpy(tbox_mcu_info.ID, "LQH02505280001", sizeof(tbox_mcu_info.ID) - 1);
+	
+	pthread_create(&pthread_get_gps, NULL, get_gps_task, NULL);
 
-
-
-	/*get TBOX info from local configuration files*/
 	if(readLocalJson(DEVICE_INFO_PATH, buf, sizeof(buf)) == -1){
+		ret=-1;
 		goto exit;
 	}
 
 	cJSON* root = cJSON_Parse(buf);
-	if(!root)      //解析json失败
+	if(!root)      
 	{
 		log_d("ConfigParse","tboxinfo file format error");
+		ret=-1;
 		goto exit;
 	}
 
@@ -886,28 +932,44 @@ exit:
 		cJSON_Delete(root);
 	}
 
-	strncpy(tboxInfo_obj.VIN, tbox_mcu_info.vin, sizeof(tboxInfo_obj.VIN) - 1);
-	strncpy(tboxInfo_obj.ID, tbox_mcu_info.sn, sizeof(tboxInfo_obj.ID) - 1);
-	strncpy(tboxInfo_obj.MANUFACTURER, tbox_mcu_info.supplierInfo, sizeof(tboxInfo_obj.MANUFACTURER) - 1);
+	strncpy(tboxInfo_obj.VIN, tbox_mcu_info.VIN, sizeof(tboxInfo_obj.VIN) - 1);
+	strncpy(tboxInfo_obj.ID, tbox_mcu_info.ID, sizeof(tboxInfo_obj.ID) - 1);
+	strncpy(tboxInfo_obj.MANUFACTURER, tbox_mcu_info.MANUFACTURER, sizeof(tboxInfo_obj.MANUFACTURER) - 1);
+	
 	strncpy(tboxInfo_obj.CAR, tbox_info_local.CAR, sizeof(tboxInfo_obj.CAR) - 1);
 
 	memset(spdlog, 0 ,sizeof(spdlog));
 	sprintf(spdlog, "ID:%s, VIN:%s, CAR:%s, SIMU:%s\n", tboxInfo_obj.ID, tboxInfo_obj.VIN, tboxInfo_obj.CAR, tboxInfo_obj.SYS_VERSION);
 	log_d("ConfigParse", spdlog);
+	return ret;
 }
+
+/*return: 1,str is AllZero; 0,str is not AllZero*/
+int isAllZero(const char *str)
+{
+	while (*str != '\0')
+	{
+		if (*str != '0')
+		{
+			return 0;
+		}
+		str++;
+	}
+
+	return 1;
+}
+
 
 int initCert(void)
 {
 	char cert[10240] = {0};
-	int certLen = 10240;
 	int read_len = 0;
 
-	printf("init cert\n");
-	/*create client certificate*/
-	read_len = readCert("deviceCert", cert, certLen);
+	log_d("ConfigParse","init cert\n");
+	
+	read_len = DSec_ReadFile("deviceCert", cert, sizeof(cert));
 	if (read_len > 0)
 	{
-		//printf("len:%d, client cert:%s\n", len, cert);
 		if (s_dev_cert)
 		{
 			free(s_dev_cert);
@@ -925,9 +987,8 @@ int initCert(void)
 		log_e("ConfigParse", "read client certificate err!");
 	}
 
-	/*create client private key*/
 	memset(cert, 0, sizeof(cert));
-	read_len = readCert("deviceKey", cert, certLen);
+	read_len = DSec_ReadFile("deviceKey", cert, sizeof(cert));
 	if (read_len > 0)
 	{
 		//printf("len:%d, client key:%s\n", len, cert);
@@ -949,9 +1010,8 @@ int initCert(void)
 		log_e("ConfigParse", "read client private key err");
 	}
 
-	/*create root certificate*/
 	memset(cert, 0, sizeof(cert));
-	read_len = readCert("rootCert", cert, certLen);
+	read_len = DSec_ReadFile("rootCert", cert, sizeof(cert));
 	if (read_len > 0)
 	{
 		//printf("len:%d, root cert:%s\n", len, cert);
@@ -1008,7 +1068,7 @@ int recordVesion(char *version)
 {
 	return writeVersion(BASE_VERSION_PATH, version);
 }
-
+#if 1
 unsigned char *get_pki_client_cert(void)
 {
 	return s_dev_cert;
@@ -1024,7 +1084,26 @@ unsigned char *get_pki_root_cert(void)
 {
 	return s_root_cert;
 }
+#endif 
 
+#if 0
+unsigned char *get_pki_client_cert(void)
+{
+	return s_pki_client_cert_buff;
+}
+
+
+unsigned char *get_pki_client_private_key(void)
+{
+	return s_pki_client_private_key_buff;
+}
+
+unsigned char *get_pki_root_cert(void)
+{
+	return s_pki_root_cert_buff;
+}
+
+#endif
 // 离线在线模式 1：在线 0：离线
 static int s_network_connection_enabled = 0;
 
@@ -1067,4 +1146,36 @@ int init_sync_clock(void)
 	clockobj.sync_clock(timestamp);
 
 	return 0;
+}
+
+int conf_rw_path_init()
+{
+    DIR *dir = NULL;
+    char system_buff[128] = {0};
+	int result = -1;
+
+    dir = opendir(ROOT_PATH_RW"/config");
+    if (dir)
+    {
+        //printf("目录存在\n");
+        closedir(dir);
+    }
+    else
+    {
+        snprintf(system_buff, sizeof(system_buff), "mkdir -p %s", ROOT_PATH_RW"/config");
+        result = system(system_buff);
+    }
+
+    if (access(POLICY_CONFIG_PATH, F_OK) == 0)
+    {
+        //printf("文件存在\n");
+    }
+    else
+    {
+        memset(system_buff, 0, sizeof(system_buff));
+        snprintf(system_buff, sizeof(system_buff), "cp %s %s", ROOT_PATH_OR"/config/policy_config.json", POLICY_CONFIG_PATH);
+        result = system(system_buff);
+    }
+
+    return 0;
 }

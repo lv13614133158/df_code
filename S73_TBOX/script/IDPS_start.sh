@@ -1,12 +1,15 @@
 #!/bin/bash    
-# IDPS start up script 
+# IDPS start up script
+script_name=$(basename $0)
+# echo $script_name
+
 #添加本地执行路径
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/emmc/idps/lib/   
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/oemapp/lib
 while true; 
 do
-	num=$(ps aux | grep IDPS | grep -v grep|wc -l)
+	num=$(ps aux | grep IDPS | grep -v grep | grep -v $script_name |wc -l)
 	if [ $num -eq 0 ];then
-		cd /emmc/idps/bin/
+		cd /oemapp/bin/
 		./IDPS &
 		echo "IDPS START"
 		#启动后沉睡10s

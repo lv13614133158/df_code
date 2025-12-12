@@ -409,10 +409,10 @@ void checkZombieProcess()
     int ret = 0;
     int i = 0, j = 0;
 
-    fp = popen("ps -A -ostat,ppid,pid,cmd | grep -e '^[Zz]'", "r");
+    fp = popen("ps -A -ostat,ppid,pid,comm | grep -e '^[Zz]'", "r");
     if (NULL == fp)
     {
-        printf("popen\" ps -A -ostat,ppid,pid,cmd | grep -e '^[Zz]' \" error\n");
+        printf("popen\" ps -A -ostat,ppid,pid,comm | grep -e '^[Zz]' \" error\n");
         return ;
     }
 

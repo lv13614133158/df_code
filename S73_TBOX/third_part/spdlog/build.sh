@@ -2,7 +2,9 @@
 path=$( cd $( dirname " ${BASH_SOURCE[0]} " ) && pwd ) ##
 echo $path
 
-
+cd /mnt/work/tool
+# 设定环境，
+source ag35-crosstool-env-init-v2
 #cd /home/toolchain/WHDF5G-MKT
 # 设定环境，
 #source /home/toolchain/WHDF/config.rc

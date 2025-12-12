@@ -18,7 +18,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <pthread.h>
-#include <pcap.h>
+#include <pcap/pcap.h>
 #include <stdbool.h>
 #include <pthread.h>
 #include "util.h"

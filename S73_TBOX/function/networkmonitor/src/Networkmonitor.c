@@ -694,10 +694,18 @@ void stopSniffer_Base(void)
 }
 
 // 建立监测
-void newNetworkMonitor(char *watchNicDevice, bool attackSwitch, char* attackList, char* attackThreshold,
+void newNetworkMonitor(char *watchNicDevicePolicy, char *watchNicDeviceBase, bool attackSwitch, char* attackList, char* attackThreshold,
 							bool flowSwitch, int flowInterval, bool connectSwitch, int connectInterval)
 {
-	strncpy(s_watchNicDevice, watchNicDevice, sizeof(s_watchNicDevice) - 1);
+	if (strlen(watchNicDevicePolicy) <= 0)
+	{
+		strncpy(s_watchNicDevice, watchNicDeviceBase, sizeof(s_watchNicDevice) - 1);
+	}
+	else
+	{
+		strncpy(s_watchNicDevice, watchNicDevicePolicy, sizeof(s_watchNicDevice) - 1);
+	}
+
 	LoadNetWorkMonitor(connectSwitch);
 	updateNetConnectReportInterval(connectInterval);
 	initWhiteList();

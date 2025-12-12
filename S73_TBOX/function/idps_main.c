@@ -54,7 +54,7 @@ static int s_net_connect_fail_cnt = 0;
 #define SECOND_STAGE_RETRY_ALL_TIME ((20*SECOND_STAGE_RETRY_INTERVAL_TIME)+FIRST_STAGE_RETRY_ALL_TIME) //100 minute
 #define THIRD_STAGE_RETRY_INTERVAL_TIME (1800) //30 minute
 
-
+#define IDSVERSION 		"IDPS-Version-"IDS_VERSION
 
 
 /**
@@ -108,7 +108,7 @@ static int InitLog(configData configObj)
 	set_file_write_logger(true);  // 写入文件
     set_file_logger(configObj.commonModuleObj.dataspdlog, 5*1024*1024, 2);  //设置日志文件存储路径、大小、滚动个数
 	set_level(0);
-	log_v("idps version","360 Autocare DR V1.2"); 
+	log_v("idps version","DF Autocare DR V1.2"); 
 
 	return 0;
 }
@@ -350,11 +350,21 @@ static void initNetConnect(void)
 int main(){
 	//step 0:获取基础配置
 	char spdlog[256] = {0};
-	
+	conf_rw_path_init();
 	SetIDSVersion();
-	getLocalConfig(&configObj, 0);  //获取common配置
+	
+	//获取common配置
+	if (getLocalConfig(&configObj, 0) < 0) {	
+		printf("getLocalConfig failed, exit IDPS!\n");
+		return -1;
+	}
+	
 	InitLog(configObj);
-	initTboxInfo();                 //初始化tbox的硬件信息
+	if(initTboxInfo()==-1)
+	{
+		printf("initTboxInfo failed, exit IDPS!\n");
+		return -1;
+	}                //初始化tbox的硬件信息
 	//InitSql(configObj);
 	char imei[72] = {0};
 	GetImei(imei, configObj);
@@ -383,6 +393,7 @@ int main(){
        configSetObj.networkInvasionObj.switchFun)
 	{ 
 		NetWorkMonitorMethodObj.newNetworkMonitor(
+			configSetObj.networkInvasionObj.interface,
 			configObj.networkManagerObj.watchNicDevice, 
 			configSetObj.networkInvasionObj.switchFun,
 			configSetObj.networkInvasionObj.attackList,

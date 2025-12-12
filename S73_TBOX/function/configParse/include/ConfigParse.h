@@ -8,10 +8,43 @@ extern "C" {
 #include "common.h"
 #include "idps_main.h"
 #include "cJSON.h"
-#define CodeVersion  	"IDPS-Version-1.2.5"
-#define Version			"1.2.5"
-#define IDSVERSION 		"IDPS-Version-" Version
+#include <sys/time.h>
+#include <dirent.h>
 
+// ... existing code ...
+// 配置文件目录位置设置
+#define IDS_VERSION "1.0.6"
+#define POS_3  1
+#ifdef POS_1
+	#define ROOT_PATH  "./"
+#elif POS_2
+	#define ROOT_PATH  "/usr/local/idps"
+#elif POS_3
+	#define ROOT_PATH_OR  "/oemapp/etc/idps"
+	#define ROOT_PATH_RW  "/oemdata/idps"
+#elif POS_4
+	#define ROOT_PATH_OR  "../conf"
+	#define ROOT_PATH_RW  "/oemdata/idps"
+#else
+	#define ROOT_PATH  "/mnt/sdcard/idps"
+#endif
+#define DEVICE_INFO_PATH      ROOT_PATH_OR "/config/device_info.conf"
+#define BASE_CONFIG_PATH   ROOT_PATH_OR "/config/base_config.json"
+#define DEFAULT_POLICY_CONFIG_PATH ROOT_PATH_OR "/config/policy_config.json"	//初始化的配置文件
+#define POLICY_CONFIG_PATH  ROOT_PATH_RW "/config/policy_config_cloud.json"			//云端获取的配置文件
+#define PROCESS_WLIST_PATH ROOT_PATH_RW "/config/process_list.json"
+#define POLICY_CONFIG_MD5  ROOT_PATH_RW "/config/save_conf.json"
+#define BASE_VERSION_PATH  ROOT_PATH_RW "/version/version.ver"
+
+#define GETREQUEST_DATALEN  (1024*5)
+static unsigned char *s_root_cert = NULL;
+static unsigned char *s_dev_cert = NULL;
+static unsigned char *s_dev_key = NULL;
+#define PKI_CERT_PATH      ROOT_PATH_RW "/data123"
+#define PKI_CLIENT_CERT_NAME        PKI_CERT_PATH "/d2e64f06c8855b171ed9c0d952c1"
+#define PKI_CLIENT_PRIVATE_KEY_NAME PKI_CERT_PATH "/d2e64f06c8855b171ed9c0d952c2"
+#define PKI_ROOT_CERT_NAME          PKI_CERT_PATH "/d2e64f06c8855b171ed9c0d952c3"
+#define IDS_CODE_VERSION "1.2.5"
 #define INTERFACE_MAXSIZE     (128)    //网卡名长度
 #define GENERALSET 	bool switchFun;\
 					int  policyType;\
@@ -107,6 +140,11 @@ typedef struct tboxInfo{
 }tboxInfo_t;
 extern tboxInfo_t tboxInfo_obj;
 
+typedef struct tbox_gps_info{
+	double latitude;
+	double longitude;
+}tbox_gps_info_t;
+
 //获取本地mode :0 公共配置 1 :rpc置默认配置
 int getLocalConfig(configData* configObj, int mode);
 // 云端拉取rpc配置
@@ -120,8 +158,8 @@ int recordVesion(char* version);
 
 char *getProcessWhileList(void);
 int   setProcessWhileList(char *white_process);
-
-void initTboxInfo();
+int conf_rw_path_init();
+int initTboxInfo();
 int initCert(void);
 char* getTCUID();
 char* getVIN();
@@ -135,6 +173,7 @@ char* getManufacturer();
 int networkFunctionEnabled(void);
 void initFlagNetworkConnection(void);
 int init_sync_clock(void);
+int isAllZero(const char *str);
 
 #ifdef __cplusplus
 }

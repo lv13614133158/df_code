@@ -88,8 +88,7 @@ static void setCurlComopt(CURL *curlget)
     //curl_easy_setopt(curlget, CURLOPT_CAPATH, caPath); //指定证书路径
     //curl_easy_setopt(curlget, CURLOPT_CAINFO, caInfo); //指定证书信息
     curl_easy_setopt(curlget, CURLOPT_VERBOSE, 1L);         //curl日志打印，0关闭，1打开
-
-    /*Method 1. load the certificate in memory*/
+    
     char *client_cert_buff = NULL;
     int client_cert_len = 0;
     char *client_private_key_buff = NULL;
@@ -159,30 +158,6 @@ static void setCurlComopt(CURL *curlget)
         free(client_private_key_buff);
         client_private_key_buff = NULL;
     }
-    /*Method 1. end*/
-
-    /*Method 2. load the certificate as a file*/
-#if 0
-    /* cert is stored PEM coded in file... */
-    /* since PEM is default, we needn't set it for PEM */
-    curl_easy_setopt(curlget, CURLOPT_SSLCERTTYPE, "PEM");
-
-    /* set the cert for client authentication */
-    curl_easy_setopt(curlget, CURLOPT_SSLCERT, get_pki_client_cert_file_path());
-
-    //curl_easy_setopt(curlget, CURLOPT_KEYPASSWD, "password");
-
-    /* if we use a key stored in a crypto engine,
-    *          we must set the key type to "ENG" */
-    curl_easy_setopt(curlget, CURLOPT_SSLKEYTYPE, "PEM");
-
-    /* set the private key (file or ID in engine) */
-    curl_easy_setopt(curlget, CURLOPT_SSLKEY, get_pki_client_private_key_file_path());
-
-    /* set the file with the certs vaildating the server */
-    curl_easy_setopt(curlget, CURLOPT_CAINFO, get_pki_root_cert_file_path());
-#endif
-    /*Method 2. end*/
 }
 
 static void setGetRequestopt(CURL *curlget)
